@@ -106,6 +106,28 @@ def _px_range(lo: int, hi: int):
     return _check
 
 
+def _int_range(lo: int, hi: int):
+    def _check(v: int) -> None:
+        if not (lo <= v <= hi):
+            raise ValueError(f"must be between {lo} and {hi}")
+    return _check
+
+
+def _valid_timezone(v: str) -> None:
+    from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+    try:
+        ZoneInfo(v)
+    except ZoneInfoNotFoundError:
+        raise ValueError(f"{v!r} is not a valid IANA timezone (e.g. 'Asia/Kuwait', 'America/New_York')")
+
+
+def _valid_workdays(v: list) -> None:
+    if not all(isinstance(d, int) and 0 <= d <= 6 for d in v):
+        raise ValueError("each workday must be an integer 0 (Monday) through 6 (Sunday)")
+    if len(v) != len(set(v)):
+        raise ValueError("workdays must not contain duplicates")
+
+
 # ── Registry ──────────────────────────────────────────────────────────
 # Grouped by category purely for readability; the flat dict below is
 # what code actually consumes.
@@ -175,6 +197,31 @@ _DEFS: list[SettingDef] = [
     SettingDef("features.booking_enabled", "features", "Enable appointment booking", SettingType.BOOL, True),
     SettingDef("features.chat_enabled", "features", "Enable AI chat widget", SettingType.BOOL, True),
     SettingDef("features.whatsapp_widget_enabled", "features", "Enable WhatsApp widget", SettingType.BOOL, False),
+
+    # booking — business rules for the appointment scheduler. Slot
+    # generation, availability, and notice-window enforcement all read
+    # these at request time (app/booking_service.py) rather than having
+    # any of it hardcoded, so an admin can retune the whole booking
+    # flow (different hours, days, timezone, lead time) without a
+    # deploy. day_start_hour/day_end_hour aren't cross-validated against
+    # each other here (registry validation is per-key); if end <= start,
+    # booking_service treats that day as having zero slots rather than
+    # erroring, so a temporarily-inconsistent pair never 500s a request.
+    SettingDef("booking.timezone", "booking", "Timezone", SettingType.STRING, "Asia/Kuwait",
+               help_text="IANA timezone name — determines what 'today' and business hours mean.",
+               validator=_valid_timezone),
+    SettingDef("booking.slot_minutes", "booking", "Slot length (minutes)", SettingType.INT, 30,
+               validator=_int_range(5, 240)),
+    SettingDef("booking.day_start_hour", "booking", "Day starts at (hour, 24h)", SettingType.INT, 9,
+               validator=_int_range(0, 23)),
+    SettingDef("booking.day_end_hour", "booking", "Day ends at (hour, 24h)", SettingType.INT, 17,
+               validator=_int_range(0, 23)),
+    SettingDef("booking.workdays", "booking", "Working days", SettingType.LIST, [0, 1, 2, 3, 4],
+               help_text="0=Monday .. 6=Sunday.", validator=_valid_workdays),
+    SettingDef("booking.max_days_ahead", "booking", "Max days ahead bookable", SettingType.INT, 30,
+               validator=_int_range(1, 365)),
+    SettingDef("booking.min_notice_hours", "booking", "Minimum notice (hours)", SettingType.INT, 6,
+               help_text="Required lead time to book, cancel, or reschedule.", validator=_int_range(0, 168)),
 
     # copy — free-form UI microcopy blobs, grouped by the screen that
     # uses them (home / chat / booking). Kept as JSON blobs rather than

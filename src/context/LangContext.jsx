@@ -74,6 +74,7 @@ export function LangProvider({ children }) {
       pages: site.pages[lang],
       branding: resolvedBranding,
       theme: site.theme,
+      features: site.features,
       supportedLanguages: langs,
       toggleLang: () => setLang(langs[(idx + 1) % langs.length]),
       setLang,

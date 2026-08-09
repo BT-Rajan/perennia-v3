@@ -1,13 +1,11 @@
 // ──────────────────────────────────────────────────────────
 // Every call here uses a *relative* path ("api/…"), never a
-// hardcoded host:port. That's what lets the exact same build
-// work unmodified whether Apache/XAMPP is serving it on 80,
-// 8080, or whatever free port it found — see xampp-backend/
-// and vite.config.js for the matching dev-time proxy.
+// hardcoded host:port — see vite.config.js for the matching dev-time
+// proxy to the Python backend (backend/app/main.py).
 //
-// If the PHP backend isn't reachable (e.g. running `npm run dev`
-// without XAMPP), every call transparently falls back to an
-// in-memory mock so the UI is still fully explorable.
+// If the backend isn't reachable (e.g. running `npm run dev` without
+// it started), every call transparently falls back to an in-memory
+// mock so the UI is still fully explorable.
 // ──────────────────────────────────────────────────────────
 
 const API_BASE = "api";
@@ -37,7 +35,7 @@ function genId() {
 function mockSlotsFor(dateStr) {
   const base = ["09:00", "10:00", "11:00", "13:00", "14:00", "15:30", "16:30"];
   const date = new Date(dateStr);
-  const isWeekend = date.getDay() === 5 || date.getDay() === 6; // Fri/Sat off, matching Gulf work week
+  const isWeekend = date.getDay() === 0 || date.getDay() === 6; // matches the backend's default Mon-Fri workweek
   if (isWeekend) return [];
   return base.filter((_, i) => (date.getDate() + i) % 4 !== 0);
 }
@@ -55,19 +53,14 @@ export const api = {
       : "Thanks for sharing that! Someone from our team will follow up shortly. Would you like to book a time to talk?";
   },
 
-  async getFaq(lang) {
-    const data = await tryFetch(`faq.php?lang=${lang}`);
-    return data?.items ?? null; // null → caller uses local content.js data
-  },
-
   async getSlots(date) {
-    const data = await tryFetch(`appointments.php?action=slots&date=${date}`);
+    const data = await tryFetch(`booking/slots?date=${date}`);
     if (data) return data.slots;
     return mockSlotsFor(date);
   },
 
   async createAppointment(payload) {
-    const data = await tryFetch("appointments.php?action=create", {
+    const data = await tryFetch("booking/appointments", {
       method: "POST",
       body: JSON.stringify(payload),
     });
@@ -78,7 +71,10 @@ export const api = {
   },
 
   async lookupAppointment(id, email) {
-    const data = await tryFetch(`appointments.php?action=lookup&id=${id}&email=${encodeURIComponent(email)}`);
+    const data = await tryFetch("booking/appointments/lookup", {
+      method: "POST",
+      body: JSON.stringify({ id, email }),
+    });
     if (data) return data;
     const appt = mockAppointments.get(id);
     if (appt && appt.email?.toLowerCase() === email.toLowerCase()) {
@@ -88,7 +84,7 @@ export const api = {
   },
 
   async cancelAppointment(id, email) {
-    const data = await tryFetch("appointments.php?action=cancel", {
+    const data = await tryFetch("booking/appointments/cancel", {
       method: "POST",
       body: JSON.stringify({ id, email }),
     });
@@ -99,7 +95,7 @@ export const api = {
   },
 
   async rescheduleAppointment(id, email, date, time) {
-    const data = await tryFetch("appointments.php?action=reschedule", {
+    const data = await tryFetch("booking/appointments/reschedule", {
       method: "POST",
       body: JSON.stringify({ id, email, date, time }),
     });

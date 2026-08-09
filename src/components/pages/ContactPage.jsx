@@ -15,7 +15,7 @@ import "./ContactPage.css";
  * no separate route needed for scheduling a call.
  */
 export default function ContactPage({ onBack, onNavigate }) {
-  const { copy, pages, branding } = useLang();
+  const { copy, pages, branding, features } = useLang();
   const meta = pages.contact;
 
   const [bookingOpen, setBookingOpen] = useState(false);
@@ -51,14 +51,18 @@ export default function ContactPage({ onBack, onNavigate }) {
 
           {confirmation && <p className="contact-confirmation">{confirmation}</p>}
 
-          <div className="contact-cta-row">
-            <Button variant="primary" onClick={() => setBookingOpen(true)}>
-              {copy.chat.bookBtn}
-            </Button>
-          </div>
+          {features.bookingEnabled && (
+            <>
+              <div className="contact-cta-row">
+                <Button variant="primary" onClick={() => setBookingOpen(true)}>
+                  {copy.chat.bookBtn}
+                </Button>
+              </div>
 
-          {bookingOpen && (
-            <BookingPanel onClose={() => setBookingOpen(false)} onResult={handleBookingResult} />
+              {bookingOpen && (
+                <BookingPanel onClose={() => setBookingOpen(false)} onResult={handleBookingResult} />
+              )}
+            </>
           )}
         </GlassPanel>
       </main>

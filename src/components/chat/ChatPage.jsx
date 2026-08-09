@@ -13,7 +13,7 @@ import BookingPanel from "../booking/BookingPanel.jsx";
 import "./ChatPage.css";
 
 export default function ChatPage({ onBack, onNavigate }) {
-  const { copy, lang } = useLang();
+  const { copy, lang, features } = useLang();
   const t = copy.chat;
 
   const [messages, setMessages] = useState([]);
@@ -61,7 +61,9 @@ export default function ChatPage({ onBack, onNavigate }) {
         onLogoClick={onBack}
         leading={<BackButton onClick={onBack} />}
       >
-        <Chip icon="💬" onClick={() => setBookingOpen(true)}>{t.bookBtn}</Chip>
+        {features.bookingEnabled && (
+          <Chip icon="💬" onClick={() => setBookingOpen(true)}>{t.bookBtn}</Chip>
+        )}
       </TopBar>
 
       <main className="chat-main">
@@ -99,7 +101,7 @@ export default function ChatPage({ onBack, onNavigate }) {
                 disabled={typing}
               />
 
-              {bookingOpen && (
+              {bookingOpen && features.bookingEnabled && (
                 <BookingPanel onClose={() => setBookingOpen(false)} onResult={handleBookingResult} />
               )}
             </div>

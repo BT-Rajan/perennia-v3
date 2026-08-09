@@ -74,6 +74,7 @@ class InfraSettings(BaseSettings):
     COOKIE_SECURE: bool = True
 
     RATE_LIMIT_LOGIN: str = "5/minute"
+    RATE_LIMIT_APPOINTMENT: str = "6/hour"
 
     LOG_DIR: Path = BASE_DIR / "logs"
     DATA_DIR: Path = BASE_DIR / "data"

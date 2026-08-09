@@ -9,7 +9,16 @@ from slowapi.errors import RateLimitExceeded
 
 from app.config import settings
 from app.rate_limit import limiter
-from app.routers import admin_auth, admin_content, admin_settings, admin_uploads, public_config, public_content
+from app.routers import (
+    admin_auth,
+    admin_booking,
+    admin_content,
+    admin_settings,
+    admin_uploads,
+    public_booking,
+    public_config,
+    public_content,
+)
 
 
 def create_app() -> FastAPI:
@@ -54,8 +63,10 @@ def create_app() -> FastAPI:
     app.include_router(admin_settings.router)
     app.include_router(admin_content.router)
     app.include_router(admin_uploads.router)
+    app.include_router(admin_booking.router)
     app.include_router(public_config.router)
     app.include_router(public_content.router)
+    app.include_router(public_booking.router)
 
     app.mount("/uploads", StaticFiles(directory=str(settings.UPLOADS_DIR)), name="uploads")
 

@@ -149,6 +149,7 @@ export function buildFallbackSite() {
     supportedLanguages,
     defaultLanguage: "en",
     theme: FALLBACK_THEME,
+    features: { bookingEnabled: true, chatEnabled: true, whatsappWidgetEnabled: false },
     branding: {
       siteNameByLang: { en: BRAND.name, ar: BRAND.wordmarkAr },
       logoUrl: "/static/logo.svg",
@@ -156,6 +157,14 @@ export function buildFallbackSite() {
       metaDescriptionByLang: { en: "Perennia — AI-powered technology & innovation.", ar: "" },
     },
     ...buildFromLocalFallback(supportedLanguages),
+  };
+}
+
+function apiFeatures(publicConfig) {
+  return {
+    bookingEnabled: publicConfig["features.booking_enabled"],
+    chatEnabled: publicConfig["features.chat_enabled"],
+    whatsappWidgetEnabled: publicConfig["features.whatsapp_widget_enabled"],
   };
 }
 
@@ -201,6 +210,9 @@ export async function loadSiteContent() {
     supportedLanguages,
     defaultLanguage,
     theme: haveFullApiData ? apiTheme(publicConfig) : FALLBACK_THEME,
+    features: haveFullApiData
+      ? apiFeatures(publicConfig)
+      : { bookingEnabled: true, chatEnabled: true, whatsappWidgetEnabled: false },
     branding: {
       siteNameByLang: publicConfig?.["branding.site_name"] ?? { en: BRAND.name, ar: BRAND.wordmarkAr },
       logoUrl: publicConfig?.["branding.logo_url"] ?? "/static/logo.svg",

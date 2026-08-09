@@ -147,3 +147,31 @@ class FaqItem(Base):
     translations: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)
     updated_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, onupdate=_utcnow)
     updated_by: Mapped[str | None] = mapped_column(String(32), ForeignKey("admin_user.id"), nullable=True)
+
+
+class Appointment(Base):
+    """One row per booking. `date`/`time` are kept as separate strings
+    (ISO date, 'HH:MM') rather than a single datetime because every
+    piece of booking logic — slot generation, availability, the
+    workdays/hours settings — is inherently day-and-slot shaped, not a
+    continuous timestamp; storing it that way avoids timezone-conversion
+    bugs creeping into what's fundamentally a "which slot" question.
+    The confirmation code (id) is the primary key and is what a visitor
+    quotes back to look up, cancel, or reschedule — always paired with
+    the email on file, checked in booking_service.py."""
+
+    __tablename__ = "appointment"
+
+    id: Mapped[str] = mapped_column(String(16), primary_key=True)
+    date: Mapped[str] = mapped_column(String(10), nullable=False, index=True)  # YYYY-MM-DD
+    time: Mapped[str] = mapped_column(String(5), nullable=False)  # HH:MM, 24h
+    name: Mapped[str] = mapped_column(String(120), nullable=False)
+    email: Mapped[str] = mapped_column(String(254), nullable=False, index=True)
+    phone: Mapped[str] = mapped_column(String(40), default="", nullable=False)
+    service: Mapped[str] = mapped_column(String(200), default="", nullable=False)
+    notes: Mapped[str] = mapped_column(String(1000), default="", nullable=False)
+    status: Mapped[str] = mapped_column(String(16), default="confirmed", nullable=False)  # confirmed | cancelled
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+    updated_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, onupdate=_utcnow)
+
+    __table_args__ = (Index("ix_appointment_date_status", "date", "status"),)
