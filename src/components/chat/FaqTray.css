@@ -1,0 +1,44 @@
+/* Desktop-only floating menu tray, docked inside the chat window just
+   above the input, always visible (no toggle). Hidden below desktop
+   width per requirement. */
+.faq-tray {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .faq-tray {
+    display: flex;
+    position: absolute;
+    inset-inline-end: var(--space-4);
+    bottom: calc(var(--space-3) + 64px);
+    z-index: 20;
+    max-width: min(320px, calc(100% - var(--space-6)));
+  }
+
+  .faq-tray-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: var(--space-2);
+    border-radius: var(--radius-md);
+    background: var(--glass-strong);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  }
+
+  .faq-tray-item {
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    white-space: nowrap;
+    padding: 8px 14px;
+    border-radius: var(--radius-pill);
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    color: var(--white-soft);
+    transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+  }
+  .faq-tray-item:hover { background: var(--gold-dim); border-color: var(--gold-border); color: var(--gold); }
+}

@@ -1,0 +1,77 @@
+/* ──────────────────────────────────────────────────────────
+   Design tokens — single source of truth for the whole app.
+   Every component reads colors/spacing/radii from here so the
+   look stays consistent and re-themeable from one place.
+   ────────────────────────────────────────────────────────── */
+:root {
+  /* Brand palette (enhanced - more vibrant & professional) */
+  --navy-1: #0a0e27;
+  --navy-2: #0f1535;
+  --navy-3: #151d42;
+  --navy-4: #1a2550;
+  --navy-5: #1f3366;
+  --navy-6: #254080;
+  --blue-mid: #2563eb;
+  --blue-light: #3b82f6;
+  --white-soft: #f0f5ff;
+  --white-pure: #ffffff;
+  --gold: #fbbf24;
+  --gold-dim: rgba(251, 191, 36, 0.16);
+  --gold-border: rgba(251, 191, 36, 0.3);
+  
+  /* Accent colors for visual richness */
+  --accent-purple: #a78bfa;
+  --accent-cyan: #06b6d4;
+  --accent-emerald: #10b981;
+  --accent-rose: #f43f5e;
+
+  /* Glass surfaces */
+  --glass: rgba(255, 255, 255, 0.055);
+  --glass-strong: rgba(255, 255, 255, 0.09);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --muted: rgba(255, 255, 255, 0.5);
+  --muted-strong: rgba(255, 255, 255, 0.7);
+
+  /* Typography */
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;
+  --font-ar: "Noto Kufi Arabic", "Arial Unicode MS", sans-serif;
+
+  /* Fluid type scale — clamp() keeps this "native" across phone/tablet/desktop
+     instead of relying on breakpoint-by-breakpoint font-size overrides. */
+  --fs-hero: clamp(2rem, 5vw + 1rem, 4rem);
+  --fs-tagline: clamp(1.5rem, 3vw + 1rem, 2.75rem);
+  --fs-sub: clamp(0.7rem, 0.5vw + 0.55rem, 0.85rem);
+  --fs-body: clamp(0.9rem, 0.3vw + 0.8rem, 1rem);
+  --fs-sm: clamp(0.78rem, 0.2vw + 0.72rem, 0.85rem);
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* Radii + motion */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast: 0.18s;
+  --dur-med: 0.32s;
+
+  /* Layout */
+  --header-h: 64px;
+  --content-max: 1180px;
+
+  /* Breakpoints (referenced in comments; media queries can't read vars,
+     kept here as the documented contract for the app) */
+  --bp-mobile: 480px;
+  --bp-tablet: 768px;
+  --bp-desktop: 1024px;
+  --bp-wide: 1400px;
+}

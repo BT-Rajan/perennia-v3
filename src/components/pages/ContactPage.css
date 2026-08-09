@@ -1,0 +1,20 @@
+.contact-shell {
+  position: relative;
+  min-height: 360px;
+}
+
+.contact-cta-row {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-5);
+}
+
+.contact-confirmation {
+  margin-top: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: var(--accent-emerald);
+  font-size: var(--fs-sm);
+}

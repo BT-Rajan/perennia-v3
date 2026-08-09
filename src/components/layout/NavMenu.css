@@ -1,0 +1,33 @@
+.nav-menu {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .nav-menu {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+  }
+
+  .nav-menu-link {
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--white-soft);
+    padding: 6px 2px;
+    position: relative;
+  }
+  .nav-menu-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: var(--gold);
+    transform: scaleX(0);
+    transition: transform var(--dur-fast) var(--ease);
+  }
+  .nav-menu-link:hover { color: var(--gold); }
+  .nav-menu-link:hover::after { transform: scaleX(1); }
+}

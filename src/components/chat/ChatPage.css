@@ -1,0 +1,89 @@
+.chat-page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding-top: calc(var(--header-h) + var(--space-4));
+  padding-left: var(--space-5);
+  padding-right: var(--space-5);
+  padding-bottom: var(--space-3);
+  animation: fade-in 0.5s var(--ease);
+}
+
+.chat-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  max-width: var(--content-max);
+  width: 100%;
+  margin: 0 auto;
+  padding-bottom: var(--space-4);
+}
+
+.chat-tagline { text-align: center; }
+.chat-tagline-main {
+  font-family: var(--font-display);
+  font-size: var(--fs-tagline);
+  font-weight: 600;
+}
+[dir="rtl"] .chat-tagline-main { font-family: var(--font-ar); font-weight: 500; }
+.chat-tagline-main .gold { color: var(--gold); }
+.chat-tagline-divider { width: 48px; height: 2px; background: var(--gold); margin: var(--space-2) auto; }
+.chat-tagline-sub { font-size: var(--fs-sub); letter-spacing: 0.12em; color: var(--muted-strong); }
+
+.chat-content {
+  display: flex;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
+.chat-shell {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 480px;
+  max-height: 640px;
+  overflow: hidden;
+  position: relative;
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--glass-border);
+}
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 8px #4ade80; }
+.chat-header-text { font-weight: 600; font-size: var(--fs-body); }
+
+.chat-conversation-wrap { flex: 1; display: flex; flex-direction: column; min-height: 0; position: relative; }
+.chat-conversation { flex: 1; overflow-y: auto; padding: var(--space-4); min-width: 0; }
+
+.chat-footer {
+  text-align: center;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--fs-sm);
+  color: var(--muted);
+  border-top: 1px solid rgba(251, 191, 36, 0.1);
+  margin-top: var(--space-3);
+  background: linear-gradient(180deg, transparent 0%, rgba(10, 14, 39, 0.3) 100%);
+}
+
+@keyframes fade-in {
+  from { opacity: 0; } to { opacity: 1; }
+}
+
+@media (max-width: 767px) {
+  .chat-page { 
+    padding-top: calc(56px + var(--space-3));
+    padding-left: var(--space-3); 
+    padding-right: var(--space-3); 
+    padding-bottom: var(--space-3);
+  }
+  .chat-shell { min-height: 60vh; max-height: none; }
+  .chat-footer { font-size: var(--fs-sm); padding: var(--space-2) var(--space-3); }
+}
