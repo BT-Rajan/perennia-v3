@@ -34,7 +34,7 @@ export default function ContactPage({ onBack, onNavigate }) {
 
   return (
     <div className="content-page">
-      <TopBar onNavigate={onNavigate} onLogoClick={onBack} leading={<BackButton onClick={onBack} />} />
+      <TopBar onNavigate={onNavigate} onLogoClick={onBack} leading={<BackButton onClick={onBack} title={copy.common.back} />} />
 
       <main className="content-main">
         <div className="content-tagline">

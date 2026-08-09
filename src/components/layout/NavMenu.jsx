@@ -8,10 +8,10 @@ import "./NavMenu.css";
  * link is clicked; the caller decides what that means on its page.
  */
 export default function NavMenu({ onNavigate }) {
-  const { nav } = useLang();
+  const { nav, copy } = useLang();
 
   return (
-    <nav className="nav-menu" aria-label="Primary">
+    <nav className="nav-menu" aria-label={copy.common.primaryNav}>
       {nav.map((item) => (
         <button key={item.id} className="nav-menu-link" onClick={() => onNavigate?.(item.id)}>
           {item.label}

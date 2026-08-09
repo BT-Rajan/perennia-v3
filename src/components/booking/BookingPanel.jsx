@@ -12,7 +12,7 @@ export default function BookingPanel({ onClose, onResult }) {
 
   return (
     <GlassPanel className="booking-panel" as="div" role="dialog" aria-modal="true">
-      <button className="booking-close" onClick={onClose} aria-label="Close">✕</button>
+      <button className="booking-close" onClick={onClose} aria-label={copy.common.close}>✕</button>
       <div className="booking-badge" aria-hidden="true">📅</div>
       <h3>{t.title}</h3>
       <p className="booking-sub">{t.subtitle}</p>

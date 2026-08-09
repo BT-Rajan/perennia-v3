@@ -43,6 +43,7 @@ function localCopyForLang(lang) {
   return {
     home: c.home,
     chat: c.chat,
+    common: c.common,
     booking: {
       ...c.booking,
       // already functions in the local fallback — used as-is.
@@ -72,13 +73,22 @@ function buildFromLocalFallback(supportedLanguages) {
 function apiCopyForLang(copyBlobs, lang) {
   const home = toCamel(copyBlobs["copy.home"]?.[lang] ?? {});
   const chat = toCamel(copyBlobs["copy.chat"]?.[lang] ?? {});
+  const common = toCamel(copyBlobs["copy.common"]?.[lang] ?? {});
   const bookingRaw = toCamel(copyBlobs["copy.booking"]?.[lang] ?? {});
+  // `errors` keys are backend error codes (e.g. "slot_unavailable"),
+  // looked up verbatim against booking_service.py's return values —
+  // NOT field names, so they must stay snake_case. camelCasing them
+  // above (toCamel is recursive) would silently break every lookup,
+  // since result.error from the API is always snake_case.
+  const rawErrors = copyBlobs["copy.booking"]?.[lang]?.errors ?? {};
 
   return {
     home,
     chat,
+    common,
     booking: {
       ...bookingRaw,
+      errors: rawErrors,
       // Backend stores these as {id}/{date}/{time} template strings
       // (functions aren't JSON-serializable); rehydrate them into the
       // callables every booking component already expects.
@@ -140,6 +150,7 @@ const FALLBACK_THEME = {
   headerHeightPx: 64,
   contentMaxWidthPx: 1180,
   cornerRadiusPx: 16,
+  heroAutoAdvanceSeconds: 7,
 };
 
 export function buildFallbackSite() {
@@ -181,6 +192,7 @@ function apiTheme(publicConfig) {
     headerHeightPx: publicConfig["theme.header_height_px"],
     contentMaxWidthPx: publicConfig["theme.content_max_width_px"],
     cornerRadiusPx: publicConfig["theme.corner_radius_px"],
+    heroAutoAdvanceSeconds: publicConfig["theme.hero_auto_advance_seconds"],
   };
 }
 

@@ -19,28 +19,32 @@ export default function ManageBooking({ onDone }) {
   const [busy, setBusy] = useState(false);
 
   async function handleLookup() {
-    if (!id.trim() || !email.trim()) return setError("Enter both the appointment ID and email.");
+    if (!id.trim() || !email.trim()) return setError(t.errLookupBoth);
     setError("");
     setBusy(true);
     const res = await api.lookupAppointment(id.trim(), email.trim());
     setBusy(false);
     if (res.ok) setAppt(res.appointment);
-    else setError("We couldn't find a matching appointment.");
+    else setError(t.errors[res.error] || t.errors.generic);
   }
 
   async function handleCancel() {
+    setError("");
     setBusy(true);
     const res = await api.cancelAppointment(id.trim(), email.trim());
     setBusy(false);
     if (res.ok) onDone(t.successCancel);
+    else setError(t.errors[res.error] || t.errors.generic);
   }
 
   async function handleReschedule() {
-    if (!reDate || !reSlot) return setError("Pick a new date and time.");
+    if (!reDate || !reSlot) return setError(t.errPickNewDateSlot);
+    setError("");
     setBusy(true);
     const res = await api.rescheduleAppointment(id.trim(), email.trim(), reDate, reSlot);
     setBusy(false);
     if (res.ok) onDone(t.successReschedule(reDate, reSlot));
+    else setError(t.errors[res.error] || t.errors.generic);
   }
 
   function reset() {
@@ -55,7 +59,7 @@ export default function ManageBooking({ onDone }) {
     return (
       <div>
         <Field label={t.lookupId}>
-          <input value={id} onChange={(e) => setId(e.target.value)} placeholder="PRN-XXXXXXXX" />
+          <input value={id} onChange={(e) => setId(e.target.value)} placeholder={t.idPlaceholder} />
         </Field>
         <Field label={t.lookupEmail}>
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -75,6 +79,8 @@ export default function ManageBooking({ onDone }) {
         <div>{appt.date} · {appt.slot || appt.time}</div>
         <div>{appt.name}</div>
       </div>
+
+      {!showReschedule && error && <div className="bk-err">{error}</div>}
 
       {!showReschedule ? (
         <div className="booking-foot">

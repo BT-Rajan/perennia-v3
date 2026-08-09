@@ -1,4 +1,5 @@
 import "./TopBar.css";
+import { useLang } from "../../context/LangContext.jsx";
 import LangToggle from "../ui/LangToggle.jsx";
 import Logo from "../ui/Logo.jsx";
 import NavMenu from "./NavMenu.jsx";
@@ -13,11 +14,12 @@ import NavMenu from "./NavMenu.jsx";
  * logo itself a shortcut back to Home — used on every page except Home.
  */
 export default function TopBar({ leading, children, onNavigate, onLogoClick }) {
+  const { copy } = useLang();
   return (
     <header className="top-bar-header">
       <div className="top-bar-start">
         {onLogoClick ? (
-          <button className="logo-btn" onClick={onLogoClick} aria-label="Perennia — go to home">
+          <button className="logo-btn" onClick={onLogoClick} aria-label={copy.common.goHome}>
             <Logo />
           </button>
         ) : (

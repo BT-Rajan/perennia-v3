@@ -3,19 +3,19 @@ import { useLang } from "../../context/LangContext.jsx";
 import TopBar from "../layout/TopBar.jsx";
 import "./Hero.css";
 
-const AUTO_ADVANCE_MS = 7000;
-
 /**
  * Landing page. Auto-advances into the chat assistant after a short
- * countdown, or the person can jump in early via the CTA. The cards
- * below double as the mobile entry point into the standalone content
- * pages (whichever pages are currently configured to show in the nav
- * — see the `nav` list from useLang()), since the header nav menu
- * only shows at desktop widths.
+ * countdown (length set by theme.heroAutoAdvanceSeconds — see
+ * useLang().theme), or the person can jump in early via the CTA. The
+ * cards below double as the mobile entry point into the standalone
+ * content pages (whichever pages are currently configured to show in
+ * the nav — see the `nav` list from useLang()), since the header nav
+ * menu only shows at desktop widths.
  */
 export default function Hero({ onEnter, onNavigate }) {
-  const { copy, sections, nav, branding } = useLang();
+  const { copy, sections, nav, branding, theme } = useLang();
   const [progress, setProgress] = useState(0);
+  const autoAdvanceMs = (theme.heroAutoAdvanceSeconds ?? 7) * 1000;
 
   useEffect(() => {
     let rafId;
@@ -24,7 +24,7 @@ export default function Hero({ onEnter, onNavigate }) {
 
     function tick(now) {
       if (cancelled) return;
-      const pct = Math.min(100, ((now - start) / AUTO_ADVANCE_MS) * 100);
+      const pct = Math.min(100, ((now - start) / autoAdvanceMs) * 100);
       setProgress(pct);
       if (pct >= 100) {
         onEnter();
@@ -39,7 +39,7 @@ export default function Hero({ onEnter, onNavigate }) {
       cancelAnimationFrame(rafId);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [autoAdvanceMs]);
 
   return (
     <div className="hero-page">

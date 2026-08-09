@@ -15,7 +15,7 @@ import "./ContentPage.css";
  * renders inside the shell.
  */
 export default function ContentPage({ pageId, onBack, onNavigate }) {
-  const { pages, branding } = useLang();
+  const { copy, pages, branding } = useLang();
   const meta = pages[pageId];
 
   useEffect(() => {
@@ -26,7 +26,7 @@ export default function ContentPage({ pageId, onBack, onNavigate }) {
 
   return (
     <div className="content-page">
-      <TopBar onNavigate={onNavigate} onLogoClick={onBack} leading={<BackButton onClick={onBack} />} />
+      <TopBar onNavigate={onNavigate} onLogoClick={onBack} leading={<BackButton onClick={onBack} title={copy.common.back} />} />
 
       <main className="content-main">
         <div className="content-tagline">

@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { api } from "../../api/client.js";
+import { useLang } from "../../context/LangContext.jsx";
 import "./SlotPicker.css";
 
 export default function SlotPicker({ date, value, onChange, emptyLabel }) {
+  const { copy } = useLang();
   const [slots, setSlots] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -26,7 +28,7 @@ export default function SlotPicker({ date, value, onChange, emptyLabel }) {
 
   if (!date) return <div className="bk-slots-empty">{emptyLabel}</div>;
   if (loading) return <div className="bk-slots-empty">…</div>;
-  if (slots.length === 0) return <div className="bk-slots-empty">No availability that day — try another date.</div>;
+  if (slots.length === 0) return <div className="bk-slots-empty">{copy.booking.noAvailability}</div>;
 
   return (
     <div className="bk-slots">

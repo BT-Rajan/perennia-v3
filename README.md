@@ -31,8 +31,13 @@ suite:
 - **Pass 6** — notifications (email/WhatsApp), editable templates
 - **Pass 7** — admin dashboard UI (login, overview, appointments, leads)
 
+After Pass 7, a full audit was done against the project's core goal —
+"every customer-facing item on screen is configurable through admin" —
+and closed several real gaps it found (see
+`backend/AUDIT_CUSTOMER_FACING_CONFIG.md`).
+
 See `backend/PASS1_NOTES.md` through `PASS7_NOTES.md` for details on
-each. Remaining passes (admin settings UI, security hardening,
+each pass. Remaining passes (admin settings UI, security hardening,
 deployment polish) are tracked but not yet built.
 
 ## Running it
@@ -47,7 +52,7 @@ python scripts/seed_content.py
 uvicorn app.main:app --reload --port 8001
 
 # separate terminals
-npm install && npm run dev            # public site, :5173
+npm install && npm run dev              # public site, :5173
 cd admin && npm install && npm run dev  # admin dashboard, :5174
 ```
 

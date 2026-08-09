@@ -69,6 +69,10 @@ export const SECTIONS = {
 export const COPY = {
   en: {
     dir: "ltr",
+    common: {
+      close: "Close", back: "Back", send: "Send", quickMenu: "Quick menu",
+      primaryNav: "Primary", goHome: "Go to home", assistantTyping: "Assistant is typing",
+    },
     home: {
       welcome: "Welcome to Perennia",
       tagline: "Visit our V-Lounge for more",
@@ -114,10 +118,32 @@ export const COPY = {
       successNew: (id) => `You're booked! Confirmation code: ${id}. A confirmation email is on its way.`,
       successCancel: "Your appointment has been cancelled.",
       successReschedule: (date, time) => `All set — your appointment is now on ${date} at ${time}.`,
+      idPlaceholder: "PRN-XXXXXXXX",
+      noAvailability: "No availability that day — try another date.",
+      errPickDateSlot: "Please pick a date and time.",
+      errName: "Please enter your name.",
+      errEmail: "Please enter a valid email.",
+      errLookupBoth: "Enter both the appointment ID and email.",
+      errPickNewDateSlot: "Pick a new date and time.",
+      errors: {
+        slot_unavailable: "That time is no longer available — please pick another.",
+        notice_window_passed: "This is too close to the appointment time to make that change.",
+        not_found: "We couldn't find a matching appointment.",
+        invalid_email: "Please enter a valid email.",
+        invalid_name: "Please enter your name.",
+        invalid_date: "That date isn't valid.",
+        already_cancelled: "This appointment has already been cancelled.",
+        booking_disabled: "Booking is currently unavailable — please check back soon.",
+        generic: "Something went wrong — please try again.",
+      },
     },
   },
   ar: {
     dir: "rtl",
+    common: {
+      close: "إغلاق", back: "رجوع", send: "إرسال", quickMenu: "قائمة سريعة",
+      primaryNav: "الأساسية", goHome: "الذهاب إلى الرئيسية", assistantTyping: "المساعد يكتب",
+    },
     home: {
       welcome: "مرحبا بك في بيرينيا",
       tagline: "زوروا V-Lounge الخاص بنا لمزيد من المعلومات",
@@ -163,6 +189,24 @@ export const COPY = {
       successNew: (id) => `تم الحجز! رمز التأكيد: ${id}. بريد التأكيد في طريقه إليك.`,
       successCancel: "تم إلغاء موعدك.",
       successReschedule: (date, time) => `تم! موعدك الآن في ${date} الساعة ${time}.`,
+      idPlaceholder: "PRN-XXXXXXXX",
+      noAvailability: "لا توجد مواعيد متاحة في هذا اليوم — جرّب تاريخًا آخر.",
+      errPickDateSlot: "يرجى اختيار تاريخ ووقت.",
+      errName: "يرجى إدخال اسمك.",
+      errEmail: "يرجى إدخال بريد إلكتروني صالح.",
+      errLookupBoth: "أدخل رقم الموعد والبريد الإلكتروني معًا.",
+      errPickNewDateSlot: "اختر تاريخًا ووقتًا جديدين.",
+      errors: {
+        slot_unavailable: "لم يعد هذا الوقت متاحًا — يرجى اختيار وقت آخر.",
+        notice_window_passed: "الوقت المتبقي غير كافٍ لإجراء هذا التغيير.",
+        not_found: "لم نتمكن من العثور على موعد مطابق.",
+        invalid_email: "يرجى إدخال بريد إلكتروني صالح.",
+        invalid_name: "يرجى إدخال اسمك.",
+        invalid_date: "هذا التاريخ غير صالح.",
+        already_cancelled: "تم إلغاء هذا الموعد بالفعل.",
+        booking_disabled: "الحجز غير متاح حاليًا — يرجى المحاولة لاحقًا.",
+        generic: "حدث خطأ ما — يرجى المحاولة مرة أخرى.",
+      },
     },
   },
 };

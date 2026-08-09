@@ -19,9 +19,9 @@ export default function NewAppointmentForm({ onCancel, onBooked }) {
   }
 
   async function handleSubmit() {
-    if (!form.date || !form.slot) return setError("Please pick a date and time.");
-    if (!form.name.trim()) return setError("Please enter your name.");
-    if (!/^\S+@\S+\.\S+$/.test(form.email)) return setError("Please enter a valid email.");
+    if (!form.date || !form.slot) return setError(t.errPickDateSlot);
+    if (!form.name.trim()) return setError(t.errName);
+    if (!/^\S+@\S+\.\S+$/.test(form.email)) return setError(t.errEmail);
 
     setError("");
     setSubmitting(true);
@@ -30,7 +30,7 @@ export default function NewAppointmentForm({ onCancel, onBooked }) {
     if (result.ok) {
       onBooked({ ...form, id: result.id });
     } else {
-      setError(result.error || "Something went wrong — please try again.");
+      setError(t.errors[result.error] || t.errors.generic);
     }
   }
 

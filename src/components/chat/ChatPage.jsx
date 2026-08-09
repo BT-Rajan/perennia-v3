@@ -13,7 +13,7 @@ import BookingPanel from "../booking/BookingPanel.jsx";
 import "./ChatPage.css";
 
 export default function ChatPage({ onBack, onNavigate }) {
-  const { copy, lang, features } = useLang();
+  const { copy, lang, features, branding } = useLang();
   const t = copy.chat;
 
   const [messages, setMessages] = useState([]);
@@ -59,7 +59,7 @@ export default function ChatPage({ onBack, onNavigate }) {
       <TopBar
         onNavigate={onNavigate}
         onLogoClick={onBack}
-        leading={<BackButton onClick={onBack} />}
+        leading={<BackButton onClick={onBack} title={copy.common.back} />}
       >
         {features.bookingEnabled && (
           <Chip icon="💬" onClick={() => setBookingOpen(true)}>{t.bookBtn}</Chip>
@@ -89,7 +89,7 @@ export default function ChatPage({ onBack, onNavigate }) {
                   {messages.map((m, i) => (
                     <ChatMessage key={i} from={m.from} text={m.text} />
                   ))}
-                  {typing && <TypingIndicator />}
+                  {typing && <TypingIndicator label={copy.common.assistantTyping} />}
                 </div>
               </div>
 
@@ -98,6 +98,7 @@ export default function ChatPage({ onBack, onNavigate }) {
                 onChange={setDraft}
                 onSend={() => sendMessage(draft)}
                 placeholder={t.inputPlaceholder}
+                sendLabel={copy.common.send}
                 disabled={typing}
               />
 
@@ -111,7 +112,7 @@ export default function ChatPage({ onBack, onNavigate }) {
         </div>
       </main>
       
-      <footer className="chat-footer">© 2026 Perennia. All rights reserved.</footer>
+      <footer className="chat-footer">© {new Date().getFullYear()} {branding.siteName}. All rights reserved.</footer>
     </div>
   );
 }

@@ -197,6 +197,9 @@ _DEFS: list[SettingDef] = [
     SettingDef("theme.corner_radius_px", "theme", "Corner radius (px)", SettingType.INT, 16,
                help_text="Base radius — smaller and larger UI elements scale proportionally from this.",
                validator=_px_range(0, 48)),
+    SettingDef("theme.hero_auto_advance_seconds", "theme", "Home auto-advance (seconds)", SettingType.INT, 7,
+               help_text="How long the home screen waits before auto-continuing into chat.",
+               validator=_int_range(2, 60)),
 
     # features (toggles for capabilities landing in later passes,
     # declared now so the admin can already see what's coming and
@@ -351,8 +354,18 @@ _DEFS: list[SettingDef] = [
     SettingDef("copy.chat", "copy", "Chat screen text", SettingType.JSON, {"en": {}, "ar": {}}, i18n=True,
                help_text="tagline_line1, tagline_line2, sub, header, book_btn, faq_title, input_placeholder, welcome_msg, lang_switch"),
     SettingDef("copy.booking", "copy", "Booking flow text", SettingType.JSON, {"en": {}, "ar": {}}, i18n=True,
-               help_text="Field labels and status messages for the booking panel. Status messages support "
+               help_text="Field labels and status messages for the booking panel, including validation and "
+                          "error messages so a visitor never sees a raw error code. Status messages support "
                           "{id}/{date}/{time} placeholders."),
+    SettingDef("copy.common", "copy", "Shared accessibility labels", SettingType.JSON, {
+        "en": {"close": "Close", "back": "Back", "send": "Send", "quick_menu": "Quick menu",
+               "primary_nav": "Primary", "go_home": "Go to home", "assistant_typing": "Assistant is typing"},
+        "ar": {"close": "إغلاق", "back": "رجوع", "send": "إرسال", "quick_menu": "قائمة سريعة",
+               "primary_nav": "الأساسية", "go_home": "الذهاب إلى الرئيسية", "assistant_typing": "المساعد يكتب"},
+    }, i18n=True,
+               help_text="Screen-reader labels used across multiple screens (close/back/send buttons, nav "
+                          "landmarks) — not visible text, but still shown to assistive-technology users in "
+                          "whichever language they're browsing in."),
 ]
 
 for _d in _DEFS:
