@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useLang } from "../context/LangContext.jsx";
 import styles from "./StickyChat.module.css";
 
 /**
@@ -8,7 +7,6 @@ import styles from "./StickyChat.module.css";
  * @param {function} onChatClick - Callback when button is clicked
  */
 export default function StickyChat({ onChatClick }) {
-  const { copy } = useLang();
   const [isHovered, setIsHovered] = useState(false);
 
   const handleClick = () => {
@@ -22,8 +20,8 @@ export default function StickyChat({ onChatClick }) {
         onClick={handleClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        aria-label={copy?.common?.chat_button_label || "Open chat"}
-        title={copy?.common?.chat_button_label || "Chat with us"}
+        aria-label="Chat with assistant"
+        title="Chat with our AI assistant"
       >
         {/* Chat icon SVG */}
         <svg
@@ -42,7 +40,7 @@ export default function StickyChat({ onChatClick }) {
 
         {/* Label on hover */}
         <span className={styles.label}>
-          {copy?.common?.chat_button_text || "Chat"}
+          Chat
         </span>
       </button>
 
