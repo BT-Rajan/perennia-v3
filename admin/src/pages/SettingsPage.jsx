@@ -4,6 +4,7 @@ import { adminApi } from "../api/client.js";
 import { useAuth } from "../context/AuthContext.jsx";
 import PageHeader from "../components/PageHeader.jsx";
 import SettingField from "../components/SettingField.jsx";
+import ThemePresetPicker from "../components/ThemePresetPicker.jsx";
 import "./SettingsPage.css";
 
 // Nicer labels for the sidebar than a raw category key. Anything not
@@ -152,6 +153,13 @@ export default function SettingsPage() {
           ) : (
             <form onSubmit={handleSave}>
               <h2 className="settings-form-title">{labelFor(categoryParam)}</h2>
+
+              {categoryParam === "theme" && (
+                <ThemePresetPicker
+                  values={values}
+                  onApply={(presetValues) => setValues((prev) => ({ ...prev, ...presetValues }))}
+                />
+              )}
 
               {schema.map((field) => (
                 <SettingField
