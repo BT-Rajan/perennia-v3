@@ -11,30 +11,31 @@ body {
   color: var(--white-pure);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  /* Enterprise-grade background: deeper, more authoritative color gradient */
-  background:
-    radial-gradient(ellipse 140% 70% at 50% -5%, rgba(30, 64, 175, 0.12) 0%, transparent 45%),
-    radial-gradient(ellipse 90% 90% at 15% 75%, rgba(3, 105, 161, 0.15) 0%, transparent 55%),
-    radial-gradient(ellipse 100% 100% at 90% 20%, rgba(30, 64, 175, 0.08) 0%, transparent 50%),
-    linear-gradient(135deg, var(--navy-1) 0%, var(--navy-2) 15%, var(--navy-3) 35%, var(--navy-4) 52%,
-      var(--navy-5) 68%, var(--navy-6) 82%, var(--blue-mid) 92%, var(--blue-light) 100%);
+  /* BOLD solid background — no soft gradients weakening the impact */
+  background-color: var(--brand-bg);
+  /* Minimal grid overlay for sophistication, not softness */
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 80px 80px;
   background-attachment: fixed;
   position: relative;
   overflow-x: hidden;
-  /* Better letter spacing for corporate feel */
-  letter-spacing: 0.3px;
+  /* Strong letter spacing for corporate feel */
+  letter-spacing: 0.4px;
+  font-weight: 500;
 }
 
-/* Subtle grid-mesh overlay for depth, same on every screen size */
+/* Bold grid overlay — emphasizes the sharp, authoritative design */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
-  background-size: 64px 64px;
-  mask-image: radial-gradient(ellipse 90% 90% at 50% 40%, black 0%, transparent 100%);
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse 95% 95% at 50% 40%, black 0%, transparent 85%);
   pointer-events: none;
   z-index: 0;
 }

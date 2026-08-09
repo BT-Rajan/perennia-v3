@@ -1,65 +1,83 @@
 // ──────────────────────────────────────────────────────────
-// Enterprise theme presets — three professional, high-visibility designs
-// Replace soft pastels with authoritative typography and bold contrast.
+// BOLD ENTERPRISE THEMES — Maximum contrast, high-impact designs
+// No soft gradients. Pure power. Authoritative presence.
 // ──────────────────────────────────────────────────────────
 
 export const THEME_PRESETS = {
-  // ---- PROFESSIONAL DARK: Sophisticated, executive boardroom aesthetic ----
-  professional_dark: {
-    name: "Professional Dark",
-    description: "Authoritative dark theme with steel blue accents",
-    backgroundColor: "#0f1419",      // Deeper charcoal (less playful than #0a0e27)
-    primaryColor: "#1e40af",         // Bold steel blue (replaces soft gold)
-    accentColor: "#0369a1",          // Deep cyan (sharp, not playful)
-    textColor: "#f8fafc",            // Clean white text
-    fontDisplay: '"Lora", Georgia, serif',                               // More serious serif
-    fontBody: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',        // Corporate sans-serif
+  // ---- DARK POWER: Jet black + electric blue — commanding boardroom ----
+  dark_power: {
+    name: "Dark Power",
+    description: "Jet black with electric blue. Maximum contrast. Pure authority.",
+    backgroundColor: "#000000",           // Pure jet black (maximum darkness)
+    primaryColor: "#00d4ff",              // Electric cyan/blue (maximum saturation & brightness)
+    accentColor: "#ff0080",               // Hot magenta (high visibility CTAs)
+    textColor: "#ffffff",                 // Pure white (maximum contrast)
+    fontDisplay: '"IBM Plex Mono", monospace',              // Bold, technical
+    fontBody: '"IBM Plex Sans", Arial, sans-serif',        // Corporate strength
     fontAr: '"Noto Kufi Arabic", "Arial Unicode MS", sans-serif',
-    googleFontsUrl: "https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&display=swap",
-    headerHeightPx: 72,              // Taller, more commanding
-    contentMaxWidthPx: 1280,
-    cornerRadiusPx: 8,               // Sharper corners (less rounded/playful)
+    googleFontsUrl: "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@600;700;800&family=IBM+Plex+Mono:wght@600;700&display=swap",
+    headerHeightPx: 80,                  // Tall, commanding
+    contentMaxWidthPx: 1400,
+    cornerRadiusPx: 0,                   // NO rounding — sharp, brutal
+    heroAutoAdvanceSeconds: 5,
+  },
+
+  // ---- CORPORATE STEEL: Deep navy + gold — institutional powerhouse ----
+  corporate_steel: {
+    name: "Corporate Steel",
+    description: "Deep navy foundation with bold gold highlights. Institutional strength.",
+    backgroundColor: "#0a1428",          // Deep navy-black (intense, authority)
+    primaryColor: "#ffd700",             // Bold gold (high visibility, wealth signal)
+    accentColor: "#ff4444",              // Bold red (emergency CTAs, demands attention)
+    textColor: "#ffffff",                // Pure white text (maximum readability)
+    fontDisplay: '"Playfair Display", Georgia, serif',     // Bold serif authority
+    fontBody: '"Open Sans", Arial, sans-serif',            // Strong sans-serif
+    fontAr: '"Noto Kufi Arabic", "Arial Unicode MS", sans-serif',
+    googleFontsUrl: "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Open+Sans:wght@600;700;800&display=swap",
+    headerHeightPx: 78,
+    contentMaxWidthPx: 1380,
+    cornerRadiusPx: 2,                   // Minimal rounding (sharp, professional)
     heroAutoAdvanceSeconds: 6,
   },
 
-  // ---- CORPORATE BLUE: Trustworthy, institutional, high-impact ----
-  corporate_blue: {
-    name: "Corporate Blue",
-    description: "Trust-focused design with strong contrast and institutional authority",
-    backgroundColor: "#ffffff",      // Pure white (maximum clarity)
-    primaryColor: "#003d82",         // Deep corporate blue
-    accentColor: "#d73027",          // Bold accent for CTAs (high visibility)
-    textColor: "#1a1a1a",            // Near-black text (strong contrast)
-    fontDisplay: '"IBM Plex Sans", Arial, sans-serif',                  // IBM corporate aesthetic
-    fontBody: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
+  // ---- TECH NEON: White + cyberpunk magenta/cyan — disruptive bold ----
+  tech_neon: {
+    name: "Tech Neon",
+    description: "Pure white with neon magenta & cyan. Modern, aggressive, disruptive.",
+    backgroundColor: "#ffffff",          // Pure white (maximum brightness)
+    primaryColor: "#ff006e",             // Hot magenta (aggressive, attention-grabbing)
+    accentColor: "#00f5ff",              // Neon cyan (electric, high-energy)
+    textColor: "#000000",                // Pure black (maximum contrast)
+    fontDisplay: '"Space Mono", monospace',               // Bold monospace (tech)
+    fontBody: '"Roboto", Arial, sans-serif',              // Strong, modern sans
     fontAr: '"Noto Kufi Arabic", "Arial Unicode MS", sans-serif',
-    googleFontsUrl: "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap",
-    headerHeightPx: 68,
-    contentMaxWidthPx: 1200,
-    cornerRadiusPx: 6,               // Minimal rounding (business-like)
-    heroAutoAdvanceSeconds: 8,
+    googleFontsUrl: "https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&family=Roboto:wght@700;800;900&display=swap",
+    headerHeightPx: 76,
+    contentMaxWidthPx: 1360,
+    cornerRadiusPx: 4,                   // Slightly sharp
+    heroAutoAdvanceSeconds: 4,
   },
 
-  // ---- MODERN MINIMAL: Clean, minimalist, confidence through clarity ----
-  modern_minimal: {
-    name: "Modern Minimal",
-    description: "Bold typography, clean lines, maximum readability",
-    backgroundColor: "#fafbfc",      // Nearly white with subtle warmth
-    primaryColor: "#e11d48",         // Striking rose (confident, bold)
-    accentColor: "#475569",          // Dark slate (grounded, professional)
-    textColor: "#0f172a",            // Deep navy text (high contrast)
-    fontDisplay: '"Poppins", "Segoe UI", sans-serif',                  // Modern, clean display
-    fontBody: '"Inter", system-ui, -apple-system, sans-serif',         // Industry standard
+  // ---- MINIMAL BOLD: Charcoal + red — no-nonsense enterprise ----
+  minimal_bold: {
+    name: "Minimal Bold",
+    description: "Charcoal + bold red. No frills. Maximum legibility. Enterprise steel.",
+    backgroundColor: "#1a1a1a",          // Deep charcoal (strong, serious)
+    primaryColor: "#ff0000",             // Pure bold red (cannot be ignored)
+    accentColor: "#ffaa00",              // Bright orange-gold (secondary CTA)
+    textColor: "#ffffff",                // Pure white (crystal clear)
+    fontDisplay: '"Roboto Condensed", Arial, sans-serif',  // Condensed bold
+    fontBody: '"Roboto", Arial, sans-serif',              // Strong, trustworthy
     fontAr: '"Noto Kufi Arabic", "Arial Unicode MS", sans-serif',
-    googleFontsUrl: "https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@300;400;500;600;700&display=swap",
-    headerHeightPx: 70,
-    contentMaxWidthPx: 1260,
-    cornerRadiusPx: 12,              // Balanced, not excessive
+    googleFontsUrl: "https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700;800;900&family=Roboto:wght@600;700;800&display=swap",
+    headerHeightPx: 74,
+    contentMaxWidthPx: 1340,
+    cornerRadiusPx: 0,                   // No rounding
     heroAutoAdvanceSeconds: 7,
   },
 };
 
-export const DEFAULT_THEME = "professional_dark";
+export const DEFAULT_THEME = "dark_power";
 
 /**
  * Get a specific preset by key
