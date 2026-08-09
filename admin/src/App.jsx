@@ -22,7 +22,7 @@ function RedirectIfAuthed({ children }) {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/admin">
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<RedirectIfAuthed><LoginPage /></RedirectIfAuthed>} />

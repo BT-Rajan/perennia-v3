@@ -42,6 +42,35 @@ deployment polish) are tracked but not yet built.
 
 ## Running it
 
+Easiest path: run `./install.sh` (macOS/Linux) or `installer.bat`
+(Windows) from the repo root. It sets up the backend venv, generates
+secrets, initializes the DB, seeds content, and builds both frontends.
+Both scripts are idempotent — safe to re-run any time.
+
+### Single port (production-style)
+
+The backend serves the built public site at `/`, the built admin
+dashboard at `/admin`, and the API at `/api/*` and `/admin/api/*` — one
+process, one port:
+
+```bash
+cd backend
+source venv/bin/activate   # venv\Scripts\activate.bat on Windows
+uvicorn app.main:app --port 8001
+```
+
+- Public site: http://localhost:8001/
+- Admin dashboard: http://localhost:8001/admin
+- API: http://localhost:8001/api/... and /admin/api/...
+
+Rebuild after frontend changes with `npm run build` (root) and
+`cd admin && npm run build`.
+
+### Dev mode (hot reload, three ports)
+
+For active frontend development, the Vite dev servers still work and
+proxy API calls to the backend:
+
 ```bash
 cd backend
 pip install -r requirements-dev.txt

@@ -3,8 +3,11 @@
 # Perennia v2 — one-shot installer for macOS / Linux.
 #
 # Sets up the FastAPI backend (venv, deps, .env, secrets, DB, seed data)
-# and installs npm dependencies for both frontends (public site + admin
-# dashboard). Safe to re-run: every step it performs is idempotent.
+# and builds both frontends (public site + admin dashboard) as static
+# production bundles. The backend serves everything itself — public
+# site at /, admin dashboard at /admin, API at /api and /admin/api —
+# so the whole app runs behind a single port with no separate dev
+# servers needed. Safe to re-run: every step it performs is idempotent.
 #
 #   ./install.sh
 #
@@ -141,27 +144,41 @@ ok "Content seeded"
 deactivate
 cd "$ROOT_DIR"
 
-# ── 5. Frontend: public site ────────────────────────────────────────
-info "Installing public site dependencies (npm)"
+# ── 5. Frontend: public site (production build) ─────────────────────
+info "Building public site (npm install + build)"
 npm install
-ok "Public site dependencies installed"
+npm run build
+ok "Public site built to dist/"
 
-# ── 6. Frontend: admin dashboard ────────────────────────────────────
-info "Installing admin dashboard dependencies (npm)"
+# ── 6. Frontend: admin dashboard (production build) ──────────────────
+info "Building admin dashboard (npm install + build)"
 cd "$ADMIN_DIR"
 npm install
+npm run build
 cd "$ROOT_DIR"
-ok "Admin dashboard dependencies installed"
+ok "Admin dashboard built to admin/dist/"
 
 # ── Done ─────────────────────────────────────────────────────────────
 echo ""
 echo "${GREEN}${BOLD}Perennia v2 is set up.${RESET}"
 echo ""
-echo "Start each part in its own terminal:"
+echo "Everything runs behind a single port now — start the backend and"
+echo "it serves the public site, the admin dashboard, and the API:"
 echo ""
-echo "  ${BOLD}Backend${RESET}         cd backend && source venv/bin/activate && uvicorn app.main:app --reload --port 8001"
-echo "  ${BOLD}Public site${RESET}     npm run dev              # http://localhost:5173"
-echo "  ${BOLD}Admin dashboard${RESET} cd admin && npm run dev  # http://localhost:5174"
+echo "  ${BOLD}cd backend && source venv/bin/activate && uvicorn app.main:app --port 8001${RESET}"
+echo ""
+echo "  Public site        http://localhost:8001/"
+echo "  Admin dashboard     http://localhost:8001/admin"
+echo "  API                 http://localhost:8001/api/... and /admin/api/..."
 echo ""
 echo "Run the backend test suite with:  cd backend && source venv/bin/activate && pytest -q"
+echo ""
+echo "${YELLOW}Rebuilding after frontend changes:${RESET} re-run this script, or just"
+echo "  npm run build              (public site)"
+echo "  cd admin && npm run build  (admin dashboard)"
+echo ""
+echo "${YELLOW}Prefer hot-reload dev servers instead?${RESET} They still work, on"
+echo "separate ports, and proxy API calls to the backend:"
+echo "  npm run dev              # http://localhost:5173"
+echo "  cd admin && npm run dev  # http://localhost:5174"
 echo ""

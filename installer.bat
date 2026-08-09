@@ -3,9 +3,12 @@ REM ============================================================
 REM  Perennia v2 - one-shot installer for Windows.
 REM
 REM  Sets up the FastAPI backend (venv, deps, .env, secrets, DB,
-REM  seed data) and installs npm dependencies for both frontends
-REM  (public site + admin dashboard). Safe to re-run: every step
-REM  it performs is idempotent.
+REM  seed data) and builds both frontends (public site + admin
+REM  dashboard) as static production bundles. The backend serves
+REM  everything itself - public site at /, admin dashboard at
+REM  /admin, API at /api and /admin/api - so the whole app runs
+REM  behind a single port with no separate dev servers needed.
+REM  Safe to re-run: every step it performs is idempotent.
 REM
 REM      installer.bat
 REM ============================================================
@@ -145,33 +148,49 @@ echo   Content seeded
 call venv\Scripts\deactivate.bat
 cd /d "%ROOT_DIR%"
 
-REM ── Frontend: public site ─────────────────────────────────────
+REM ── Frontend: public site (production build) ───────────────────
 echo.
-echo ==^> Installing public site dependencies (npm)
+echo ==^> Building public site (npm install + build)
 call npm install
 if %errorlevel% neq 0 exit /b 1
-echo   Public site dependencies installed
+call npm run build
+if %errorlevel% neq 0 exit /b 1
+echo   Public site built to dist\
 
-REM ── Frontend: admin dashboard ─────────────────────────────────
+REM ── Frontend: admin dashboard (production build) ────────────────
 echo.
-echo ==^> Installing admin dashboard dependencies (npm)
+echo ==^> Building admin dashboard (npm install + build)
 cd /d "%ADMIN_DIR%"
 call npm install
 if %errorlevel% neq 0 exit /b 1
+call npm run build
+if %errorlevel% neq 0 exit /b 1
 cd /d "%ROOT_DIR%"
-echo   Admin dashboard dependencies installed
+echo   Admin dashboard built to admin\dist\
 
 REM ── Done ────────────────────────────────────────────────────
 echo.
 echo Perennia v2 is set up.
 echo.
-echo Start each part in its own terminal / command prompt:
+echo Everything runs behind a single port now - start the backend and
+echo it serves the public site, the admin dashboard, and the API:
 echo.
-echo   Backend          cd backend ^&^& venv\Scripts\activate.bat ^&^& uvicorn app.main:app --reload --port 8001
-echo   Public site      npm run dev              (http://localhost:5173)
-echo   Admin dashboard  cd admin ^&^& npm run dev  (http://localhost:5174)
+echo   cd backend ^&^& venv\Scripts\activate.bat ^&^& uvicorn app.main:app --port 8001
+echo.
+echo   Public site        http://localhost:8001/
+echo   Admin dashboard    http://localhost:8001/admin
+echo   API                http://localhost:8001/api/... and /admin/api/...
 echo.
 echo Run the backend test suite with:  cd backend ^&^& venv\Scripts\activate.bat ^&^& pytest -q
+echo.
+echo Rebuilding after frontend changes: re-run this script, or just
+echo   npm run build              (public site)
+echo   cd admin ^&^& npm run build  (admin dashboard)
+echo.
+echo Prefer hot-reload dev servers instead? They still work, on
+echo separate ports, and proxy API calls to the backend:
+echo   npm run dev              (http://localhost:5173)
+echo   cd admin ^&^& npm run dev  (http://localhost:5174)
 echo.
 
 endlocal
