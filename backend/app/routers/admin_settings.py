@@ -43,6 +43,12 @@ def get_settings_for_category(category: str, admin: AdminUser = Depends(get_curr
     defs = defs_for_category(category)
     if not defs:
         raise HTTPException(status.HTTP_404_NOT_FOUND, f"Unknown category: {category}")
+    values = get_category(db, category)
+    # Secrets are write-only from the admin's perspective — never send a
+    # decrypted value back to the browser, just whether one is set.
+    for d in defs:
+        if d.secret:
+            values[d.key] = "••••••••" if _secret_is_set(db, d.key) else ""
     return CategoryResponse(
         category=category,
         schema_=[
@@ -52,7 +58,7 @@ def get_settings_for_category(category: str, admin: AdminUser = Depends(get_curr
                 choices=list(d.choices) if d.choices else None, i18n=d.i18n,
             ) for d in defs
         ],
-        values=get_category(db, category),
+        values=values,
     )
 
 

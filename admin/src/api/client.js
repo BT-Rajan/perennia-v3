@@ -64,6 +64,11 @@ export const adminApi = {
   getLead: (id) => request(`admin/api/leads/${id}`),
   updateLead: (id, body) => request(`admin/api/leads/${id}`, { method: "PATCH", body: JSON.stringify(body) }),
   deleteLead: (id) => request(`admin/api/leads/${id}`, { method: "DELETE" }),
+
+  listSettingCategories: () => request("admin/api/settings/categories"),
+  getSettingCategory: (category) => request(`admin/api/settings/${category}`),
+  updateSettingCategory: (category, values) =>
+    request(`admin/api/settings/${category}`, { method: "PUT", body: JSON.stringify(values) }),
 };
 
 export { ApiError };

@@ -5,6 +5,7 @@ import DashboardLayout from "./pages/DashboardLayout.jsx";
 import OverviewPage from "./pages/OverviewPage.jsx";
 import AppointmentsPage from "./pages/AppointmentsPage.jsx";
 import LeadsPage from "./pages/LeadsPage.jsx";
+import SettingsPage from "./pages/SettingsPage.jsx";
 
 function RequireAuth({ children }) {
   const { user, loading } = useAuth();
@@ -37,6 +38,8 @@ export default function App() {
             <Route index element={<OverviewPage />} />
             <Route path="appointments" element={<AppointmentsPage />} />
             <Route path="leads" element={<LeadsPage />} />
+            <Route path="settings" element={<SettingsPage />} />
+            <Route path="settings/:category" element={<SettingsPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
