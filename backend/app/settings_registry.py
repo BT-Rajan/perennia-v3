@@ -113,6 +113,13 @@ def _int_range(lo: int, hi: int):
     return _check
 
 
+def _float_range(lo: float, hi: float):
+    def _check(v: float) -> None:
+        if not (lo <= v <= hi):
+            raise ValueError(f"must be between {lo} and {hi}")
+    return _check
+
+
 def _valid_timezone(v: str) -> None:
     from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
     try:
@@ -222,6 +229,37 @@ _DEFS: list[SettingDef] = [
                validator=_int_range(1, 365)),
     SettingDef("booking.min_notice_hours", "booking", "Minimum notice (hours)", SettingType.INT, 6,
                help_text="Required lead time to book, cancel, or reschedule.", validator=_int_range(0, 168)),
+
+    # chat — LLM-powered assistant configuration. The API key is the
+    # only secret setting in the app so far (Fernet-encrypted at rest
+    # by settings_service.py, never returned by any read endpoint).
+    # Everything else here — provider, model, prompt, sampling
+    # parameters, and the fallback message shown when no key is
+    # configured — is ordinary admin-editable config, so the whole
+    # assistant's behavior and persona can be retuned without a deploy.
+    SettingDef("chat.llm_provider", "chat", "LLM provider", SettingType.ENUM, "none",
+               choices=("none", "anthropic", "openai"),
+               help_text="'none' disables real LLM calls; the assistant uses the fallback message below."),
+    SettingDef("chat.llm_model", "chat", "Model", SettingType.STRING, "claude-sonnet-4-6"),
+    SettingDef("chat.llm_api_key", "chat", "API key", SettingType.STRING, "", secret=True),
+    SettingDef("chat.max_tokens", "chat", "Max response tokens", SettingType.INT, 512,
+               validator=_int_range(16, 4096)),
+    SettingDef("chat.temperature", "chat", "Temperature", SettingType.FLOAT, 0.7,
+               validator=_float_range(0.0, 1.0)),
+    SettingDef("chat.system_prompt", "chat", "System prompt", SettingType.TEXT, {
+        "en": "You are Perennia's AI assistant. Be warm, concise, and professional. Early in the "
+              "conversation, ask the visitor's name so you can personalize the chat and so the team can "
+              "follow up. Help visitors understand Perennia's AI products and services, and encourage "
+              "booking a call via \"Talk to Us\" when they show real interest.",
+        "ar": "أنت المساعد الذكي لشركة بيرينيا. كن ودودًا ومختصرًا ومحترفًا. في وقت مبكر من المحادثة، اسأل "
+              "الزائر عن اسمه حتى تتمكن من تخصيص المحادثة ومتابعة الطلب. ساعد الزوار على فهم منتجات وخدمات "
+              "بيرينيا، وشجعهم على حجز مكالمة عبر \"تحدث إلينا\" عند إبداء اهتمام حقيقي.",
+    }, i18n=True),
+    SettingDef("chat.unavailable_message", "chat", "Fallback message (LLM unavailable)", SettingType.TEXT, {
+        "en": "Thanks for sharing that! Someone from our team will follow up shortly. "
+              "Would you like to book a time to talk?",
+        "ar": "شكرًا لك! سيقوم أحد أعضاء فريقنا بمتابعة رسالتك قريبًا. هل ترغب في حجز موعد؟",
+    }, i18n=True, help_text="Shown when no LLM provider is configured, or if a request to it fails."),
 
     # copy — free-form UI microcopy blobs, grouped by the screen that
     # uses them (home / chat / booking). Kept as JSON blobs rather than

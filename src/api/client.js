@@ -42,7 +42,7 @@ function mockSlotsFor(dateStr) {
 
 export const api = {
   async chat(message, lang, history) {
-    const data = await tryFetch("chat.php", {
+    const data = await tryFetch("chat", {
       method: "POST",
       body: JSON.stringify({ message, lang, history }),
     });

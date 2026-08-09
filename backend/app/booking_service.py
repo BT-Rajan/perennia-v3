@@ -121,6 +121,15 @@ def create_appointment(
     )
     db.add(appt)
     db.flush()
+
+    # A booking is a strong, unambiguous signal — always worth a lead
+    # record, whether or not this person ever chatted first.
+    from app import leads_service
+    leads_service.capture_lead(
+        db, email=appt.email, source="booking", name=appt.name, phone=appt.phone,
+        transcript_entry={"from": "system", "text": f"Booked {appt.date} {appt.time} ({appt.service or 'general enquiry'})"},
+    )
+
     return {"ok": True, "id": appt.id}
 
 

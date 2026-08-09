@@ -175,3 +175,27 @@ class Appointment(Base):
     updated_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, onupdate=_utcnow)
 
     __table_args__ = (Index("ix_appointment_date_status", "date", "status"),)
+
+
+class Lead(Base):
+    """A contact worth following up with — captured automatically
+    whenever a booking is made (source='booking') or an email address
+    appears in a chat conversation (source='chat'), rather than
+    requiring a separate lead-capture form. Multiple touches from the
+    same email upsert into one record (see leads_service.py) so a
+    visitor who chats and later books shows up as one lead with a
+    fuller picture, not two disconnected ones."""
+
+    __tablename__ = "lead"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    name: Mapped[str] = mapped_column(String(120), default="", nullable=False)
+    email: Mapped[str] = mapped_column(String(254), nullable=False, index=True)
+    phone: Mapped[str] = mapped_column(String(40), default="", nullable=False)
+    source: Mapped[str] = mapped_column(String(20), nullable=False)  # chat | booking
+    status: Mapped[str] = mapped_column(String(20), default="new", nullable=False)
+    # new | contacted | qualified | converted | lost
+    notes: Mapped[str] = mapped_column(Text, default="", nullable=False)  # admin's own notes
+    transcript: Mapped[list] = mapped_column(JSON, default=list, nullable=False)  # [{from, text, at}]
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, index=True)
+    updated_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, onupdate=_utcnow)

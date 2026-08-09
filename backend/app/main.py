@@ -13,9 +13,11 @@ from app.routers import (
     admin_auth,
     admin_booking,
     admin_content,
+    admin_leads,
     admin_settings,
     admin_uploads,
     public_booking,
+    public_chat,
     public_config,
     public_content,
 )
@@ -64,9 +66,11 @@ def create_app() -> FastAPI:
     app.include_router(admin_content.router)
     app.include_router(admin_uploads.router)
     app.include_router(admin_booking.router)
+    app.include_router(admin_leads.router)
     app.include_router(public_config.router)
     app.include_router(public_content.router)
     app.include_router(public_booking.router)
+    app.include_router(public_chat.router)
 
     app.mount("/uploads", StaticFiles(directory=str(settings.UPLOADS_DIR)), name="uploads")
 
