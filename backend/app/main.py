@@ -15,6 +15,7 @@ from app.routers import (
     admin_auth,
     admin_booking,
     admin_content,
+    admin_knowledge,
     admin_leads,
     admin_settings,
     admin_stats,
@@ -76,6 +77,7 @@ def create_app() -> FastAPI:
     app.include_router(admin_booking.router)
     app.include_router(admin_leads.router)
     app.include_router(admin_stats.router)
+    app.include_router(admin_knowledge.router)
     app.include_router(public_config.router)
     app.include_router(public_content.router)
     app.include_router(public_booking.router)

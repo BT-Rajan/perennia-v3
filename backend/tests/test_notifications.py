@@ -333,5 +333,9 @@ def test_smtp_password_never_exposed(logged_in_client, client):
         assert "notifications.smtp_password" not in public
         admin_all = logged_in_client.get("/admin/api/settings").json()
         assert admin_all["notifications.smtp_password"] != "hunter2"
+
+        category = logged_in_client.get("/admin/api/settings/notifications").json()
+        assert category["values"]["notifications.smtp_password"] != "hunter2"
+        assert category["values"]["notifications.smtp_password"] == "••••••••"
     finally:
         logged_in_client.put("/admin/api/settings/notifications", json={"notifications.smtp_password": ""})

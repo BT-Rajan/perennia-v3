@@ -200,3 +200,34 @@ class Lead(Base):
     transcript: Mapped[list] = mapped_column(JSON, default=list, nullable=False)  # [{from, text, at}]
     created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, index=True)
     updated_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, onupdate=_utcnow)
+
+
+class KnowledgeSource(Base):
+    """A document (uploaded file) or web page an admin has added so the
+    chat assistant can ground its answers in real, current information
+    instead of only what's baked into the system prompt — a Perennia
+    org chart, a pricing sheet, a policy document, a page from the
+    live site, etc. No embeddings/vector search: chat_service.py
+    concatenates the (capped) text of every active source into the
+    system prompt for each reply, the same approach used by the
+    reference implementation this was modeled on. `source_ref` is the
+    original filename or the URL; re-fetching (URL sources only)
+    updates `text` in place rather than creating a new row, so a
+    source's identity persists across refreshes."""
+
+    __tablename__ = "knowledge_source"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    kind: Mapped[str] = mapped_column(String(10), nullable=False)  # file | url
+    content_type: Mapped[str] = mapped_column(String(16), nullable=False)  # pdf | docx | html | text | markdown
+    title: Mapped[str] = mapped_column(String(200), nullable=False)
+    source_ref: Mapped[str] = mapped_column(String(2048), nullable=False)  # filename or URL
+    text: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    chars: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    truncated: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    ok: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    error_message: Mapped[str] = mapped_column(String(500), default="", nullable=False)
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, index=True)
+    updated_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, onupdate=_utcnow)
+    updated_by: Mapped[str | None] = mapped_column(String(32), ForeignKey("admin_user.id"), nullable=True)

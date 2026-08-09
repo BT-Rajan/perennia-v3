@@ -10,7 +10,7 @@ from app.db import get_db
 from app.deps import get_current_admin, require_csrf
 from app.models import AdminUser
 from app.settings_registry import CATEGORIES, REGISTRY, SettingType, defs_for_category
-from app.settings_service import get_all, get_category, set_many
+from app.settings_service import get_all, get_category, set_many, _secret_placeholder
 
 router = APIRouter(prefix="/admin/api/settings", tags=["admin-settings"], dependencies=[Depends(require_csrf)])
 
@@ -43,12 +43,7 @@ def get_settings_for_category(category: str, admin: AdminUser = Depends(get_curr
     defs = defs_for_category(category)
     if not defs:
         raise HTTPException(status.HTTP_404_NOT_FOUND, f"Unknown category: {category}")
-    values = get_category(db, category)
-    # Secrets are write-only from the admin's perspective — never send a
-    # decrypted value back to the browser, just whether one is set.
-    for d in defs:
-        if d.secret:
-            values[d.key] = "••••••••" if _secret_is_set(db, d.key) else ""
+    values = get_category(db, category)  # secrets already masked — see settings_service.get_category
     return CategoryResponse(
         category=category,
         schema_=[
@@ -100,11 +95,5 @@ def get_all_settings(admin: AdminUser = Depends(get_current_admin), db: Session 
     out = get_all(db, include_secrets=False)
     for key, d in REGISTRY.items():
         if d.secret:
-            row_present = key not in out
-            out[key] = "••••••••" if _secret_is_set(db, key) else ""
+            out[key] = _secret_placeholder(db, key)
     return out
-
-
-def _secret_is_set(db: Session, key: str) -> bool:
-    from app.models import SiteSetting
-    return db.get(SiteSetting, key) is not None

@@ -6,6 +6,7 @@ import OverviewPage from "./pages/OverviewPage.jsx";
 import AppointmentsPage from "./pages/AppointmentsPage.jsx";
 import LeadsPage from "./pages/LeadsPage.jsx";
 import SettingsPage from "./pages/SettingsPage.jsx";
+import KnowledgePage from "./pages/KnowledgePage.jsx";
 
 function RequireAuth({ children }) {
   const { user, loading } = useAuth();
@@ -40,6 +41,7 @@ export default function App() {
             <Route path="leads" element={<LeadsPage />} />
             <Route path="settings" element={<SettingsPage />} />
             <Route path="settings/:category" element={<SettingsPage />} />
+            <Route path="knowledge" element={<KnowledgePage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

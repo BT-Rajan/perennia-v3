@@ -75,6 +75,7 @@ class InfraSettings(BaseSettings):
 
     RATE_LIMIT_LOGIN: str = "5/minute"
     RATE_LIMIT_APPOINTMENT: str = "6/hour"
+    RATE_LIMIT_KNOWLEDGE_UPLOAD: str = "10/hour"
 
     LOG_DIR: Path = BASE_DIR / "logs"
     DATA_DIR: Path = BASE_DIR / "data"

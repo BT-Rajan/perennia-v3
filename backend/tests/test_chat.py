@@ -80,6 +80,38 @@ def test_chat_api_key_never_exposed_publicly(logged_in_client, client):
 
         admin_all = logged_in_client.get("/admin/api/settings").json()
         assert admin_all["chat.llm_api_key"] != "super-secret-value"
+
+        # The category-level endpoint (what the settings UI's edit form
+        # reads from) must ALSO never return the plaintext value — only
+        # a masked placeholder, same rule as the all-settings endpoint.
+        category = logged_in_client.get("/admin/api/settings/chat").json()
+        assert category["values"]["chat.llm_api_key"] != "super-secret-value"
+        assert category["values"]["chat.llm_api_key"] == "••••••••"
+    finally:
+        logged_in_client.put("/admin/api/settings/chat", json={"chat.llm_api_key": ""})
+
+
+def test_secret_placeholder_reflects_unset_state(logged_in_client):
+    logged_in_client.put("/admin/api/settings/chat", json={"chat.llm_api_key": ""})
+    category = logged_in_client.get("/admin/api/settings/chat").json()
+    assert category["values"]["chat.llm_api_key"] == ""
+
+
+def test_resubmitting_secret_placeholder_does_not_overwrite_it(logged_in_client):
+    """Simulates the settings UI's edit form: fetch the category (gets
+    the masked placeholder back for the secret field), then save the
+    form as-is without touching that field. The real secret must
+    survive — this is the write-path half of the masking fix."""
+    logged_in_client.put("/admin/api/settings/chat", json={"chat.llm_api_key": "real-secret-key"})
+    try:
+        category = logged_in_client.get("/admin/api/settings/chat").json()
+        assert category["values"]["chat.llm_api_key"] == "••••••••"
+
+        resp = logged_in_client.put("/admin/api/settings/chat", json=category["values"])
+        assert resp.status_code == 200
+
+        still_masked = logged_in_client.get("/admin/api/settings/chat").json()
+        assert still_masked["values"]["chat.llm_api_key"] == "••••••••"
     finally:
         logged_in_client.put("/admin/api/settings/chat", json={"chat.llm_api_key": ""})
 

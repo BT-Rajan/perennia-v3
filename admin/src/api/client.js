@@ -21,7 +21,8 @@ class ApiError extends Error {
 
 async function request(path, options = {}) {
   const method = options.method || "GET";
-  const headers = { "Content-Type": "application/json", ...options.headers };
+  const isFormData = options.body instanceof FormData;
+  const headers = { ...(isFormData ? {} : { "Content-Type": "application/json" }), ...options.headers };
   if (method !== "GET" && csrfToken) headers["X-CSRF-Token"] = csrfToken;
 
   const res = await fetch(`/${path}`, { credentials: "include", ...options, headers });
@@ -69,6 +70,20 @@ export const adminApi = {
   getSettingCategory: (category) => request(`admin/api/settings/${category}`),
   updateSettingCategory: (category, values) =>
     request(`admin/api/settings/${category}`, { method: "PUT", body: JSON.stringify(values) }),
+
+  // -- knowledge base (chat grounding: uploaded documents + web pages) --
+  listKnowledge: () => request("admin/api/knowledge"),
+  getKnowledgeSource: (id) => request(`admin/api/knowledge/${id}`),
+  uploadKnowledgeFile: (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return request("admin/api/knowledge/upload", { method: "POST", body: formData });
+  },
+  addKnowledgeUrl: (url) => request("admin/api/knowledge/url", { method: "POST", body: JSON.stringify({ url }) }),
+  refreshKnowledgeSource: (id) => request(`admin/api/knowledge/${id}/refresh`, { method: "POST" }),
+  setKnowledgeSourceActive: (id, isActive) =>
+    request(`admin/api/knowledge/${id}`, { method: "PATCH", body: JSON.stringify({ is_active: isActive }) }),
+  deleteKnowledgeSource: (id) => request(`admin/api/knowledge/${id}`, { method: "DELETE" }),
 };
 
 export { ApiError };

@@ -13,6 +13,7 @@ os.environ.setdefault("COOKIE_SECURE", "false")
 # in its own isolated process.
 os.environ.setdefault("RATE_LIMIT_LOGIN", "1000/minute")
 os.environ.setdefault("RATE_LIMIT_APPOINTMENT", "1000/minute")
+os.environ.setdefault("RATE_LIMIT_KNOWLEDGE_UPLOAD", "1000/minute")
 
 _tmp_db = tempfile.NamedTemporaryFile(suffix=".db", delete=False)
 os.environ["DATABASE_URL"] = f"sqlite:///{_tmp_db.name}"

@@ -366,6 +366,26 @@ _DEFS: list[SettingDef] = [
                help_text="Screen-reader labels used across multiple screens (close/back/send buttons, nav "
                           "landmarks) — not visible text, but still shown to assistive-technology users in "
                           "whichever language they're browsing in."),
+
+    # knowledge — the chat assistant's grounding documents (uploaded
+    # files and fetched web pages). No embeddings/vector search: every
+    # active source's (capped) text is concatenated straight into the
+    # system prompt on each reply — see chat_service.py and
+    # knowledge_service.py. These settings bound how much that can
+    # grow, since prompt size directly affects LLM cost and latency.
+    SettingDef("knowledge.enabled", "knowledge", "Use knowledge base in chat replies", SettingType.BOOL, True),
+    SettingDef("knowledge.max_total_sources", "knowledge", "Max sources", SettingType.INT, 20,
+               help_text="Uploads/URLs beyond this must be removed before adding another.",
+               validator=_int_range(1, 200)),
+    SettingDef("knowledge.max_chars_per_source", "knowledge", "Max characters per source", SettingType.INT, 8000,
+               help_text="Longer documents are truncated at upload/fetch time.",
+               validator=_int_range(500, 50000)),
+    SettingDef("knowledge.max_lines_in_prompt", "knowledge", "Max lines per source sent to the LLM",
+               SettingType.INT, 50,
+               help_text="Defense-in-depth against prompt injection via an uploaded document: caps how much "
+                          "of any one source can reach the model, so a huge or adversarial upload can't crowd "
+                          "out the assistant's actual instructions.",
+               validator=_int_range(5, 500)),
 ]
 
 for _d in _DEFS:

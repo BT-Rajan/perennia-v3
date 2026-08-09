@@ -11,7 +11,7 @@ import re
 
 from sqlalchemy.orm import Session
 
-from app import leads_service, llm_client
+from app import knowledge_service, leads_service, llm_client
 from app.settings_service import get_setting
 
 EMAIL_RE = re.compile(r"[^\s@,;:!?()<>\[\]\"']+@[^\s@,;:!?()<>\[\]\"']+\.[^\s@,;:!?()<>\[\]\"']+")
@@ -32,11 +32,17 @@ def get_reply(db: Session, *, message: str, lang: str, history: list[dict]) -> s
         reply = unavailable
     else:
         try:
+            system_prompt = _lang_value(get_setting(db, "chat.system_prompt"), lang)
+            # Grounds replies in whatever the admin has uploaded/linked
+            # (see knowledge_service.py) — a no-op string when the
+            # knowledge base is empty or disabled, so this never changes
+            # behavior for a site that hasn't configured one.
+            system_prompt += knowledge_service.build_prompt_block(db)
             reply = llm_client.generate_reply(
                 provider=provider,
                 api_key=get_setting(db, "chat.llm_api_key"),
                 model=get_setting(db, "chat.llm_model"),
-                system_prompt=_lang_value(get_setting(db, "chat.system_prompt"), lang),
+                system_prompt=system_prompt,
                 history=history,
                 message=message,
                 max_tokens=get_setting(db, "chat.max_tokens"),
