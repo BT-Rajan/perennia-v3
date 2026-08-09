@@ -53,7 +53,14 @@ def _maybe_capture_lead(db: Session, *, message: str) -> None:
     match = EMAIL_RE.search(message)
     if not match:
         return
-    leads_service.capture_lead(
-        db, email=match.group(0), source="chat",
+    email = match.group(0)
+    lead, created = leads_service.capture_lead(
+        db, email=email, source="chat",
         transcript_entry={"from": "user", "text": message},
     )
+    if created:
+        # Only alert staff on a genuinely new contact — not on every
+        # follow-up message an already-known lead sends, which would
+        # turn an active conversation into an alert-email flood.
+        from app import notification_service
+        notification_service.notify_admin_new_lead(db, email=email, message=message)

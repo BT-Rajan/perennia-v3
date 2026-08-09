@@ -1,9 +1,9 @@
 # Perennia v2
 
 Perennia's site, rebuilt so that everything an admin should be able to
-change — content, theming/branding, business hours, chat behavior — is
-configurable at runtime through a Python (FastAPI) backend, instead of
-hardcoded in the frontend.
+change — content, theming/branding, business hours, chat behavior,
+notifications — is configurable at runtime through a Python (FastAPI)
+backend, instead of hardcoded in the frontend.
 
 This is a fresh repo (not a fork of the original `perennia-production`)
 so the existing stable site is untouched while this is built out.
@@ -13,7 +13,7 @@ so the existing stable site is untouched while this is built out.
 ```
 backend/    FastAPI backend — see backend/PASS*_NOTES.md for a
             pass-by-pass account of what was built and why
-src/        React frontend (Vite)
+src/        Public React frontend (Vite)
 ```
 
 ## Status
@@ -26,11 +26,11 @@ suite:
 - **Pass 3** — theming, branding, image uploads
 - **Pass 4** — appointment booking
 - **Pass 5** — chat (LLM-backed) & leads CRM
+- **Pass 6** — notifications (email/WhatsApp), editable templates
 
-See `backend/PASS1_NOTES.md` through `PASS5_NOTES.md` for details on
-each. Remaining passes (notifications, admin dashboard UI, admin
-settings UI, security hardening, deployment polish) are tracked but not
-yet built.
+See `backend/PASS1_NOTES.md` through `PASS6_NOTES.md` for details on
+each. Remaining passes (admin dashboard UI, admin settings UI, security
+hardening, deployment polish) are tracked but not yet built.
 
 ## Running it
 
@@ -48,4 +48,4 @@ npm install
 npm run dev
 ```
 
-`pytest -q` in `backend/` runs the full test suite (87 tests as of Pass 5).
+`pytest -q` in `backend/` runs the full test suite (104 tests as of Pass 6).

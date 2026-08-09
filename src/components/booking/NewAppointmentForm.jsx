@@ -8,7 +8,7 @@ import { api } from "../../api/client.js";
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
 export default function NewAppointmentForm({ onCancel, onBooked }) {
-  const { copy } = useLang();
+  const { copy, lang } = useLang();
   const t = copy.booking;
   const [form, setForm] = useState({ date: "", slot: "", name: "", email: "", phone: "", service: "", notes: "" });
   const [error, setError] = useState("");
@@ -25,7 +25,7 @@ export default function NewAppointmentForm({ onCancel, onBooked }) {
 
     setError("");
     setSubmitting(true);
-    const result = await api.createAppointment(form);
+    const result = await api.createAppointment({ ...form, lang });
     setSubmitting(false);
     if (result.ok) {
       onBooked({ ...form, id: result.id });

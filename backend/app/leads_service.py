@@ -24,13 +24,15 @@ def _utcnow_iso() -> str:
 def capture_lead(
     db: Session, *, email: str, source: str, name: str = "", phone: str = "",
     transcript_entry: dict | None = None,
-) -> Lead:
+) -> tuple[Lead, bool]:
     """Finds an existing lead by email (case-insensitive) and appends
     to it, or creates a new one. Never downgrades known info — an
     empty `name`/`phone` on a later touch doesn't erase a name/phone
-    already on file."""
+    already on file. Returns (lead, created) so callers can decide
+    whether a *new* lead is alert-worthy without re-querying."""
     email_norm = email.strip().lower()
     existing = db.scalar(select(Lead).where(Lead.email == email_norm))
+    created = existing is None
 
     if existing is None:
         lead = Lead(email=email_norm, name=name.strip(), phone=phone.strip(), source=source)
@@ -46,7 +48,7 @@ def capture_lead(
         lead.transcript = [*(lead.transcript or []), {**transcript_entry, "at": _utcnow_iso()}]
 
     db.flush()
-    return lead
+    return lead, created
 
 
 def list_leads(db: Session, *, status: str | None = None, source: str | None = None) -> list[Lead]:

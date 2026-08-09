@@ -115,7 +115,9 @@ def test_cancel_appointment_with_sufficient_notice(client):
     created = client.post("/api/booking/appointments", json={"date": date, "slot": "14:00", **VALID_APPT}).json()
 
     resp = client.post("/api/booking/appointments/cancel", json={"id": created["id"], "email": VALID_APPT["email"]})
-    assert resp.json() == {"ok": True}
+    body = resp.json()
+    assert body["ok"] is True
+    assert body["appointment"]["status"] == "cancelled"
 
     # slot should be free again
     slots = client.get(f"/api/booking/slots?date={date}").json()["slots"]
@@ -127,7 +129,7 @@ def test_cancel_appointment_is_idempotent(client):
     created = client.post("/api/booking/appointments", json={"date": date, "slot": "15:00", **VALID_APPT}).json()
     client.post("/api/booking/appointments/cancel", json={"id": created["id"], "email": VALID_APPT["email"]})
     again = client.post("/api/booking/appointments/cancel", json={"id": created["id"], "email": VALID_APPT["email"]})
-    assert again.json() == {"ok": True}
+    assert again.json()["ok"] is True
 
 
 def test_cancel_appointment_not_found(client):

@@ -261,6 +261,83 @@ _DEFS: list[SettingDef] = [
         "ar": "شكرًا لك! سيقوم أحد أعضاء فريقنا بمتابعة رسالتك قريبًا. هل ترغب في حجز موعد؟",
     }, i18n=True, help_text="Shown when no LLM provider is configured, or if a request to it fails."),
 
+    # notifications — outbound email/WhatsApp for booking confirmations
+    # and internal staff alerts. Every send is best-effort: a
+    # notification failure (bad SMTP creds, provider down) never fails
+    # the booking/chat request that triggered it — see
+    # notification_service.py. Both channels default fully OFF so an
+    # admin opts in deliberately rather than the app silently trying
+    # (and failing) to send mail with no configuration.
+    SettingDef("notifications.email_enabled", "notifications", "Enable email notifications", SettingType.BOOL, False),
+    SettingDef("notifications.smtp_host", "notifications", "SMTP host", SettingType.STRING, ""),
+    SettingDef("notifications.smtp_port", "notifications", "SMTP port", SettingType.INT, 587,
+               validator=_int_range(1, 65535)),
+    SettingDef("notifications.smtp_username", "notifications", "SMTP username", SettingType.STRING, ""),
+    SettingDef("notifications.smtp_password", "notifications", "SMTP password", SettingType.STRING, "", secret=True),
+    SettingDef("notifications.smtp_use_tls", "notifications", "Use STARTTLS", SettingType.BOOL, True),
+    SettingDef("notifications.from_email", "notifications", "From address", SettingType.EMAIL, ""),
+    SettingDef("notifications.from_name", "notifications", "From name", SettingType.STRING, "",
+               help_text="Falls back to the site name if left blank."),
+    SettingDef("notifications.admin_alert_email", "notifications", "Internal alert email", SettingType.EMAIL, "",
+               help_text="Where new-booking and new-lead alerts are sent. Leave blank to disable."),
+    SettingDef("notifications.whatsapp_enabled", "notifications", "Enable WhatsApp notifications", SettingType.BOOL, False),
+    SettingDef("notifications.whatsapp_provider", "notifications", "WhatsApp provider", SettingType.ENUM, "none",
+               choices=("none", "twilio", "meta_cloud")),
+    SettingDef("notifications.whatsapp_account_id", "notifications", "Account ID", SettingType.STRING, "",
+               help_text="Twilio Account SID, or Meta phone number ID."),
+    SettingDef("notifications.whatsapp_api_key", "notifications", "API key / auth token", SettingType.STRING, "",
+               secret=True),
+    SettingDef("notifications.whatsapp_from_number", "notifications", "Sender number", SettingType.STRING, "",
+               help_text="Required for Twilio; unused for Meta Cloud API (the account ID identifies the sender)."),
+
+    # templates — editable, bilingual notification content. Every
+    # send in notification_service.py renders one of these rather than
+    # having any wording hardcoded in Python, so the exact phrasing of
+    # a confirmation email or WhatsApp message is an admin edit like
+    # everything else. {name}/{date}/{time}/{id}/{service} placeholders
+    # are filled in at send time — see notification_service.render().
+    SettingDef("templates.booking_confirmed_email", "templates", "Booking confirmed — email", SettingType.JSON, {
+        "en": {"subject": "Your appointment is confirmed — {id}",
+               "body": "Hi {name},\n\nYour appointment is confirmed for {date} at {time}.\n"
+                       "Confirmation code: {id}\n\nWe look forward to speaking with you."},
+        "ar": {"subject": "تم تأكيد موعدك — {id}",
+               "body": "مرحباً {name}،\n\nتم تأكيد موعدك في {date} الساعة {time}.\nرمز التأكيد: {id}\n\nنتطلع للحديث معك."},
+    }, i18n=True),
+    SettingDef("templates.booking_cancelled_email", "templates", "Booking cancelled — email", SettingType.JSON, {
+        "en": {"subject": "Your appointment has been cancelled — {id}",
+               "body": "Hi {name},\n\nYour appointment on {date} at {time} (code {id}) has been cancelled.\n"
+                       "Feel free to book a new time whenever suits you."},
+        "ar": {"subject": "تم إلغاء موعدك — {id}",
+               "body": "مرحباً {name}،\n\nتم إلغاء موعدك في {date} الساعة {time} (الرمز {id}).\n"
+                       "يمكنك حجز موعد جديد في أي وقت يناسبك."},
+    }, i18n=True),
+    SettingDef("templates.booking_rescheduled_email", "templates", "Booking rescheduled — email", SettingType.JSON, {
+        "en": {"subject": "Your appointment was rescheduled — {id}",
+               "body": "Hi {name},\n\nYour appointment (code {id}) is now confirmed for {date} at {time}."},
+        "ar": {"subject": "تم تغيير موعد الحجز — {id}",
+               "body": "مرحباً {name}،\n\nموعدك (الرمز {id}) أصبح الآن في {date} الساعة {time}."},
+    }, i18n=True),
+    SettingDef("templates.booking_confirmed_whatsapp", "templates", "Booking confirmed — WhatsApp", SettingType.TEXT, {
+        "en": "Hi {name}! Your appointment is confirmed for {date} at {time}. Code: {id}",
+        "ar": "مرحباً {name}! تم تأكيد موعدك في {date} الساعة {time}. الرمز: {id}",
+    }, i18n=True),
+    SettingDef("templates.booking_cancelled_whatsapp", "templates", "Booking cancelled — WhatsApp", SettingType.TEXT, {
+        "en": "Hi {name}, your appointment on {date} at {time} (code {id}) has been cancelled.",
+        "ar": "مرحباً {name}، تم إلغاء موعدك في {date} الساعة {time} (الرمز {id}).",
+    }, i18n=True),
+    SettingDef("templates.booking_rescheduled_whatsapp", "templates", "Booking rescheduled — WhatsApp", SettingType.TEXT, {
+        "en": "Hi {name}, your appointment (code {id}) is now confirmed for {date} at {time}.",
+        "ar": "مرحباً {name}، موعدك (الرمز {id}) أصبح الآن في {date} الساعة {time}.",
+    }, i18n=True),
+    SettingDef("templates.new_booking_admin_alert", "templates", "New booking — internal alert", SettingType.JSON, {
+        "en": {"subject": "New booking: {name} — {date} {time}",
+               "body": "{name} ({email}) booked {date} at {time}.\nService: {service}\nCode: {id}"},
+    }, help_text="Internal alert, English only by default — this is for staff, not visitors."),
+    SettingDef("templates.new_lead_admin_alert", "templates", "New lead — internal alert", SettingType.JSON, {
+        "en": {"subject": "New lead from chat: {email}",
+               "body": "A new lead came in via chat.\nEmail: {email}\nMessage: {message}"},
+    }, help_text="Internal alert, English only by default — this is for staff, not visitors."),
+
     # copy — free-form UI microcopy blobs, grouped by the screen that
     # uses them (home / chat / booking). Kept as JSON blobs rather than
     # exploded into one registry entry per string: these ~10-15 strings

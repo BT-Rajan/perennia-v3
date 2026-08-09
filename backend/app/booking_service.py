@@ -100,7 +100,7 @@ def _generate_code(db: Session) -> str:
 
 def create_appointment(
     db: Session, *, date_str: str, time_str: str, name: str, email: str,
-    phone: str = "", service: str = "", notes: str = "",
+    phone: str = "", service: str = "", notes: str = "", lang: str = "en",
 ) -> dict:
     if not name.strip():
         return {"ok": False, "error": "invalid_name"}
@@ -115,7 +115,7 @@ def create_appointment(
         return {"ok": False, "error": "slot_unavailable"}
 
     appt = Appointment(
-        id=_generate_code(db), date=date_str, time=time_str,
+        id=_generate_code(db), date=date_str, time=time_str, lang=lang or "en",
         name=name.strip(), email=email.strip(), phone=phone.strip(),
         service=service.strip(), notes=notes.strip(),
     )
@@ -129,8 +129,7 @@ def create_appointment(
         db, email=appt.email, source="booking", name=appt.name, phone=appt.phone,
         transcript_entry={"from": "system", "text": f"Booked {appt.date} {appt.time} ({appt.service or 'general enquiry'})"},
     )
-
-    return {"ok": True, "id": appt.id}
+    return {"ok": True, "id": appt.id, "appointment": _serialize(appt)}
 
 
 def _find_by_id_and_email(db: Session, appt_id: str, email: str) -> Appointment | None:
@@ -166,11 +165,11 @@ def cancel_appointment(db: Session, appt_id: str, email: str) -> dict:
     if appt is None:
         return {"ok": False, "error": "not_found"}
     if appt.status == "cancelled":
-        return {"ok": True}  # idempotent
+        return {"ok": True, "appointment": _serialize(appt), "already_cancelled": True}  # idempotent
     if not _has_enough_notice(db, appt):
         return {"ok": False, "error": "notice_window_passed"}
     appt.status = "cancelled"
-    return {"ok": True}
+    return {"ok": True, "appointment": _serialize(appt), "already_cancelled": False}
 
 
 def reschedule_appointment(db: Session, appt_id: str, email: str, new_date_str: str, new_time_str: str) -> dict:

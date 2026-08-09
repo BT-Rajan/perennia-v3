@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from app import booking_service
+from app import booking_service, notification_service
 from app.config import settings
 from app.db import get_db
 from app.rate_limit import limiter
@@ -19,6 +19,7 @@ class CreateAppointmentRequest(BaseModel):
     phone: str = Field(default="", max_length=40)
     service: str = Field(default="", max_length=200)
     notes: str = Field(default="", max_length=1000)
+    lang: str = Field(default="en", max_length=8)
 
 
 class LookupRequest(BaseModel):
@@ -55,9 +56,12 @@ def create_appointment(request: Request, body: CreateAppointmentRequest, db: Ses
         return {"ok": False, "error": "booking_disabled"}
     result = booking_service.create_appointment(
         db, date_str=body.date, time_str=body.slot, name=body.name, email=body.email,
-        phone=body.phone, service=body.service, notes=body.notes,
+        phone=body.phone, service=body.service, notes=body.notes, lang=body.lang,
     )
     db.commit()
+    if result["ok"]:
+        notification_service.notify_booking_confirmed(db, result["appointment"])
+        db.commit()  # notification sending may have touched the session; flush any of its own state
     return result
 
 
@@ -71,6 +75,9 @@ def lookup_appointment(body: LookupRequest, db: Session = Depends(get_db)):
 def cancel_appointment(request: Request, body: CancelRequest, db: Session = Depends(get_db)):
     result = booking_service.cancel_appointment(db, body.id, body.email)
     db.commit()
+    if result["ok"] and not result.get("already_cancelled"):
+        notification_service.notify_booking_cancelled(db, result["appointment"])
+        db.commit()
     return result
 
 
@@ -79,4 +86,7 @@ def cancel_appointment(request: Request, body: CancelRequest, db: Session = Depe
 def reschedule_appointment(request: Request, body: RescheduleRequest, db: Session = Depends(get_db)):
     result = booking_service.reschedule_appointment(db, body.id, body.email, body.date, body.time)
     db.commit()
+    if result["ok"]:
+        notification_service.notify_booking_rescheduled(db, result["appointment"])
+        db.commit()
     return result
