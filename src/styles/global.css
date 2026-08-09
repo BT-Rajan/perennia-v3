@@ -11,16 +11,18 @@ body {
   color: var(--white-pure);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  /* Enterprise-grade background: deeper, more authoritative color gradient */
   background:
-    radial-gradient(ellipse 120% 60% at 50% -10%, rgba(251, 191, 36, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse 80% 80% at 20% 80%, rgba(167, 139, 250, 0.2) 0%, transparent 60%),
-    radial-gradient(ellipse 90% 90% at 85% 10%, rgba(37, 99, 235, 0.25) 0%, transparent 55%),
-    radial-gradient(ellipse 100% 100% at 50% 100%, rgba(6, 182, 212, 0.1) 0%, transparent 70%),
-    linear-gradient(135deg, var(--navy-1) 0%, var(--navy-2) 12%, var(--navy-3) 28%, var(--navy-4) 45%,
-      var(--navy-5) 62%, var(--navy-6) 75%, var(--blue-mid) 88%, var(--blue-light) 100%);
+    radial-gradient(ellipse 140% 70% at 50% -5%, rgba(30, 64, 175, 0.12) 0%, transparent 45%),
+    radial-gradient(ellipse 90% 90% at 15% 75%, rgba(3, 105, 161, 0.15) 0%, transparent 55%),
+    radial-gradient(ellipse 100% 100% at 90% 20%, rgba(30, 64, 175, 0.08) 0%, transparent 50%),
+    linear-gradient(135deg, var(--navy-1) 0%, var(--navy-2) 15%, var(--navy-3) 35%, var(--navy-4) 52%,
+      var(--navy-5) 68%, var(--navy-6) 82%, var(--blue-mid) 92%, var(--blue-light) 100%);
   background-attachment: fixed;
   position: relative;
   overflow-x: hidden;
+  /* Better letter spacing for corporate feel */
+  letter-spacing: 0.3px;
 }
 
 /* Subtle grid-mesh overlay for depth, same on every screen size */

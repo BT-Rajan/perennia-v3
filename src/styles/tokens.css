@@ -15,18 +15,19 @@
    ────────────────────────────────────────────────────────── */
 :root {
   /* ---- Base tokens (admin-configurable) --------------------------- */
-  --brand-bg: #0a0e27;        /* theme.background_color */
-  --brand-primary: #fbbf24;   /* theme.primary_color */
-  --brand-accent: #3b82f6;    /* theme.accent_color */
-  --brand-text: #f0f5ff;      /* theme.text_color */
+  /* Enterprise-focused defaults: bold colors, strong contrast, authoritative hierarchy */
+  --brand-bg: #0f1419;        /* theme.background_color — deeper, more commanding */
+  --brand-primary: #1e40af;   /* theme.primary_color — bold steel blue (enterprise) */
+  --brand-accent: #0369a1;    /* theme.accent_color — deep cyan (high visibility) */
+  --brand-text: #f8fafc;      /* theme.text_color — clean, bright text */
 
-  --font-display: "Cormorant Garamond", Georgia, serif;                 /* theme.font_display */
-  --font-body: "Inter", system-ui, -apple-system, sans-serif;           /* theme.font_body */
+  --font-display: "Lora", Georgia, serif;                               /* theme.font_display — more serious */
+  --font-body: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;        /* theme.font_body — corporate */
   --font-ar: "Noto Kufi Arabic", "Arial Unicode MS", sans-serif;        /* theme.font_ar */
 
-  --header-h: 64px;       /* theme.header_height_px */
-  --content-max: 1180px;  /* theme.content_max_width_px */
-  --radius-md: 16px;      /* theme.corner_radius_px */
+  --header-h: 72px;       /* theme.header_height_px — taller, commanding presence */
+  --content-max: 1280px;  /* theme.content_max_width_px — wider for content */
+  --radius-md: 8px;       /* theme.corner_radius_px — sharper, less playful */
 
   /* ---- Derived: dark surface scale (each step lightens the base) -- */
   --navy-1: var(--brand-bg);
@@ -76,13 +77,13 @@
   --muted: color-mix(in srgb, white 50%, transparent);
   --muted-strong: color-mix(in srgb, white 70%, transparent);
 
-  /* Fluid type scale — clamp() keeps this "native" across phone/tablet/desktop
-     instead of relying on breakpoint-by-breakpoint font-size overrides. */
-  --fs-hero: clamp(2rem, 5vw + 1rem, 4rem);
-  --fs-tagline: clamp(1.5rem, 3vw + 1rem, 2.75rem);
-  --fs-sub: clamp(0.7rem, 0.5vw + 0.55rem, 0.85rem);
-  --fs-body: clamp(0.9rem, 0.3vw + 0.8rem, 1rem);
-  --fs-sm: clamp(0.78rem, 0.2vw + 0.72rem, 0.85rem);
+  /* Fluid type scale — optimized for enterprise clarity & authority
+     Uses clamp() for responsive scaling across phone/tablet/desktop */
+  --fs-hero: clamp(2.2rem, 5vw + 1.1rem, 4.2rem);           /* Bolder headline presence */
+  --fs-tagline: clamp(1.6rem, 3.2vw + 1rem, 2.9rem);       /* Stronger section hierarchy */
+  --fs-sub: clamp(0.75rem, 0.6vw + 0.6rem, 0.95rem);       /* Better sub-text hierarchy */
+  --fs-body: clamp(0.95rem, 0.35vw + 0.85rem, 1.05rem);    /* Improved readability */
+  --fs-sm: clamp(0.82rem, 0.25vw + 0.75rem, 0.9rem);       /* Clearer small text */
 
   /* Spacing scale */
   --space-1: 4px;
