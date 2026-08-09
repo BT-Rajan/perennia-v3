@@ -1,41 +1,80 @@
 /* ──────────────────────────────────────────────────────────
    Design tokens — single source of truth for the whole app.
-   Every component reads colors/spacing/radii from here so the
-   look stays consistent and re-themeable from one place.
+
+   The variables in the first block are the only ones an admin
+   actually configures (see theme.* in backend/app/settings_registry.py,
+   applied at runtime by src/theme/applyTheme.js). Everything below that
+   — the navy scale, glass surfaces, gold gradient shades, derived radii
+   — is computed FROM those few values with color-mix()/calc(), so a
+   full re-theme only ever requires changing the base tokens, never
+   hunting down every place a shade was hand-picked.
+
+   The literal values here are just the *fallback* — what renders
+   before (or without) a backend connection; see LangContext.jsx /
+   applyTheme.js for how these get overridden at runtime.
    ────────────────────────────────────────────────────────── */
 :root {
-  /* Brand palette (enhanced - more vibrant & professional) */
-  --navy-1: #0a0e27;
-  --navy-2: #0f1535;
-  --navy-3: #151d42;
-  --navy-4: #1a2550;
-  --navy-5: #1f3366;
-  --navy-6: #254080;
-  --blue-mid: #2563eb;
-  --blue-light: #3b82f6;
-  --white-soft: #f0f5ff;
+  /* ---- Base tokens (admin-configurable) --------------------------- */
+  --brand-bg: #0a0e27;        /* theme.background_color */
+  --brand-primary: #fbbf24;   /* theme.primary_color */
+  --brand-accent: #3b82f6;    /* theme.accent_color */
+  --brand-text: #f0f5ff;      /* theme.text_color */
+
+  --font-display: "Cormorant Garamond", Georgia, serif;                 /* theme.font_display */
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;           /* theme.font_body */
+  --font-ar: "Noto Kufi Arabic", "Arial Unicode MS", sans-serif;        /* theme.font_ar */
+
+  --header-h: 64px;       /* theme.header_height_px */
+  --content-max: 1180px;  /* theme.content_max_width_px */
+  --radius-md: 16px;      /* theme.corner_radius_px */
+
+  /* ---- Derived: dark surface scale (each step lightens the base) -- */
+  --navy-1: var(--brand-bg);
+  --navy-2: color-mix(in srgb, var(--brand-bg) 92%, white);
+  --navy-3: color-mix(in srgb, var(--brand-bg) 85%, white);
+  --navy-4: color-mix(in srgb, var(--brand-bg) 78%, white);
+  --navy-5: color-mix(in srgb, var(--brand-bg) 65%, white);
+  --navy-6: color-mix(in srgb, var(--brand-bg) 55%, white);
+
+  /* ---- Derived: primary (gold) gradient shades -------------------- */
+  --gold: var(--brand-primary);
+  --gold-shade-2: color-mix(in srgb, var(--brand-primary) 82%, black);
+  --gold-shade-3: color-mix(in srgb, var(--brand-primary) 64%, black);
+  --gold-dim: color-mix(in srgb, var(--brand-primary) 16%, transparent);
+  --gold-border: color-mix(in srgb, var(--brand-primary) 30%, transparent);
+  /* Text placed on top of a solid gold surface — always the background
+     color itself, so it stays legible whatever primary color is chosen. */
+  --on-gold-text: var(--brand-bg);
+
+  /* ---- Derived: accent (blue) shades ------------------------------- */
+  --blue-mid: color-mix(in srgb, var(--brand-accent) 90%, black);
+  --blue-light: var(--brand-accent);
+
+  /* ---- Derived: text/surface ---------------------------------------- */
+  --white-soft: var(--brand-text);
   --white-pure: #ffffff;
-  --gold: #fbbf24;
-  --gold-dim: rgba(251, 191, 36, 0.16);
-  --gold-border: rgba(251, 191, 36, 0.3);
-  
-  /* Accent colors for visual richness */
+
+  /* Secondary accents used sparingly for visual richness in gradients —
+     deliberately not admin-configurable (see PASS3_NOTES.md): these are
+     decorative variety, not brand identity, and exposing every gradient
+     stop would turn the admin theme form into dozens of color pickers
+     for no real customization value. */
   --accent-purple: #a78bfa;
   --accent-cyan: #06b6d4;
   --accent-emerald: #10b981;
   --accent-rose: #f43f5e;
 
-  /* Glass surfaces */
-  --glass: rgba(255, 255, 255, 0.055);
-  --glass-strong: rgba(255, 255, 255, 0.09);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --muted: rgba(255, 255, 255, 0.5);
-  --muted-strong: rgba(255, 255, 255, 0.7);
+  /* Semantic (non-brand) status colors — not admin-configurable for the
+     same reason: "success green" / "danger red" are conventional, not
+     a brand choice, and changing them would work against recognizability. */
+  --color-success: #4ade80;
+  --color-danger: #ff9b9b;
 
-  /* Typography */
-  --font-display: "Cormorant Garamond", Georgia, serif;
-  --font-body: "Inter", system-ui, -apple-system, sans-serif;
-  --font-ar: "Noto Kufi Arabic", "Arial Unicode MS", sans-serif;
+  --glass: color-mix(in srgb, white 5.5%, transparent);
+  --glass-strong: color-mix(in srgb, white 9%, transparent);
+  --glass-border: color-mix(in srgb, white 10%, transparent);
+  --muted: color-mix(in srgb, white 50%, transparent);
+  --muted-strong: color-mix(in srgb, white 70%, transparent);
 
   /* Fluid type scale — clamp() keeps this "native" across phone/tablet/desktop
      instead of relying on breakpoint-by-breakpoint font-size overrides. */
@@ -55,18 +94,13 @@
   --space-7: 48px;
   --space-8: 64px;
 
-  /* Radii + motion */
-  --radius-sm: 10px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
+  /* Radii (derived from the single configurable --radius-md) + motion */
+  --radius-sm: calc(var(--radius-md) * 0.625);
+  --radius-lg: calc(var(--radius-md) * 1.5);
   --radius-pill: 999px;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
   --dur-fast: 0.18s;
   --dur-med: 0.32s;
-
-  /* Layout */
-  --header-h: 64px;
-  --content-max: 1180px;
 
   /* Breakpoints (referenced in comments; media queries can't read vars,
      kept here as the documented contract for the app) */

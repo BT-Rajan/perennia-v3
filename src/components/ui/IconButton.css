@@ -5,7 +5,7 @@
   border-radius: 50%;
   background: var(--glass);
   border: 1px solid var(--glass-border);
-  color: #fff;
+  color: var(--white-pure);
   transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
   flex: none;
 }

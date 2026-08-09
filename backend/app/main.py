@@ -3,12 +3,13 @@ from __future__ import annotations
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
 from app.config import settings
 from app.rate_limit import limiter
-from app.routers import admin_auth, admin_content, admin_settings, public_config, public_content
+from app.routers import admin_auth, admin_content, admin_settings, admin_uploads, public_config, public_content
 
 
 def create_app() -> FastAPI:
@@ -52,8 +53,11 @@ def create_app() -> FastAPI:
     app.include_router(admin_auth.router)
     app.include_router(admin_settings.router)
     app.include_router(admin_content.router)
+    app.include_router(admin_uploads.router)
     app.include_router(public_config.router)
     app.include_router(public_content.router)
+
+    app.mount("/uploads", StaticFiles(directory=str(settings.UPLOADS_DIR)), name="uploads")
 
     @app.get("/api/health")
     def health():

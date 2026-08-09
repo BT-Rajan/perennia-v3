@@ -22,8 +22,8 @@
 }
 
 .msg-user .msg-bubble {
-  background: linear-gradient(135deg, var(--gold) 0%, #f59e0b 50%, #d97706 100%);
-  color: #0a0e27;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-shade-2) 50%, var(--gold-shade-3) 100%);
+  color: var(--on-gold-text);
   border-start-end-radius: 4px;
   box-shadow: 0 4px 16px rgba(251, 191, 36, 0.3);
   font-weight: 500;

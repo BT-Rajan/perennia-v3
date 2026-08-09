@@ -57,7 +57,7 @@
   padding: var(--space-3) var(--space-4);
   border-bottom: 1px solid var(--glass-border);
 }
-.status-dot { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 8px #4ade80; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-success); box-shadow: 0 0 8px var(--color-success); }
 .chat-header-text { font-weight: 600; font-size: var(--fs-body); }
 
 .chat-conversation-wrap { flex: 1; display: flex; flex-direction: column; min-height: 0; position: relative; }

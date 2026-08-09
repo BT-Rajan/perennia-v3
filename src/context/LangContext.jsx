@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { buildFallbackSite, dirFor, loadSiteContent } from "../data/siteContent.js";
+import { applyTheme } from "../theme/applyTheme.js";
 
 const LangContext = createContext(null);
 
@@ -8,6 +9,16 @@ function detectInitialLang(supportedLanguages, defaultLanguage) {
   const nav = (navigator.language || navigator.languages?.[0] || "").toLowerCase();
   const match = supportedLanguages.find((code) => nav.startsWith(code));
   return match ?? defaultLanguage;
+}
+
+function resolveBranding(branding, lang, defaultLanguage) {
+  const pick = (byLang) => byLang[lang] ?? byLang[defaultLanguage] ?? Object.values(byLang)[0] ?? "";
+  return {
+    siteName: pick(branding.siteNameByLang),
+    logoUrl: branding.logoUrl,
+    faviconUrl: branding.faviconUrl,
+    metaDescription: pick(branding.metaDescriptionByLang),
+  };
 }
 
 // Built once, synchronously, at module load — this is what the very
@@ -39,10 +50,16 @@ export function LangProvider({ children }) {
     };
   }, []);
 
+  const resolvedBranding = useMemo(
+    () => resolveBranding(site.branding, lang, site.defaultLanguage),
+    [site, lang]
+  );
+
   useEffect(() => {
     document.documentElement.lang = lang;
     document.documentElement.dir = dirFor(lang);
-  }, [lang]);
+    applyTheme(site.theme, resolvedBranding);
+  }, [lang, site, resolvedBranding]);
 
   const value = useMemo(() => {
     const langs = site.supportedLanguages;
@@ -55,12 +72,13 @@ export function LangProvider({ children }) {
       nav: site.nav[lang],
       sections: site.sections[lang],
       pages: site.pages[lang],
-      branding: site.branding,
+      branding: resolvedBranding,
+      theme: site.theme,
       supportedLanguages: langs,
       toggleLang: () => setLang(langs[(idx + 1) % langs.length]),
       setLang,
     };
-  }, [site, lang]);
+  }, [site, lang, resolvedBranding]);
 
   return <LangContext.Provider value={value}>{children}</LangContext.Provider>;
 }

@@ -78,6 +78,11 @@ class InfraSettings(BaseSettings):
     LOG_DIR: Path = BASE_DIR / "logs"
     DATA_DIR: Path = BASE_DIR / "data"
 
+    # Uploaded brand assets (logo, favicon). Served as static files —
+    # nothing secret is ever allowed to live under this directory.
+    UPLOADS_DIR: Path = BASE_DIR / "data" / "uploads"
+    MAX_UPLOAD_IMAGE_BYTES: int = 4 * 1024 * 1024  # 4 MB
+
     @property
     def allowed_origins_list(self) -> list[str]:
         return [o.strip() for o in self.ALLOWED_ORIGINS.split(",") if o.strip()]
@@ -117,3 +122,4 @@ def _validate(s: InfraSettings) -> InfraSettings:
 settings = _validate(InfraSettings())
 settings.DATA_DIR.mkdir(parents=True, exist_ok=True)
 settings.LOG_DIR.mkdir(parents=True, exist_ok=True)
+settings.UPLOADS_DIR.mkdir(parents=True, exist_ok=True)

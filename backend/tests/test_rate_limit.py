@@ -17,6 +17,7 @@ os.environ["COOKIE_SECURE"] = "false"
 os.environ["RATE_LIMIT_LOGIN"] = "5/minute"
 _tmp_db = tempfile.NamedTemporaryFile(suffix=".db", delete=False)
 os.environ["DATABASE_URL"] = f"sqlite:///{_tmp_db.name}"
+os.environ["UPLOADS_DIR"] = tempfile.mkdtemp(prefix="perennia-test-uploads-")
 
 from cryptography.fernet import Fernet
 os.environ["ENCRYPTION_KEY"] = Fernet.generate_key().decode()

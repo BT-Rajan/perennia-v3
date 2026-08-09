@@ -28,6 +28,16 @@ export default defineConfig({
           proxy.on("error", () => {});
         },
       },
+      // Uploaded brand assets (logo, favicon) — served by the backend
+      // from backend/data/uploads/, referenced by branding.logo_url /
+      // branding.favicon_url as root-relative paths.
+      "/uploads": {
+        target: "http://localhost:8001",
+        changeOrigin: true,
+        configure: (proxy) => {
+          proxy.on("error", () => {});
+        },
+      },
     },
   },
 

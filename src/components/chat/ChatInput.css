@@ -22,7 +22,7 @@
   font-size: var(--fs-body);
   line-height: 1.4;
   max-height: 120px;
-  color: #fff;
+  color: var(--white-pure);
   box-sizing: border-box;
   overflow-wrap: anywhere;
   backdrop-filter: blur(10px);

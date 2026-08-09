@@ -99,17 +99,29 @@ def _url_or_empty(v: str) -> None:
         raise ValueError("must be an absolute URL or a root-relative path")
 
 
+def _px_range(lo: int, hi: int):
+    def _check(v: int) -> None:
+        if not (lo <= v <= hi):
+            raise ValueError(f"must be between {lo} and {hi}")
+    return _check
+
+
 # ── Registry ──────────────────────────────────────────────────────────
 # Grouped by category purely for readability; the flat dict below is
 # what code actually consumes.
 
 _DEFS: list[SettingDef] = [
     # branding ------------------------------------------------------
-    SettingDef("branding.site_name", "branding", "Site name", SettingType.STRING, "Perennia",
-               help_text="Shown in the header, browser tab, and emails."),
+    SettingDef("branding.site_name", "branding", "Site name", SettingType.STRING,
+               {"en": "Perennia", "ar": "بيرينيا"}, i18n=True,
+               help_text="Shown in the header, browser tab, and emails. Per-language, since a wordmark "
+                          "often isn't a literal translation."),
     SettingDef("branding.tagline", "branding", "Tagline", SettingType.STRING, {"en": "", "ar": ""}, i18n=True),
     SettingDef("branding.logo_url", "branding", "Logo", SettingType.IMAGE, "/static/logo.svg"),
     SettingDef("branding.favicon_url", "branding", "Favicon", SettingType.IMAGE, "/favicon.svg"),
+    SettingDef("branding.meta_description", "branding", "Search/share description", SettingType.TEXT,
+               {"en": "Perennia — AI-powered technology & innovation.", "ar": ""}, i18n=True,
+               help_text="Shown in search results and link previews (og:description)."),
 
     # locale ----------------------------------------------------------
     SettingDef("locale.default_language", "locale", "Default language", SettingType.ENUM, "en",
@@ -123,10 +135,39 @@ _DEFS: list[SettingDef] = [
                help_text="Include country code, digits only, e.g. 96599999999."),
     SettingDef("contact.address", "contact", "Address", SettingType.TEXT, {"en": "", "ar": ""}, i18n=True),
 
-    # theme (expanded in Pass 3; minimal placeholders now so nothing is
-    # hardcoded even in Pass 1) --------------------------------------
-    SettingDef("theme.primary_color", "theme", "Primary color", SettingType.COLOR, "#fbbf24"),
-    SettingDef("theme.accent_color", "theme", "Accent color", SettingType.COLOR, "#3b82f6"),
+    # theme — brand identity. Deliberately a SMALL set of base tokens
+    # (colors, fonts, a few layout metrics) rather than every CSS custom
+    # property in tokens.css: the frontend derives the full palette
+    # (navy scale, glass surfaces, gold gradient shades, etc.) from
+    # these few values using CSS color-mix(), so a full re-theme only
+    # ever requires changing what's here — see src/styles/tokens.css
+    # and PASS3_NOTES.md for the derivation.
+    SettingDef("theme.primary_color", "theme", "Primary color", SettingType.COLOR, "#fbbf24",
+               help_text="Main accent — buttons, links, highlights."),
+    SettingDef("theme.accent_color", "theme", "Accent color", SettingType.COLOR, "#3b82f6",
+               help_text="Secondary accent, used alongside the primary color in gradients."),
+    SettingDef("theme.background_color", "theme", "Background color", SettingType.COLOR, "#0a0e27",
+               help_text="Base dark surface color the whole app is built on."),
+    SettingDef("theme.text_color", "theme", "Text color", SettingType.COLOR, "#f0f5ff",
+               help_text="Primary light text color against the background."),
+    SettingDef("theme.font_display", "theme", "Display font (headings)", SettingType.STRING,
+               '"Cormorant Garamond", Georgia, serif'),
+    SettingDef("theme.font_body", "theme", "Body font", SettingType.STRING,
+               '"Inter", system-ui, -apple-system, sans-serif'),
+    SettingDef("theme.font_ar", "theme", "Arabic font", SettingType.STRING,
+               '"Noto Kufi Arabic", "Arial Unicode MS", sans-serif'),
+    SettingDef("theme.google_fonts_url", "theme", "Google Fonts stylesheet URL", SettingType.URL,
+               "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700"
+               "&family=Cormorant+Garamond:wght@500;600;700&family=Noto+Kufi+Arabic:wght@300;400;500;600;700"
+               "&display=swap",
+               help_text="Must include every font family referenced above, or those fonts won't load."),
+    SettingDef("theme.header_height_px", "theme", "Header height (px)", SettingType.INT, 64,
+               validator=_px_range(40, 160)),
+    SettingDef("theme.content_max_width_px", "theme", "Content max width (px)", SettingType.INT, 1180,
+               validator=_px_range(600, 2400)),
+    SettingDef("theme.corner_radius_px", "theme", "Corner radius (px)", SettingType.INT, 16,
+               help_text="Base radius — smaller and larger UI elements scale proportionally from this.",
+               validator=_px_range(0, 48)),
 
     # features (toggles for capabilities landing in later passes,
     # declared now so the admin can already see what's coming and

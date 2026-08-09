@@ -8,7 +8,7 @@
 // PAGE_CONTENT directly anymore — only useLang() — so swapping how
 // content is sourced never touches component code again.
 // ──────────────────────────────────────────────────────────
-import { COPY, FAQ, NAV, SECTIONS } from "./content.js";
+import { BRAND, COPY, FAQ, NAV, SECTIONS } from "./content.js";
 import { PAGE_CONTENT, PAGE_META } from "./pages.js";
 import { fetchContentPages, fetchFaqItems, fetchPublicConfig } from "../api/publicContent.js";
 
@@ -123,14 +123,55 @@ function buildFromApi(publicConfig, contentPages, faqItems, supportedLanguages) 
   return { copy, nav, sections, faq, pages };
 }
 
+// Fallback theme — mirrors tokens.css's own literal defaults exactly,
+// so there's no visual "pop" if these get overridden a moment later
+// once the live backend theme arrives.
+const FALLBACK_THEME = {
+  backgroundColor: "#0a0e27",
+  primaryColor: "#fbbf24",
+  accentColor: "#3b82f6",
+  textColor: "#f0f5ff",
+  fontDisplay: '"Cormorant Garamond", Georgia, serif',
+  fontBody: '"Inter", system-ui, -apple-system, sans-serif',
+  fontAr: '"Noto Kufi Arabic", "Arial Unicode MS", sans-serif',
+  googleFontsUrl:
+    "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700" +
+    "&family=Cormorant+Garamond:wght@500;600;700&family=Noto+Kufi+Arabic:wght@300;400;500;600;700&display=swap",
+  headerHeightPx: 64,
+  contentMaxWidthPx: 1180,
+  cornerRadiusPx: 16,
+};
+
 export function buildFallbackSite() {
   const supportedLanguages = Object.keys(COPY);
   return {
     source: "fallback",
     supportedLanguages,
     defaultLanguage: "en",
-    branding: { siteName: "Perennia", logoUrl: "/static/logo.svg" },
+    theme: FALLBACK_THEME,
+    branding: {
+      siteNameByLang: { en: BRAND.name, ar: BRAND.wordmarkAr },
+      logoUrl: "/static/logo.svg",
+      faviconUrl: "/favicon.svg",
+      metaDescriptionByLang: { en: "Perennia — AI-powered technology & innovation.", ar: "" },
+    },
     ...buildFromLocalFallback(supportedLanguages),
+  };
+}
+
+function apiTheme(publicConfig) {
+  return {
+    backgroundColor: publicConfig["theme.background_color"],
+    primaryColor: publicConfig["theme.primary_color"],
+    accentColor: publicConfig["theme.accent_color"],
+    textColor: publicConfig["theme.text_color"],
+    fontDisplay: publicConfig["theme.font_display"],
+    fontBody: publicConfig["theme.font_body"],
+    fontAr: publicConfig["theme.font_ar"],
+    googleFontsUrl: publicConfig["theme.google_fonts_url"],
+    headerHeightPx: publicConfig["theme.header_height_px"],
+    contentMaxWidthPx: publicConfig["theme.content_max_width_px"],
+    cornerRadiusPx: publicConfig["theme.corner_radius_px"],
   };
 }
 
@@ -159,9 +200,12 @@ export async function loadSiteContent() {
     source: haveFullApiData ? "api" : "fallback",
     supportedLanguages,
     defaultLanguage,
+    theme: haveFullApiData ? apiTheme(publicConfig) : FALLBACK_THEME,
     branding: {
-      siteName: publicConfig?.["branding.site_name"] ?? "Perennia",
+      siteNameByLang: publicConfig?.["branding.site_name"] ?? { en: BRAND.name, ar: BRAND.wordmarkAr },
       logoUrl: publicConfig?.["branding.logo_url"] ?? "/static/logo.svg",
+      faviconUrl: publicConfig?.["branding.favicon_url"] ?? "/favicon.svg",
+      metaDescriptionByLang: publicConfig?.["branding.meta_description"] ?? { en: "", ar: "" },
     },
     ...site,
   };

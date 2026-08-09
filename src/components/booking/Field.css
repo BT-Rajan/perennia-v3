@@ -7,7 +7,7 @@
   border-radius: var(--radius-sm);
   padding: 10px 12px;
   font-size: var(--fs-body);
-  color: #fff;
+  color: var(--white-pure);
 }
 .bk-field input::placeholder, .bk-field textarea::placeholder { color: var(--muted); }
 .bk-field input:focus, .bk-field textarea:focus { outline: none; border-color: var(--gold-border); }
