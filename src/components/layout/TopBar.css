@@ -51,7 +51,7 @@
 }
 
 /* Desktop (>1024px) — header grows to comfortably fit the large
-   175px logo (see Logo.css). Overrides the height property directly
+   87px logo (see Logo.css). Overrides the height property directly
    rather than the --header-h custom property: applyTheme.js sets
    --header-h as an *inline* style on <html> (it's admin-configurable
    at runtime), and inline styles always beat stylesheet rules —
@@ -59,7 +59,7 @@
    itself would silently lose to that inline value. Same technique
    the existing mobile override below already relies on. */
 @media (min-width: 1025px) {
-  .top-bar-header { height: 200px; }
+  .top-bar-header { height: 100px; }
 }
 
 @media (max-width: 767px) {
