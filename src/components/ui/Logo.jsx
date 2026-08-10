@@ -5,16 +5,19 @@ import "./Logo.css";
 /**
  * Logo image URL and wordmark text both come from live branding config
  * (branding.logo_url / branding.site_name — see useLang()), so swapping
- * either from the admin panel needs no rebuild. Falls back to the
- * dashed "LOGO" placeholder badge if the image fails to load.
+ * either from the admin panel needs no rebuild. Shows the image OR the
+ * site-name wordmark — never both — falling back to the text if there's
+ * no logo configured or the image fails to load.
  */
 export default function Logo() {
   const { branding } = useLang();
   const [imgFailed, setImgFailed] = useState(false);
 
+  const showImage = branding.logoUrl && !imgFailed;
+
   return (
     <div className="logo">
-      {branding.logoUrl && !imgFailed ? (
+      {showImage ? (
         <img
           className="logo-img"
           src={branding.logoUrl}
@@ -22,9 +25,8 @@ export default function Logo() {
           onError={() => setImgFailed(true)}
         />
       ) : (
-        <span className="logo-mark" aria-hidden="true">LOGO</span>
+        <span className="logo-word">{branding.siteName}</span>
       )}
-      <span className="logo-word">{branding.siteName}</span>
     </div>
   );
 }
