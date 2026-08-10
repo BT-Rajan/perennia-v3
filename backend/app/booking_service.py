@@ -1,19 +1,23 @@
 """
-Booking business logic. Every rule about *when the business is open* —
-hours, workdays, timezone, notice window, how far ahead you can book —
-still comes from the booking.* settings registry (app/settings_registry.py),
-read fresh on every call.
+Booking business logic. Timezone, notice window, and how far ahead you
+can book still come from the booking.* settings registry
+(app/settings_registry.py), read fresh on every call. As of Pass 9
+(docs/CALENDAR_MODULE_PLAN.md), *which hours are open* comes from
+AvailabilityRule (app/availability_service.py) instead of the old
+booking.workdays/day_start_hour/day_end_hour trio — unless no
+AvailabilityRule exists anywhere yet, in which case those settings are
+still used exactly as before, so an install that predates Pass 9 (or
+simply hasn't touched Availability) keeps behaving identically.
 
-Pass 8 (docs/CALENDAR_MODULE_PLAN.md) adds what a *service* contributes
-on top of that: its own duration and buffer time. A booking's
-service_id is optional — a site that has never defined a Service keeps
-behaving exactly as it did before this pass, occupying one
+Pass 8 adds what a *service* contributes on top of the day's open
+hours: its own duration and buffer time. A booking's service_id is
+optional — a site that has never defined a Service occupies one
 booking.slot_minutes-sized grid slot with no buffer. When a service is
 given, slot generation still snaps to the same booking.slot_minutes
 grid (so times stay predictable and stable across services) but each
 candidate slot's *occupied span* is the service's own duration plus its
 buffers, checked for overlap against every other booking that day
-(rather than the old exact-time-string match, which only worked because
+(rather than an exact-time-string match, which only ever worked because
 every booking used to be the same length).
 """
 from __future__ import annotations
@@ -79,19 +83,47 @@ def _duration_and_buffers(cfg: dict, service: Service | None) -> tuple[int, int,
     return service.duration_minutes, service.buffer_before_minutes, service.buffer_after_minutes
 
 
-def _all_slots_for_day(cfg: dict, date: dt.date) -> list[str]:
+def _day_ranges(db: Session, cfg: dict, date: dt.date, service_id: str | None) -> list[tuple[int, int]]:
+    """Open (start_minutes, end_minutes) ranges for this date, resolved
+    through availability_service.effective_ranges. Falls back to the
+    legacy single-range booking.workdays/day_start_hour/day_end_hour
+    settings when no AvailabilityRule exists anywhere yet — see that
+    function's docstring and the module docstring above."""
+    from app import availability_service
+    ranges = availability_service.effective_ranges(
+        db, service_id=service_id, weekday=date.weekday(), date_str=date.isoformat()
+    )
+    if ranges is not None:
+        return ranges
     if date.weekday() not in cfg["workdays"]:
         return []
     if cfg["day_end_hour"] <= cfg["day_start_hour"]:
         return []  # inconsistent hours - treat as closed rather than erroring
-    slots = []
-    t = dt.datetime.combine(date, dt.time(hour=cfg["day_start_hour"]))
-    end = dt.datetime.combine(date, dt.time(hour=cfg["day_end_hour"]))
-    step = dt.timedelta(minutes=cfg["slot_minutes"])
-    while t < end:
-        slots.append(t.strftime("%H:%M"))
-        t += step
+    return [(cfg["day_start_hour"] * 60, cfg["day_end_hour"] * 60)]
+
+
+def _grid_slots_for_ranges(cfg: dict, ranges: list[tuple[int, int]]) -> list[str]:
+    """Candidate start times on the booking.slot_minutes grid, across
+    every open range for the day (a split day — e.g. 09:00-12:00 and
+    13:00-17:00 — just means two ranges, each gridded independently;
+    duplicates across overlapping ranges are deduped defensively)."""
+    seen: set[str] = set()
+    slots: list[str] = []
+    for start_min, end_min in ranges:
+        t = start_min
+        while t < end_min:
+            hh, mm = divmod(t, 60)
+            s = f"{hh:02d}:{mm:02d}"
+            if s not in seen:
+                seen.add(s)
+                slots.append(s)
+            t += cfg["slot_minutes"]
+    slots.sort()
     return slots
+
+
+def _fits_in_ranges(start_min: int, end_min: int, ranges: list[tuple[int, int]]) -> bool:
+    return any(r_start <= start_min and end_min <= r_end for r_start, r_end in ranges)
 
 
 def _booked_intervals(db: Session, cfg: dict, date_str: str, *, exclude_id: str | None = None) -> list[tuple[int, int]]:
@@ -129,12 +161,15 @@ def available_slots(
     if date < today or date > today + dt.timedelta(days=cfg["max_days_ahead"]):
         return []
 
-    all_slots = _all_slots_for_day(cfg, date)
+    ranges = _day_ranges(db, cfg, date, service_id)
+    if not ranges:
+        return []
+
+    all_slots = _grid_slots_for_ranges(cfg, ranges)
     if not all_slots:
         return []
 
     duration, buf_before, buf_after = _duration_and_buffers(cfg, service)
-    day_end_minutes = cfg["day_end_hour"] * 60
     blocked = _booked_intervals(db, cfg, date_str, exclude_id=exclude_id)
     earliest_bookable = now + dt.timedelta(hours=cfg["min_notice_hours"])
 
@@ -142,8 +177,8 @@ def available_slots(
     for s in all_slots:
         start_min = _time_to_minutes(s)
         end_min = start_min + duration
-        if end_min > day_end_minutes:
-            continue  # wouldn't finish before closing
+        if not _fits_in_ranges(start_min, end_min, ranges):
+            continue  # wouldn't finish within an open range (e.g. runs past closing)
 
         cand_start, cand_end = start_min - buf_before, end_min + buf_after
         if any(cand_start < b_end and cand_end > b_start for b_start, b_end in blocked):

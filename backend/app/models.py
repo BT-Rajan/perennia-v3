@@ -277,6 +277,49 @@ class ServiceCustomQuestion(Base):
     service: Mapped["Service"] = relationship(back_populates="questions")
 
 
+class AvailabilityRule(Base):
+    """Pass 9 (docs/CALENDAR_MODULE_PLAN.md): admin-editable business
+    hours, replacing the four global booking.workdays/day_start_hour/
+    day_end_hour settings with real rows an admin can add, edit, and
+    delete. A rule is either `weekly` (recurring, tied to a weekday) or
+    `date_override` (a specific date — a holiday closure, or a one-off
+    change in hours). `service_id` null means "business-wide default";
+    a non-null value overrides that default for just one service.
+
+    Precedence, most to least specific, is resolved in
+    availability_service.effective_ranges: service+date override >
+    business-wide date override > service weekly > business-wide
+    weekly. If literally no AvailabilityRule exists anywhere yet (a
+    fresh install, or one that hasn't been migrated onto this model),
+    booking_service.py falls back to the legacy booking.workdays/
+    day_start_hour/day_end_hour settings entirely, so nothing breaks
+    for an install that predates this pass."""
+
+    __tablename__ = "availability_rule"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    service_id: Mapped[str | None] = mapped_column(
+        String(32), ForeignKey("service.id", ondelete="CASCADE"), nullable=True, index=True
+    )
+    kind: Mapped[str] = mapped_column(String(16), nullable=False)  # weekly | date_override
+    weekday: Mapped[int | None] = mapped_column(Integer, nullable=True)  # 0=Monday .. 6=Sunday
+    date: Mapped[str | None] = mapped_column(String(10), nullable=True, index=True)  # YYYY-MM-DD
+    start_time: Mapped[str | None] = mapped_column(String(5), nullable=True)  # HH:MM
+    end_time: Mapped[str | None] = mapped_column(String(5), nullable=True)  # HH:MM
+    # A date_override row can mark a date fully closed (holiday). A
+    # weekly row could too, defensively, though the normal way to
+    # represent "closed on Sundays" is simply not having a weekly rule
+    # for Sunday at all.
+    is_closed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+    updated_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, onupdate=_utcnow)
+
+    __table_args__ = (
+        Index("ix_availability_rule_service_weekday", "service_id", "weekday"),
+        Index("ix_availability_rule_service_date", "service_id", "date"),
+    )
+
+
 class Lead(Base):
     """A contact worth following up with — captured automatically
     whenever a booking is made (source='booking') or an email address

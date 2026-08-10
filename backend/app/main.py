@@ -13,6 +13,7 @@ from app.config import settings
 from app.rate_limit import limiter
 from app.routers import (
     admin_auth,
+    admin_availability,
     admin_booking,
     admin_content,
     admin_knowledge,
@@ -77,6 +78,7 @@ def create_app() -> FastAPI:
     app.include_router(admin_uploads.router)
     app.include_router(admin_booking.router)
     app.include_router(admin_services.router)
+    app.include_router(admin_availability.router)
     app.include_router(admin_leads.router)
     app.include_router(admin_stats.router)
     app.include_router(admin_knowledge.router)
