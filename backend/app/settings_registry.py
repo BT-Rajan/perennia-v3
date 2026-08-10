@@ -147,6 +147,10 @@ _DEFS: list[SettingDef] = [
                           "often isn't a literal translation."),
     SettingDef("branding.tagline", "branding", "Tagline", SettingType.STRING, {"en": "", "ar": ""}, i18n=True),
     SettingDef("branding.logo_url", "branding", "Logo", SettingType.IMAGE, "/static/logo.svg"),
+    SettingDef("branding.logo_scale", "branding", "Logo zoom", SettingType.FLOAT, 1.0,
+               help_text="Display size of the logo image relative to its default — logos with a lot "
+                          "of built-in padding often look small next to the header text at 1.0x.",
+               validator=_float_range(0.5, 3.0)),
     SettingDef("branding.favicon_url", "branding", "Favicon", SettingType.IMAGE, "/favicon.svg"),
     SettingDef("branding.meta_description", "branding", "Search/share description", SettingType.TEXT,
                {"en": "Perennia — AI-powered technology & innovation.", "ar": ""}, i18n=True,

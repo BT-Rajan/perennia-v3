@@ -20,6 +20,7 @@ export default function Logo() {
       {showImage ? (
         <img
           className="logo-img"
+          style={{ "--logo-scale": branding.logoScale || 1 }}
           src={branding.logoUrl}
           alt={`${branding.siteName} logo`}
           onError={() => setImgFailed(true)}

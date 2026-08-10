@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 import PageHeader from "../components/PageHeader.jsx";
 import SettingField from "../components/SettingField.jsx";
 import ThemePresetPicker from "../components/ThemePresetPicker.jsx";
+import LogoZoomControl from "../components/LogoZoomControl.jsx";
 import "./SettingsPage.css";
 
 // Nicer labels for the sidebar than a raw category key. Anything not
@@ -161,16 +162,31 @@ export default function SettingsPage() {
                 />
               )}
 
-              {schema.map((field) => (
-                <SettingField
-                  key={field.key}
-                  field={field}
-                  value={values[field.key]}
-                  error={fieldErrors[field.key]}
-                  onChange={(v) => handleFieldChange(field.key, v)}
-                  onError={(msg) => handleFieldError(field.key, msg)}
-                />
-              ))}
+              {schema.map((field) => {
+                // Superseded by the LogoZoomControl composite below
+                // (rendered right after branding.logo_url) — a bare
+                // number input for a zoom factor isn't useful without
+                // a live preview next to it.
+                if (field.key === "branding.logo_scale") return null;
+                return (
+                  <div key={field.key}>
+                    <SettingField
+                      field={field}
+                      value={values[field.key]}
+                      error={fieldErrors[field.key]}
+                      onChange={(v) => handleFieldChange(field.key, v)}
+                      onError={(msg) => handleFieldError(field.key, msg)}
+                    />
+                    {field.key === "branding.logo_url" && (
+                      <LogoZoomControl
+                        logoUrl={values["branding.logo_url"]}
+                        scale={values["branding.logo_scale"]}
+                        onScaleChange={(v) => handleFieldChange("branding.logo_scale", v)}
+                      />
+                    )}
+                  </div>
+                );
+              })}
 
               <div className="settings-form-footer">
                 <button type="submit" className="btn-primary" disabled={saving || Object.keys(fieldErrors).length > 0}>

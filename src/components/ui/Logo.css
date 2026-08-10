@@ -5,8 +5,13 @@
 }
 
 .logo-img {
-  height: 40px;
-  width: 40px;
+  /* --logo-scale is set inline per the branding.logo_scale admin
+     setting — lets a logo with a lot of built-in padding be sized up
+     to actually read next to the header text, without a rebuild. */
+  height: calc(40px * var(--logo-scale, 1));
+  width: calc(40px * var(--logo-scale, 1));
+  max-height: 52px;
+  max-width: 140px;
   flex: none;
   object-fit: contain;
   border-radius: var(--radius-sm);
@@ -24,6 +29,6 @@
 [dir="rtl"] .logo-word { font-family: var(--font-ar); font-weight: 600; }
 
 @media (max-width: 767px) {
-  .logo-img { height: 32px; width: 32px; }
+  .logo-img { height: calc(32px * var(--logo-scale, 1)); width: calc(32px * var(--logo-scale, 1)); max-height: 44px; max-width: 100px; }
   .logo-word { font-size: 1rem; }
 }

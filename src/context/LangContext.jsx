@@ -16,6 +16,7 @@ function resolveBranding(branding, lang, defaultLanguage) {
   return {
     siteName: pick(branding.siteNameByLang),
     logoUrl: branding.logoUrl,
+    logoScale: branding.logoScale || 1,
     faviconUrl: branding.faviconUrl,
     metaDescription: pick(branding.metaDescriptionByLang),
   };

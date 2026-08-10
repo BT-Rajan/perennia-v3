@@ -164,6 +164,7 @@ export function buildFallbackSite() {
     branding: {
       siteNameByLang: { en: BRAND.name, ar: BRAND.wordmarkAr },
       logoUrl: "/static/logo.svg",
+      logoScale: 1,
       faviconUrl: "/favicon.svg",
       metaDescriptionByLang: { en: "Perennia — AI-powered technology & innovation.", ar: "" },
     },
@@ -228,6 +229,7 @@ export async function loadSiteContent() {
     branding: {
       siteNameByLang: publicConfig?.["branding.site_name"] ?? { en: BRAND.name, ar: BRAND.wordmarkAr },
       logoUrl: publicConfig?.["branding.logo_url"] ?? "/static/logo.svg",
+      logoScale: publicConfig?.["branding.logo_scale"] ?? 1,
       faviconUrl: publicConfig?.["branding.favicon_url"] ?? "/favicon.svg",
       metaDescriptionByLang: publicConfig?.["branding.meta_description"] ?? { en: "", ar: "" },
     },
