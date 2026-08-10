@@ -41,16 +41,19 @@ function mockSlotsFor(dateStr) {
 }
 
 export const api = {
-  async chat(message, lang, history) {
+  async chat(message, lang, history, leadCaptured) {
     const data = await tryFetch("chat", {
       method: "POST",
-      body: JSON.stringify({ message, lang, history }),
+      body: JSON.stringify({ message, lang, history, leadCaptured: !!leadCaptured }),
     });
-    if (data) return data.reply;
+    if (data) return { reply: data.reply, leadCaptured: !!data.leadCaptured };
     // mock fallback: simple canned response
-    return lang === "ar"
-      ? "شكرًا لك! سيقوم أحد أعضاء فريقنا بمتابعة رسالتك قريبًا. هل ترغب في حجز موعد؟"
-      : "Thanks for sharing that! Someone from our team will follow up shortly. Would you like to book a time to talk?";
+    return {
+      reply: lang === "ar"
+        ? "شكرًا لك! سيقوم أحد أعضاء فريقنا بمتابعة رسالتك قريبًا. هل ترغب في حجز موعد؟"
+        : "Thanks for sharing that! Someone from our team will follow up shortly. Would you like to book a time to talk?",
+      leadCaptured: !!leadCaptured,
+    };
   },
 
   async getSlots(date) {
