@@ -157,3 +157,118 @@ def test_max_tokens_setting_validation(logged_in_client):
 def test_llm_provider_enum_validation(logged_in_client):
     resp = logged_in_client.put("/admin/api/settings/chat", json={"chat.llm_provider": "made_up_provider"})
     assert resp.status_code == 400
+
+
+def test_chat_lead_tag_is_captured_and_stripped_from_reply(logged_in_client, client, monkeypatch):
+    """The assistant's hidden [[LEAD_CAPTURED ...]] tag must produce a
+    real lead with name/phone/email and never reach the visitor."""
+    def fake_generate_reply(**kwargs):
+        return 'Great to meet you! [[LEAD_CAPTURED name="Sara" phone="+96599999999" email="sara@example.com"]]'
+
+    monkeypatch.setattr("app.chat_service.llm_client.generate_reply", fake_generate_reply)
+
+    logged_in_client.put("/admin/api/settings/chat", json={
+        "chat.llm_provider": "anthropic", "chat.llm_api_key": "sk-fake-test-key",
+    })
+    try:
+        resp = client.post("/api/chat", json={"message": "sara@example.com", "lang": "en", "history": []})
+        assert resp.status_code == 200
+        body = resp.json()
+        assert "LEAD_CAPTURED" not in body["reply"]
+        assert body["leadCaptured"] is True
+
+        leads = logged_in_client.get("/admin/api/leads").json()
+        lead = next(l for l in leads if l["email"] == "sara@example.com")
+        assert lead["name"] == "Sara"
+        assert lead["phone"] == "+96599999999"
+    finally:
+        logged_in_client.put("/admin/api/settings/chat", json={"chat.llm_provider": "none"})
+
+
+def test_chat_malformed_lead_tag_is_stripped_but_not_captured(logged_in_client, client, monkeypatch):
+    def fake_generate_reply(**kwargs):
+        return 'Thanks! [[LEAD_CAPTURED name="" phone="???" email="not-an-email"]]'
+
+    monkeypatch.setattr("app.chat_service.llm_client.generate_reply", fake_generate_reply)
+    logged_in_client.put("/admin/api/settings/chat", json={
+        "chat.llm_provider": "anthropic", "chat.llm_api_key": "sk-fake-test-key",
+    })
+    try:
+        resp = client.post("/api/chat", json={"message": "hi", "lang": "en", "history": []})
+        body = resp.json()
+        assert "LEAD_CAPTURED" not in body["reply"]
+        assert body["leadCaptured"] is False
+    finally:
+        logged_in_client.put("/admin/api/settings/chat", json={"chat.llm_provider": "none"})
+
+
+def test_chat_leadcaptured_flag_skips_lead_instructions_next_turn(logged_in_client, client, monkeypatch):
+    captured = {}
+
+    def fake_generate_reply(**kwargs):
+        captured["system_prompt"] = kwargs["system_prompt"]
+        return "ok"
+
+    monkeypatch.setattr("app.chat_service.llm_client.generate_reply", fake_generate_reply)
+    logged_in_client.put("/admin/api/settings/chat", json={
+        "chat.llm_provider": "anthropic", "chat.llm_api_key": "sk-fake-test-key",
+    })
+    try:
+        client.post("/api/chat", json={"message": "hi", "lang": "en", "history": [], "leadCaptured": True})
+        assert "LEAD_CAPTURED" not in captured["system_prompt"]
+
+        client.post("/api/chat", json={"message": "hi", "lang": "en", "history": [], "leadCaptured": False})
+        assert "LEAD_CAPTURED" in captured["system_prompt"]
+    finally:
+        logged_in_client.put("/admin/api/settings/chat", json={"chat.llm_provider": "none"})
+
+
+def test_chat_turn_limit_returns_configured_message_without_calling_llm(logged_in_client, client, monkeypatch):
+    def unexpected_call(**kwargs):
+        raise AssertionError("LLM should not be called once the turn limit is exceeded")
+
+    monkeypatch.setattr("app.chat_service.llm_client.generate_reply", unexpected_call)
+    logged_in_client.put("/admin/api/settings/chat", json={
+        "chat.llm_provider": "anthropic", "chat.llm_api_key": "sk-fake-test-key", "chat.max_turns": 2,
+    })
+    try:
+        long_history = [{"from": "user", "text": "hi"}, {"from": "ai", "text": "hello"}] * 2
+        resp = client.post("/api/chat", json={"message": "one more", "lang": "en", "history": long_history})
+        assert resp.status_code == 200
+        assert resp.json()["reply"]  # the configured turn-limit message, not a crash
+    finally:
+        logged_in_client.put("/admin/api/settings/chat", json={"chat.llm_provider": "none", "chat.max_turns": 15})
+
+
+def test_chat_contact_info_reaches_system_prompt(logged_in_client, client, monkeypatch):
+    captured = {}
+
+    def fake_generate_reply(**kwargs):
+        captured["system_prompt"] = kwargs["system_prompt"]
+        return "ok"
+
+    monkeypatch.setattr("app.chat_service.llm_client.generate_reply", fake_generate_reply)
+    logged_in_client.put("/admin/api/settings/contact", json={"contact.email": "hello@perennia.example"})
+    logged_in_client.put("/admin/api/settings/chat", json={
+        "chat.llm_provider": "anthropic", "chat.llm_api_key": "sk-fake-test-key",
+    })
+    try:
+        client.post("/api/chat", json={"message": "how can we reach you?", "lang": "en", "history": []})
+        assert "hello@perennia.example" in captured["system_prompt"]
+    finally:
+        logged_in_client.put("/admin/api/settings/chat", json={"chat.llm_provider": "none"})
+        logged_in_client.put("/admin/api/settings/contact", json={"contact.email": ""})
+
+
+def test_llm_client_treats_ai_history_role_as_assistant():
+    """Regression: frontend history entries use {from: 'ai', ...}, not
+    'assistant' — the role mapper must not silently relabel the
+    assistant's own prior turns as 'user' messages."""
+    from app.llm_client import _history_to_messages
+
+    history = [{"from": "user", "text": "hi"}, {"from": "ai", "text": "hello there"}]
+    messages = _history_to_messages(history)
+    assert messages == [
+        {"role": "user", "content": "hi"},
+        {"role": "assistant", "content": "hello there"},
+    ]

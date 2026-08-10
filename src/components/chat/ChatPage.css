@@ -66,9 +66,23 @@
   gap: var(--space-2);
   padding: var(--space-3) var(--space-4);
   border-bottom: 1px solid var(--glass-border);
+  /* Row flex item inside .chat-shell (column). Without min-width: 0
+     here, .chat-header-text's text-overflow/ellipsis rule below has
+     no shrinkable box to apply to — a long admin-configured header
+     string (or a long word with no natural break point) would just
+     get hard-clipped by .chat-shell's overflow: hidden instead of
+     truncating gracefully with an ellipsis. */
+  min-width: 0;
 }
-.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-success); box-shadow: 0 0 8px var(--color-success); }
-.chat-header-text { font-weight: 600; font-size: var(--fs-body); }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-success); box-shadow: 0 0 8px var(--color-success); flex-shrink: 0; }
+.chat-header-text {
+  font-weight: 600;
+  font-size: var(--fs-body);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 .chat-conversation-wrap { flex: 1; display: flex; flex-direction: column; min-height: 0; position: relative; }
 .chat-conversation { flex: 1; overflow-y: auto; padding: var(--space-4); min-width: 0; }

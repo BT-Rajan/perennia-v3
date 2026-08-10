@@ -1,9 +1,12 @@
 """
-Orchestrates a single chat turn: reads chat.* config, calls the
-configured LLM provider (or skips straight to the fallback message if
-none is configured), and opportunistically captures a lead if the
-visitor's message contains an email address - all in one place so
-routers/public_chat.py stays a thin HTTP wrapper.
+Orchestrates a single chat turn: reads chat.* config, builds a grounded
+system prompt (persona + knowledge + contact info + conversational lead
+capture + turn-budget nudge), calls the configured LLM provider (or
+skips straight to the fallback message if none is configured), and
+captures a lead — either from a hidden tag the assistant emits once it
+has collected name/phone/email conversationally, or opportunistically
+if the visitor's message itself contains an email address. Keeps
+routers/public_chat.py a thin HTTP wrapper.
 """
 from __future__ import annotations
 
@@ -16,14 +19,144 @@ from app.settings_service import get_setting
 
 EMAIL_RE = re.compile(r"[^\s@,;:!?()<>\[\]\"']+@[^\s@,;:!?()<>\[\]\"']+\.[^\s@,;:!?()<>\[\]\"']+")
 
+# Hidden end-of-reply tag the assistant emits once it has naturally
+# gathered name/phone/email during the conversation (see
+# _lead_capture_instructions below). Stripped before the reply is
+# ever sent to the visitor.
+LEAD_TAG_RE = re.compile(
+    r'\[\[LEAD_CAPTURED\s+name="([^"]*)"\s+phone="([^"]*)"\s+email="([^"]*)"\s*\]\]', re.IGNORECASE
+)
+NAME_RE = re.compile(r"^[^\x00-\x1f<>]{1,120}$")
+PHONE_RE = re.compile(r"^[0-9+()\-\s]{6,25}$")
+SIMPLE_EMAIL_RE = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
+
+# Minimal built-in company knowledge, used only when the admin hasn't
+# configured any knowledge-base sources — so a fresh install can still
+# answer basic "what is Perennia" / "how do I reach you" questions
+# instead of always falling back to the "someone will follow up"
+# message the moment an LLM is configured but nothing else has been.
+DEFAULT_KNOWLEDGE = """
+COMPANY: Perennia — AI-powered technology and innovation company.
+TAGLINE: "Solving Today. Shaping Tomorrow."
+NAME ORIGIN: From Latin "Perennis" — lasting, enduring, resilient, continuously growing.
+MISSION: Practical, affordable AI solutions for today's challenges and tomorrow's opportunities.
+""".strip()
+
 
 def _lang_value(value: dict, lang: str) -> str:
     return value.get(lang) or value.get("en") or next(iter(value.values()), "")
 
 
-def get_reply(db: Session, *, message: str, lang: str, history: list[dict]) -> str:
+def _contact_block(db: Session, lang: str) -> str:
+    email = get_setting(db, "contact.email")
+    phone = get_setting(db, "contact.phone")
+    if not email and not phone:
+        return ""
+    contact = " / ".join(p for p in (email, phone) if p)
+    if lang == "ar":
+        return f"\n\nمعلومات التواصل الرسمية: {contact}. عند سؤال الزائر عن كيفية التواصل معنا أو الأسعار، زوّده بهذه المعلومات."
+    return f"\n\nOfficial contact info: {contact}. If asked how to reach us, or about pricing, share this."
+
+
+def _nudge_text(lang: str, turns_used: int, max_turns: int) -> str:
+    """Steers the assistant toward booking a call as the session's
+    message budget runs low. Nothing shown to the visitor until the
+    model naturally works it into a reply."""
+    if max_turns - turns_used > 3:
+        return ""
+    if lang == "ar":
+        return (
+            "\n\nملاحظة مهمة: تبقّت بضع رسائل فقط في هذه الجلسة. اختم إجابتك القادمة بدعوة لطيفة "
+            "وغير مُلحّة لحجز موعد مع الفريق لمناقشة التفاصيل مباشرة، دون تجاهل سؤال الزائر."
+        )
+    return (
+        "\n\nIMPORTANT: only a few messages remain in this session. End your next reply with a "
+        "brief, low-pressure invitation to book a short call with the team — answer their "
+        "question fully first, don't just deflect to booking."
+    )
+
+
+def _lead_capture_instructions(lang: str) -> str:
+    """Instructs the assistant to collect name, then phone, then
+    email - one at a time, politely framed - before getting into
+    anything else, and to signal back via a hidden tag once it has
+    all three. If the visitor asks something real before giving a
+    name, the assistant should acknowledge briefly rather than fully
+    answer, then ask for the name."""
+    if lang == "ar":
+        return (
+            "\n\nمهم — قبل أي شيء آخر: لم نحصل بعد على بيانات الزائر، وجمعها له الأولوية على "
+            "الإجابة التفصيلية. بأسلوب دافئ وليس مُلحّاً، اجمع ثلاث معلومات بالترتيب التالي، "
+            "معلومة واحدة في كل رسالة: 1) الاسم، 2) رقم الهاتف، 3) البريد الإلكتروني. إذا طرح "
+            "الزائر سؤالاً حقيقياً قبل إعطاء اسمه، أقرّ باهتمامه بجملة قصيرة ثم اطلب اسمه أولاً؛ "
+            "بعدها يمكنك مزج إجابة حقيقية أثناء متابعة الطلب. إذا تجاهل الزائر نفس الطلب مرتين "
+            "متتاليتين، توقف عن السؤال وواصل مساعدته بشكل طبيعي. بمجرد حصولك على الاسم ورقم "
+            "هاتف وبريد إلكتروني صالحين، أضِف هذا السطر بالضبط في نهاية ردّك، مع القيم الفعلية، "
+            "ولا شيء آخر على ذلك السطر، ولا تذكره أو تشرحه للزائر أبداً:\n"
+            '[[LEAD_CAPTURED name="..." phone="..." email="..."]]'
+        )
+    return (
+        "\n\nIMPORTANT — before anything else: this visitor's details haven't been collected yet, "
+        "and collecting them takes priority over answering in depth. In a warm, non-repetitive "
+        "tone, collect three things in this order, one per message: 1) name, 2) phone number, "
+        "3) email. If the visitor asks a real question before giving their name, do NOT answer it "
+        "in full yet — acknowledge it in one short sentence, then ask for their name first. Once "
+        "you have it, weave in a real answer while continuing to ask for phone, then email. If the "
+        "visitor brushes off the same ask twice in a row, drop it and help them normally from then "
+        "on. Once you have a name, a valid-looking phone number, and a valid-looking email, append "
+        "this exact line at the very end of your reply, with the real values filled in and nothing "
+        "else on that line, and never mention or explain it to the visitor:\n"
+        '[[LEAD_CAPTURED name="..." phone="..." email="..."]]'
+    )
+
+
+def _build_system_prompt(db: Session, *, lang: str, turns_used: int, max_turns: int, lead_captured: bool) -> str:
+    base = _lang_value(get_setting(db, "chat.system_prompt"), lang)
+
+    kb_block = knowledge_service.build_prompt_block(db)
+    if not kb_block:
+        kb_block = f"\n\n{DEFAULT_KNOWLEDGE}"
+
+    contact_block = _contact_block(db, lang)
+    lead_block = "" if lead_captured else _lead_capture_instructions(lang)
+    nudge_block = _nudge_text(lang, turns_used, max_turns)
+
+    return f"{base}{kb_block}{contact_block}{lead_block}{nudge_block}"
+
+
+def _extract_conversational_lead(reply: str) -> tuple[str, dict | None]:
+    """Strips a [[LEAD_CAPTURED ...]] tag out of an assistant reply
+    and, if the values look valid, returns a lead dict ready to
+    capture. Always returns the cleaned reply, even if the lead is
+    rejected as malformed — the tag must never reach the visitor."""
+    match = LEAD_TAG_RE.search(reply)
+    if not match:
+        return reply, None
+
+    cleaned = (reply[: match.start()] + reply[match.end() :]).strip()
+    name, phone, email = (g.strip() for g in match.groups())
+
+    if not (NAME_RE.match(name) and PHONE_RE.match(phone) and SIMPLE_EMAIL_RE.match(email)):
+        return cleaned, None
+
+    return cleaned, {"name": name, "phone": phone, "email": email}
+
+
+def get_reply(
+    db: Session, *, message: str, lang: str, history: list[dict], lead_captured: bool = False
+) -> tuple[str, bool]:
+    """Returns (reply, lead_captured) — the latter echoed back so the
+    caller can pass it into the next turn's request and skip
+    re-running the lead-capture instructions once a lead is in."""
+    lang = "ar" if lang == "ar" else "en"
+
     if not get_setting(db, "features.chat_enabled"):
-        return _lang_value(get_setting(db, "chat.unavailable_message"), lang)
+        return _lang_value(get_setting(db, "chat.unavailable_message"), lang), lead_captured
+
+    turns_used = len([h for h in history if h.get("from") == "user"]) + 1
+    max_turns = get_setting(db, "chat.max_turns")
+    if turns_used > max_turns:
+        return _lang_value(get_setting(db, "chat.turn_limit_message"), lang), lead_captured
 
     provider = get_setting(db, "chat.llm_provider")
     unavailable = _lang_value(get_setting(db, "chat.unavailable_message"), lang)
@@ -32,12 +165,9 @@ def get_reply(db: Session, *, message: str, lang: str, history: list[dict]) -> s
         reply = unavailable
     else:
         try:
-            system_prompt = _lang_value(get_setting(db, "chat.system_prompt"), lang)
-            # Grounds replies in whatever the admin has uploaded/linked
-            # (see knowledge_service.py) — a no-op string when the
-            # knowledge base is empty or disabled, so this never changes
-            # behavior for a site that hasn't configured one.
-            system_prompt += knowledge_service.build_prompt_block(db)
+            system_prompt = _build_system_prompt(
+                db, lang=lang, turns_used=turns_used, max_turns=max_turns, lead_captured=lead_captured
+            )
             reply = llm_client.generate_reply(
                 provider=provider,
                 api_key=get_setting(db, "chat.llm_api_key"),
@@ -51,8 +181,31 @@ def get_reply(db: Session, *, message: str, lang: str, history: list[dict]) -> s
         except llm_client.LLMError:
             reply = unavailable
 
-    _maybe_capture_lead(db, message=message)
-    return reply
+    lead_captured_now = lead_captured
+    if not lead_captured:
+        reply, lead_entry = _extract_conversational_lead(reply)
+        if lead_entry:
+            _capture(db, email=lead_entry["email"], name=lead_entry["name"], phone=lead_entry["phone"],
+                     message=message)
+            lead_captured_now = True
+
+    # Safety net: even without an LLM configured (or if it never emits
+    # the tag), still capture a lead the moment a visitor volunteers
+    # an email address in their own message.
+    if not lead_captured_now:
+        _maybe_capture_lead(db, message=message)
+
+    return reply, lead_captured_now
+
+
+def _capture(db: Session, *, email: str, name: str, phone: str, message: str) -> None:
+    lead, created = leads_service.capture_lead(
+        db, email=email, name=name, phone=phone, source="chat",
+        transcript_entry={"from": "user", "text": message},
+    )
+    if created:
+        from app import notification_service
+        notification_service.notify_admin_new_lead(db, email=email, message=message)
 
 
 def _maybe_capture_lead(db: Session, *, message: str) -> None:

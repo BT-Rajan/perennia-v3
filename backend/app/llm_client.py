@@ -26,8 +26,12 @@ class LLMError(Exception):
 
 
 def _history_to_messages(history: list[dict]) -> list[dict]:
-    """Frontend history entries are {from: 'user'|'assistant', text}."""
-    return [{"role": ("assistant" if h.get("from") == "assistant" else "user"), "content": h.get("text", "")}
+    """Frontend history entries are {from: 'user'|'ai', text} (tests
+    also pass 'assistant'). Anything not literally 'user' is the
+    assistant's own prior turn — treating 'ai' as unrecognized used to
+    silently relabel every past assistant reply as a 'user' message,
+    corrupting multi-turn context sent to the LLM."""
+    return [{"role": ("user" if h.get("from") == "user" else "assistant"), "content": h.get("text", "")}
             for h in history]
 
 
