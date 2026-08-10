@@ -5,10 +5,22 @@ shows — to a visitor or an admin — should be reached through
 or route. A DB row is only written once an admin actually changes a
 value from its default (sparse storage — an empty table is a fully
 valid, fully-defaulted site).
+
+Caching: REGISTRY has 70 settings. Reading them individually (the
+original implementation of get_setting: one `db.get(SiteSetting, key)`
+per key) means /api/config/public alone issues 70 separate queries,
+and building a chat reply or a booking-availability response does the
+same thing 7-9 times over for the handful of settings each needs. All
+of that is read traffic against a table that's only ever written from
+the admin settings screen, so it's cached in-process after the first
+read of any setting and invalidated on any write. Safe across the
+threadpool FastAPI runs these (sync) handlers in — guarded by a lock
+whose hold time is a dict copy, not a query.
 """
 from __future__ import annotations
 
 import json
+import threading
 from typing import Any
 
 from sqlalchemy import select
@@ -17,6 +29,29 @@ from sqlalchemy.orm import Session
 from app.models import AuditLog, SiteSetting
 from app.security import decrypt_secret, encrypt_secret
 from app.settings_registry import REGISTRY, SettingDef, get_def
+
+_cache_lock = threading.Lock()
+# key -> (raw_value, is_secret). None means "not loaded yet" — distinct
+# from an empty dict, which is a legitimate "no settings customized yet"
+# state (sparse storage, see module docstring).
+_cache: dict[str, tuple[str, bool]] | None = None
+
+
+def _row_cache(db: Session) -> dict[str, tuple[str, bool]]:
+    global _cache
+    with _cache_lock:
+        if _cache is None:
+            rows = db.execute(select(SiteSetting)).scalars().all()
+            _cache = {r.key: (r.value, r.is_secret) for r in rows}
+        return _cache
+
+
+def invalidate_cache() -> None:
+    """Called by every write path below. Next read repopulates from the
+    DB with one query, same as a cold-start cache miss."""
+    global _cache
+    with _cache_lock:
+        _cache = None
 
 
 def _decode(d: SettingDef, raw: str) -> Any:
@@ -29,10 +64,11 @@ def _encode(value: Any) -> str:
 
 def get_setting(db: Session, key: str) -> Any:
     d = get_def(key)
-    row = db.get(SiteSetting, key)
-    if row is None:
+    entry = _row_cache(db).get(key)
+    if entry is None:
         return d.default
-    raw = decrypt_secret(row.value) if row.is_secret else row.value
+    raw_value, is_secret = entry
+    raw = decrypt_secret(raw_value) if is_secret else raw_value
     stored = _decode(d, raw)
     if d.i18n and isinstance(d.default, dict) and isinstance(stored, dict):
         # Merge so a language an admin hasn't translated yet still falls
@@ -69,11 +105,12 @@ def _secret_placeholder(db: Session, key: str) -> str:
     stored — the decrypted value itself is never returned. This is
     what distinguishes "never configured" (empty row or no row) from
     "configured" (masked placeholder) without leaking the secret."""
-    row = db.get(SiteSetting, key)
-    if row is None:
+    entry = _row_cache(db).get(key)
+    if entry is None:
         return ""
+    raw_value, _is_secret = entry
     try:
-        value = _decode(get_def(key), decrypt_secret(row.value))
+        value = _decode(get_def(key), decrypt_secret(raw_value))
     except ValueError:
         return ""
     return SECRET_PLACEHOLDER if value else ""
@@ -126,6 +163,12 @@ def set_setting(db: Session, key: str, value: Any, *, actor_id: str | None, acto
         detail="<redacted secret value>" if d.secret else raw[:500],
         ip_address=ip_address,
     ))
+
+    # autoflush is off (see app/db.py), so without this a get_setting()
+    # call later in the same request/session wouldn't see this write
+    # once invalidate_cache() below forces it to re-query.
+    db.flush()
+    invalidate_cache()
 
 
 def set_many(db: Session, values: dict[str, Any], *, actor_id: str | None, actor_username: str | None,
