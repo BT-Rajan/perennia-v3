@@ -100,33 +100,13 @@ if [ "$NEEDS_SECRETS" = true ]; then
         fi
     done
 
-    SECRETS_OUTPUT="$(python scripts/gen_secrets.py --username "$ADMIN_USERNAME" --password "$ADMIN_PASSWORD")"
-
-    SECRET_KEY_LINE="$(echo "$SECRETS_OUTPUT" | grep '^SECRET_KEY=')"
-    ENCRYPTION_KEY_LINE="$(echo "$SECRETS_OUTPUT" | grep '^ENCRYPTION_KEY=')"
-    BOOTSTRAP_USERNAME_LINE="$(echo "$SECRETS_OUTPUT" | grep '^BOOTSTRAP_ADMIN_USERNAME=')"
-    BOOTSTRAP_HASH_LINE="$(echo "$SECRETS_OUTPUT" | grep '^BOOTSTRAP_ADMIN_PASSWORD_HASH=')"
-
-    # Escape sed-sensitive characters (&, /, \) in replacement values.
-    escape_sed() { printf '%s' "$1" | sed -e 's/[&/\]/\\&/g'; }
-
-    update_env_var() {
-        local key="$1" line="$2" escaped
-        escaped="$(escape_sed "$line")"
-        if grep -q "^${key}=" .env; then
-            sed -i.bak "s|^${key}=.*|${escaped}|" .env
-        else
-            echo "$line" >> .env
-        fi
-    }
-
-    update_env_var "SECRET_KEY" "$SECRET_KEY_LINE"
-    update_env_var "ENCRYPTION_KEY" "$ENCRYPTION_KEY_LINE"
-    update_env_var "BOOTSTRAP_ADMIN_USERNAME" "$BOOTSTRAP_USERNAME_LINE"
-    update_env_var "BOOTSTRAP_ADMIN_PASSWORD_HASH" "$BOOTSTRAP_HASH_LINE"
-    rm -f .env.bak
-
-    unset ADMIN_PASSWORD SECRETS_OUTPUT
+    # --write-env patches backend/.env directly in Python rather than
+    # round-tripping the generated secret through shell text-parsing
+    # (sed/grep) — avoids an entire class of quoting bugs if a
+    # generated key or the password itself contains a shell-special
+    # character.
+    python scripts/gen_secrets.py --username "$ADMIN_USERNAME" --password "$ADMIN_PASSWORD" --write-env .env
+    unset ADMIN_PASSWORD
     ok "Secrets generated and written to backend/.env"
 else
     ok "Admin secrets already present in backend/.env — skipping generation"
