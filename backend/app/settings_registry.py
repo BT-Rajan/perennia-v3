@@ -373,6 +373,50 @@ _DEFS: list[SettingDef] = [
                "body": "A new lead came in via chat.\nEmail: {email}\nMessage: {message}"},
     }, help_text="Internal alert, English only by default — this is for staff, not visitors."),
 
+    # Pass 10 (docs/CALENDAR_MODULE_PLAN.md): confirmation workflow for
+    # services with requires_confirmation=True. A new booking against
+    # one of those lands as "pending" — the organizer gets an internal
+    # alert (booking_requested_admin_alert, staff-facing like
+    # new_booking_admin_alert) instead of the attendee getting an
+    # immediate confirmation; the attendee only hears back once an
+    # admin accepts or declines the request.
+    SettingDef("templates.booking_requested_admin_alert", "templates", "Booking requested — internal alert",
+               SettingType.JSON, {
+        "en": {"subject": "Booking request: {name} — {date} {time}",
+               "body": "{name} ({email}) requested {date} at {time}.\nService: {service}\nCode: {id}\n\n"
+                       "This service requires confirmation — accept or decline it from the admin dashboard."},
+    }, help_text="Internal alert, English only by default — this is for staff, not visitors."),
+    SettingDef("templates.booking_accepted_email", "templates", "Booking request accepted — email", SettingType.JSON, {
+        "en": {"subject": "Your appointment is confirmed — {id}",
+               "body": "Hi {name},\n\nGood news — your request for {date} at {time} has been accepted "
+                       "and is now confirmed.\nConfirmation code: {id}\n\nWe look forward to speaking with you."},
+        "ar": {"subject": "تم تأكيد موعدك — {id}",
+               "body": "مرحباً {name}،\n\nخبر سار — تم قبول طلبك في {date} الساعة {time} وأصبح مؤكداً الآن.\n"
+                       "رمز التأكيد: {id}\n\nنتطلع للحديث معك."},
+    }, i18n=True),
+    SettingDef("templates.booking_declined_email", "templates", "Booking request declined — email", SettingType.JSON, {
+        "en": {"subject": "About your appointment request — {id}",
+               "body": "Hi {name},\n\nWe're sorry, but we're unable to confirm your request for {date} "
+                       "at {time}.{reason}\n\nPlease feel free to reach out or book another time.\n\nCode: {id}"},
+        "ar": {"subject": "بخصوص طلب موعدك — {id}",
+               "body": "مرحباً {name}،\n\nنأسف، لا يمكننا تأكيد طلبك في {date} الساعة {time}.{reason}\n\n"
+                       "لا تتردد في التواصل معنا أو حجز موعد آخر.\n\nالرمز: {id}"},
+    }, i18n=True, help_text="{reason} is filled with the admin's decline note when one is given, "
+                              "or left blank otherwise — leave it in the template even if you rarely use it."),
+    SettingDef("templates.booking_accepted_whatsapp", "templates", "Booking request accepted — WhatsApp",
+               SettingType.TEXT, {
+        "en": "Hi {name}! Your request for {date} at {time} has been accepted and is now confirmed. Code: {id}",
+        "ar": "مرحباً {name}! تم قبول طلبك في {date} الساعة {time} وأصبح مؤكداً. الرمز: {id}",
+    }, i18n=True),
+    SettingDef("templates.booking_declined_whatsapp", "templates", "Booking request declined — WhatsApp",
+               SettingType.TEXT, {
+        "en": "Hi {name}, we're unable to confirm your request for {date} at {time}.{reason} "
+              "Feel free to reach out or book another time.",
+        "ar": "مرحباً {name}، لا يمكننا تأكيد طلبك في {date} الساعة {time}.{reason} "
+              "لا تتردد في التواصل معنا أو حجز موعد آخر.",
+    }, i18n=True, help_text="{reason} is filled with the admin's decline note when one is given, "
+                              "or left blank otherwise."),
+
     # copy — free-form UI microcopy blobs, grouped by the screen that
     # uses them (home / chat / booking). Kept as JSON blobs rather than
     # exploded into one registry entry per string: these ~10-15 strings

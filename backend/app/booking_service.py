@@ -127,13 +127,20 @@ def _fits_in_ranges(start_min: int, end_min: int, ranges: list[tuple[int, int]])
 
 
 def _booked_intervals(db: Session, cfg: dict, date_str: str, *, exclude_id: str | None = None) -> list[tuple[int, int]]:
-    """Each confirmed appointment that day, as a (start, end) range in
-    minutes-from-midnight, already expanded by *that appointment's own*
-    service buffers (or the legacy single-slot default if it has none).
-    A later slot's own buffer is applied separately by the caller, so
-    two adjacent bookings each get their own buffer honored rather than
-    only one side of the gap being protected."""
-    stmt = select(Appointment).where(Appointment.date == date_str, Appointment.status == "confirmed")
+    """Each confirmed *or pending* appointment that day, as a
+    (start, end) range in minutes-from-midnight, already expanded by
+    *that appointment's own* service buffers (or the legacy
+    single-slot default if it has none). A later slot's own buffer is
+    applied separately by the caller, so two adjacent bookings each get
+    their own buffer honored rather than only one side of the gap
+    being protected.
+
+    Pending holds the slot on purpose (Pass 10,
+    docs/CALENDAR_MODULE_PLAN.md / PASS10_NOTES.md): the alternative —
+    a second visitor booking the same slot while the first request
+    awaits organizer approval — is a worse failure mode for a small
+    business than a slot looking briefly unavailable."""
+    stmt = select(Appointment).where(Appointment.date == date_str, Appointment.status.in_(("confirmed", "pending")))
     intervals = []
     for appt in db.scalars(stmt):
         if appt.id == exclude_id:
@@ -232,6 +239,7 @@ def create_appointment(
         id=_generate_code(db), date=date_str, time=time_str, lang=lang or "en",
         name=name.strip(), email=email.strip(), phone=phone.strip(),
         service=service.strip(), service_id=service_id, notes=notes.strip(),
+        status="pending" if (svc is not None and svc.requires_confirmation) else "confirmed",
     )
     db.add(appt)
     db.flush()
@@ -252,7 +260,7 @@ def create_appointment(
         db, email=appt.email, source="booking", name=appt.name, phone=appt.phone,
         transcript_entry={"from": "system", "text": f"Booked {appt.date} {appt.time} ({booked_what})"},
     )
-    return {"ok": True, "id": appt.id, "appointment": _serialize(db, appt)}
+    return {"ok": True, "id": appt.id, "pending": appt.status == "pending", "appointment": _serialize(db, appt)}
 
 
 def _find_by_id_and_email(db: Session, appt_id: str, email: str) -> Appointment | None:
@@ -337,7 +345,9 @@ def _serialize(db: Session, appt: Appointment) -> dict:
         "id": appt.id, "date": appt.date, "time": appt.time, "slot": appt.time,
         "name": appt.name, "email": appt.email, "phone": appt.phone,
         "service": appt.service, "service_id": appt.service_id, "service_name": service_name,
-        "notes": appt.notes, "status": appt.status, "answers": answers,
+        "notes": appt.notes, "status": appt.status,
+        "confirmed_at": appt.confirmed_at.isoformat() if appt.confirmed_at else None,
+        "answers": answers,
     }
 
 
@@ -364,3 +374,35 @@ def admin_cancel_appointment(db: Session, appt_id: str) -> dict:
         return {"ok": False, "error": "not_found"}
     appt.status = "cancelled"
     return {"ok": True}
+
+
+def admin_accept_appointment(db: Session, appt_id: str) -> dict:
+    """Valid only from 'pending' — accepting an already-confirmed or
+    cancelled appointment is a state-machine error, not something to
+    silently allow or 500 on, so it comes back as a typed 'invalid_state'
+    the router can turn into a 409."""
+    appt = db.get(Appointment, appt_id)
+    if appt is None:
+        return {"ok": False, "error": "not_found"}
+    if appt.status != "pending":
+        return {"ok": False, "error": "invalid_state"}
+    appt.status = "confirmed"
+    appt.confirmed_at = dt.datetime.now(dt.timezone.utc)
+    return {"ok": True, "appointment": _serialize(db, appt)}
+
+
+def admin_reject_appointment(db: Session, appt_id: str, *, reason: str = "") -> dict:
+    """Valid only from 'pending', same as accept. `reason` is folded
+    into `notes` with a distinguishable "[declined]" prefix rather than
+    a new column, consistent with keeping the schema lean — see
+    PASS10_NOTES.md for why a dedicated column wasn't worth it here."""
+    appt = db.get(Appointment, appt_id)
+    if appt is None:
+        return {"ok": False, "error": "not_found"}
+    if appt.status != "pending":
+        return {"ok": False, "error": "invalid_state"}
+    appt.status = "cancelled"
+    reason = (reason or "").strip()
+    prefix = f"[declined] {reason}" if reason else "[declined]"
+    appt.notes = f"{prefix}\n{appt.notes}" if appt.notes else prefix
+    return {"ok": True, "appointment": _serialize(db, appt)}

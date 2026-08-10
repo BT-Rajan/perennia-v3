@@ -90,7 +90,10 @@ def create_appointment(request: Request, body: CreateAppointmentRequest, db: Ses
     )
     db.commit()
     if result["ok"]:
-        notification_service.notify_booking_confirmed(db, result["appointment"])
+        if result["appointment"]["status"] == "pending":
+            notification_service.notify_booking_requested(db, result["appointment"])
+        else:
+            notification_service.notify_booking_confirmed(db, result["appointment"])
         db.commit()  # notification sending may have touched the session; flush any of its own state
     return result
 

@@ -138,6 +138,62 @@ def notify_booking_rescheduled(db: Session, appt: dict) -> None:
                      whatsapp_template_key="templates.booking_rescheduled_whatsapp")
 
 
+# ── Confirmation workflow (Pass 10) ──────────────────────────────────
+# A Service with requires_confirmation=True produces a "pending"
+# appointment instead of an immediately "confirmed" one
+# (booking_service.py::create_appointment). The attendee hears nothing
+# at booking time beyond "request received" in the API response itself
+# — only the organizer is alerted, via notify_booking_requested below.
+# They next hear from us only once an admin accepts or declines.
+
+def notify_booking_requested(db: Session, appt: dict) -> None:
+    """Organizer-facing only — no attendee email/WhatsApp here, since
+    nothing about their appointment is settled yet. Reuses the same
+    internal-alert channel as _notify_admin_new_booking."""
+    to = _admin_email(db)
+    if not to:
+        return
+    try:
+        rendered = render(get_setting(db, "templates.booking_requested_admin_alert"), "en", **{
+            "name": appt["name"], "email": appt["email"], "date": appt["date"], "time": appt["time"],
+            "id": appt["id"], "service": appt.get("service_name") or appt.get("service") or "general enquiry",
+        })
+        send_email(db, to_email=to, subject=rendered["subject"], body_text=rendered["body"])
+    except Exception:
+        logger.exception("Booking-requested admin alert failed for appointment %s", appt.get("id"))
+
+
+def notify_booking_accepted(db: Session, appt: dict) -> None:
+    _notify_booking(db, appt, email_template_key="templates.booking_accepted_email",
+                     whatsapp_template_key="templates.booking_accepted_whatsapp")
+
+
+def notify_booking_declined(db: Session, appt: dict, *, reason: str = "") -> None:
+    """Separate from _notify_booking (rather than adding a reason
+    param there) since this is the only booking notification whose
+    template needs an extra placeholder — reason is folded into a
+    ready-to-insert clause here so the template itself stays a plain
+    .format() target with no conditional logic of its own."""
+    try:
+        reason = (reason or "").strip()
+        ctx = {
+            "name": appt["name"], "date": appt["date"], "time": appt["time"],
+            "id": appt["id"], "service": appt.get("service") or "your enquiry",
+            "reason": f" Reason: {reason}" if reason else "",
+        }
+        lang = appt.get("lang", "en")
+
+        email_tpl = get_setting(db, "templates.booking_declined_email")
+        rendered = render(email_tpl, lang, **ctx)
+        send_email(db, to_email=appt["email"], subject=rendered["subject"], body_text=rendered["body"])
+
+        if appt.get("phone"):
+            wa_tpl = get_setting(db, "templates.booking_declined_whatsapp")
+            send_whatsapp(db, to_number=appt["phone"], message=render_text(wa_tpl, lang, **ctx))
+    except Exception:
+        logger.exception("Booking-declined notification failed for appointment %s", appt.get("id"))
+
+
 # ── Internal staff alerts ────────────────────────────────────────────
 
 def _admin_email(db: Session) -> str:

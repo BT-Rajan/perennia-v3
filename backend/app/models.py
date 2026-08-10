@@ -181,7 +181,19 @@ class Appointment(Base):
     # booking_service.py.
     service_id: Mapped[str | None] = mapped_column(String(32), ForeignKey("service.id"), nullable=True)
     notes: Mapped[str] = mapped_column(String(1000), default="", nullable=False)
-    status: Mapped[str] = mapped_column(String(16), default="confirmed", nullable=False)  # confirmed | cancelled
+    # confirmed | pending | cancelled. Pass 10 (docs/CALENDAR_MODULE_PLAN.md):
+    # a Service with requires_confirmation=True produces a "pending"
+    # booking instead of an immediately "confirmed" one — see
+    # booking_service.py::create_appointment. A pending appointment
+    # holds its slot exactly like a confirmed one (booking_service.py
+    # ::_booked_intervals), a deliberate product decision documented in
+    # PASS10_NOTES.md: double-booking while awaiting approval is a
+    # worse failure mode than a slot briefly looking unavailable.
+    status: Mapped[str] = mapped_column(String(16), default="confirmed", nullable=False)
+    # Set only when a pending appointment is admin-accepted; stays null
+    # for anything that was auto-confirmed, so "was this ever pending"
+    # is reconstructable from the data without a separate history table.
+    confirmed_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
     updated_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, onupdate=_utcnow)
 
