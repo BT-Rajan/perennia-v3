@@ -11,19 +11,15 @@ body {
   color: var(--white-pure);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  background:
-    radial-gradient(ellipse 120% 60% at 50% -10%, color-mix(in srgb, var(--gold) 15%, transparent) 0%, transparent 50%),
-    radial-gradient(ellipse 80% 80% at 20% 80%, rgba(167, 139, 250, 0.2) 0%, transparent 60%),
-    radial-gradient(ellipse 90% 90% at 85% 10%, rgba(37, 99, 235, 0.25) 0%, transparent 55%),
-    radial-gradient(ellipse 100% 100% at 50% 100%, rgba(6, 182, 212, 0.1) 0%, transparent 70%),
-    linear-gradient(135deg, var(--navy-1) 0%, var(--navy-2) 12%, var(--navy-3) 28%, var(--navy-4) 45%,
-      var(--navy-5) 62%, var(--navy-6) 75%, var(--blue-mid) 88%, var(--blue-light) 100%);
-  background-attachment: fixed;
+  /* Solid, velvety fill — a single rich base color rather than a busy
+     multi-hued gradient mesh. The faint grid-weave overlay below adds
+     just enough texture to keep it from reading as flat. */
+  background: var(--brand-bg);
   position: relative;
   overflow-x: hidden;
 }
 
-/* Subtle grid-mesh overlay for depth, same on every screen size */
+/* Subtle grid-mesh overlay for texture, same on every screen size */
 body::before {
   content: "";
   position: fixed;
