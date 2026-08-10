@@ -65,7 +65,9 @@ function buildFromLocalFallback(supportedLanguages) {
       ])
     );
   }
-  return { copy, nav, sections, faq, pages };
+  // No bundled fallback buttons — the fallback tagline string covers
+  // that spot until the admin configures real buttons via the API.
+  return { copy, nav, sections, faq, pages, heroButtons: [] };
 }
 
 // ---- Building the unified shape from the BACKEND API ----------------
@@ -130,7 +132,22 @@ function buildFromApi(publicConfig, contentPages, faqItems, supportedLanguages) 
       a: item.translations[lang]?.a ?? "",
     }));
   }
-  return { copy, nav, sections, faq, pages };
+
+  // Admin-provisioned home hero buttons — shared across languages (only
+  // each button's label is per-language); validated again on the way in
+  // since this is rendered straight into <a href>.
+  const heroButtons = (toCamel(publicConfig["copy.home_hero_buttons"]) ?? [])
+    .filter((b) => b && typeof b.url === "string" && isSafeHref(b.url) && b.label && typeof b.label === "object")
+    .slice(0, 8);
+
+  return { copy, nav, sections, faq, pages, heroButtons };
+}
+
+// Only allow schemes/paths an <a href> can safely carry — blocks
+// `javascript:`/`data:` etc. even though the value comes from an
+// authenticated admin, since it's still rendered straight into the DOM.
+export function isSafeHref(url) {
+  return typeof url === "string" && /^(https?:\/\/|\/(?!\/))/.test(url.trim());
 }
 
 // Fallback theme — mirrors tokens.css's own literal defaults exactly,

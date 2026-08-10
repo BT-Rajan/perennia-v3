@@ -73,6 +73,7 @@ export function LangProvider({ children }) {
       nav: site.nav[lang],
       sections: site.sections[lang],
       pages: site.pages[lang],
+      heroButtons: site.heroButtons,
       branding: resolvedBranding,
       theme: site.theme,
       features: site.features,

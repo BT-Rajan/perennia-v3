@@ -128,6 +128,24 @@ def _valid_timezone(v: str) -> None:
         raise ValueError(f"{v!r} is not a valid IANA timezone (e.g. 'Asia/Kuwait', 'America/New_York')")
 
 
+def _hero_buttons(v: list) -> None:
+    if not isinstance(v, list):
+        raise ValueError("expected a list of {label, url} objects")
+    if len(v) > 8:
+        raise ValueError("at most 8 buttons")
+    for i, btn in enumerate(v):
+        if not isinstance(btn, dict):
+            raise ValueError(f"button {i}: expected an object")
+        label = btn.get("label")
+        if not isinstance(label, dict) or not any(str(t).strip() for t in label.values()):
+            raise ValueError(f"button {i}: label must be a non-empty {{lang: text}} object")
+        url = btn.get("url", "")
+        if not isinstance(url, str) or not url.strip():
+            raise ValueError(f"button {i}: url is required")
+        if not (url.startswith("http://") or url.startswith("https://") or url.startswith("/")):
+            raise ValueError(f"button {i}: url must be absolute http(s) or a root-relative path")
+
+
 def _valid_workdays(v: list) -> None:
     if not all(isinstance(d, int) and 0 <= d <= 6 for d in v):
         raise ValueError("each workday must be an integer 0 (Monday) through 6 (Sunday)")
@@ -370,6 +388,12 @@ _DEFS: list[SettingDef] = [
                help_text="Screen-reader labels used across multiple screens (close/back/send buttons, nav "
                           "landmarks) — not visible text, but still shown to assistive-technology users in "
                           "whichever language they're browsing in."),
+    SettingDef("copy.home_hero_buttons", "copy", "Home hero buttons", SettingType.JSON, [],
+               help_text="Slim buttons shown on the home screen in place of the tagline. List of "
+                          "objects: {\"label\": {\"en\": \"...\", \"ar\": \"...\"}, \"url\": \"...\"}. "
+                          "Empty list falls back to the tagline text. URL must be absolute http(s) "
+                          "or a root-relative path.",
+               validator=_hero_buttons),
 
     # knowledge — the chat assistant's grounding documents (uploaded
     # files and fetched web pages). No embeddings/vector search: every

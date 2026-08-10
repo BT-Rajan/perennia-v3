@@ -1,8 +1,37 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { useLang } from "../../context/LangContext.jsx";
+import { isSafeHref } from "../../data/siteContent.js";
 import TopBar from "../layout/TopBar.jsx";
 import ChatInput from "../chat/ChatInput.jsx";
 import "./Hero.css";
+
+/**
+ * Admin-provisioned row of slim buttons, shown instead of the plain
+ * tagline once at least one is configured. Every button shares the
+ * same background (pill outline), so the row reads as one control
+ * regardless of count or label length.
+ */
+function HeroButtons({ buttons, lang }) {
+  return (
+    <div className="hero-buttons" role="navigation">
+      {buttons.map((btn, i) => {
+        const label = btn.label?.[lang] ?? Object.values(btn.label || {})[0] ?? "";
+        if (!label || !isSafeHref(btn.url)) return null;
+        const external = /^https?:\/\//.test(btn.url);
+        return (
+          <a
+            key={i}
+            className="hero-button"
+            href={btn.url}
+            {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+          >
+            {label}
+          </a>
+        );
+      })}
+    </div>
+  );
+}
 
 /**
  * Renders `text` as a single unbroken line that always fits its
@@ -35,6 +64,12 @@ function FitOneLine({ text, className }) {
       inner.style.transform = "scale(1)";
       const outerWidth = outer.clientWidth;
       const innerWidth = inner.scrollWidth;
+      // outerWidth can legitimately be 0 for a frame or two before the
+      // parent has been laid out (first paint, font swap, tab restore).
+      // Scaling to 0 in that window used to hide the headline for good —
+      // ResizeObserver only fires on width *changes*, so if the width
+      // never moves off 0→real in one observed step it never re-fires.
+      if (outerWidth === 0 || innerWidth === 0) return;
       setScale(innerWidth > outerWidth ? outerWidth / innerWidth : 1);
     }
 
@@ -70,7 +105,7 @@ function FitOneLine({ text, className }) {
  * header nav menu only shows at desktop widths.
  */
 export default function Hero({ onEnter, onNavigate }) {
-  const { copy, sections, nav, branding } = useLang();
+  const { copy, sections, nav, branding, heroButtons, lang } = useLang();
   const [quickDraft, setQuickDraft] = useState("");
 
   function handleQuickSend() {
@@ -88,7 +123,11 @@ export default function Hero({ onEnter, onNavigate }) {
         <h1 className="hero-welcome">
           <FitOneLine text={copy.home.welcome} />
         </h1>
-        <div className="hero-tagline">{copy.home.tagline}</div>
+        {heroButtons?.length > 0 ? (
+          <HeroButtons buttons={heroButtons} lang={lang} />
+        ) : (
+          <div className="hero-tagline">{copy.home.tagline}</div>
+        )}
 
         <div className="hero-quick-chat">
           <ChatInput
