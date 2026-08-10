@@ -58,3 +58,25 @@
 .row-action:disabled {
   opacity: 0.5;
 }
+
+.appt-answers-row td {
+  background: var(--bg);
+  padding: var(--space-3) var(--space-4) !important;
+}
+
+.appt-answers {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.appt-answer-item {
+  display: flex;
+  gap: var(--space-2);
+  font-size: 13px;
+}
+
+.appt-answer-label {
+  color: var(--text-faint);
+  min-width: 160px;
+}

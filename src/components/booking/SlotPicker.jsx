@@ -3,7 +3,7 @@ import { api } from "../../api/client.js";
 import { useLang } from "../../context/LangContext.jsx";
 import "./SlotPicker.css";
 
-export default function SlotPicker({ date, value, onChange, emptyLabel }) {
+export default function SlotPicker({ date, serviceId, value, onChange, emptyLabel }) {
   const { copy } = useLang();
   const [slots, setSlots] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -15,7 +15,7 @@ export default function SlotPicker({ date, value, onChange, emptyLabel }) {
     }
     let cancelled = false;
     setLoading(true);
-    api.getSlots(date).then((s) => {
+    api.getSlots(date, serviceId).then((s) => {
       if (!cancelled) {
         setSlots(s);
         setLoading(false);
@@ -24,7 +24,7 @@ export default function SlotPicker({ date, value, onChange, emptyLabel }) {
     return () => {
       cancelled = true;
     };
-  }, [date]);
+  }, [date, serviceId]);
 
   if (!date) return <div className="bk-slots-empty">{emptyLabel}</div>;
   if (loading) return <div className="bk-slots-empty">…</div>;

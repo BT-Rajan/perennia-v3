@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { adminApi } from "../api/client.js";
 import { useAuth } from "../context/AuthContext.jsx";
 import PageHeader from "../components/PageHeader.jsx";
@@ -18,6 +18,7 @@ export default function AppointmentsPage() {
   const [dateTo, setDateTo] = useState("");
   const [error, setError] = useState("");
   const [cancellingId, setCancellingId] = useState(null);
+  const [expandedId, setExpandedId] = useState(null);
 
   const load = useCallback(() => {
     adminApi
@@ -84,28 +85,48 @@ export default function AppointmentsPage() {
               <tr><td colSpan={7} className="table-empty">No appointments match these filters.</td></tr>
             )}
             {appointments?.map((a) => (
-              <tr key={a.id}>
-                <td><span className="mono-chip">{a.id}</span></td>
-                <td>{a.name}</td>
-                <td>
-                  <div>{a.email}</div>
-                  {a.phone && <div className="table-subtext">{a.phone}</div>}
-                </td>
-                <td>{a.date} · {a.time}</td>
-                <td>{a.service || "—"}</td>
-                <td><span className={`status-pill ${a.status}`}>{a.status}</span></td>
-                <td>
-                  {a.status === "confirmed" && (
-                    <button
-                      className="row-action danger"
-                      disabled={cancellingId === a.id}
-                      onClick={() => handleCancel(a.id)}
-                    >
-                      {cancellingId === a.id ? "Cancelling…" : "Cancel"}
-                    </button>
-                  )}
-                </td>
-              </tr>
+              <Fragment key={a.id}>
+                <tr onClick={() => a.answers?.length > 0 && setExpandedId(expandedId === a.id ? null : a.id)}
+                    style={{ cursor: a.answers?.length > 0 ? "pointer" : "default" }}>
+                  <td><span className="mono-chip">{a.id}</span></td>
+                  <td>{a.name}</td>
+                  <td>
+                    <div>{a.email}</div>
+                    {a.phone && <div className="table-subtext">{a.phone}</div>}
+                  </td>
+                  <td>{a.date} · {a.time}</td>
+                  <td>
+                    {a.service_name || a.service || "—"}
+                    {a.answers?.length > 0 && <span className="table-subtext"> · {a.answers.length} answer{a.answers.length > 1 ? "s" : ""}</span>}
+                  </td>
+                  <td><span className={`status-pill ${a.status}`}>{a.status}</span></td>
+                  <td>
+                    {a.status === "confirmed" && (
+                      <button
+                        className="row-action danger"
+                        disabled={cancellingId === a.id}
+                        onClick={(e) => { e.stopPropagation(); handleCancel(a.id); }}
+                      >
+                        {cancellingId === a.id ? "Cancelling…" : "Cancel"}
+                      </button>
+                    )}
+                  </td>
+                </tr>
+                {expandedId === a.id && a.answers?.length > 0 && (
+                  <tr key={`${a.id}-answers`} className="appt-answers-row">
+                    <td colSpan={7}>
+                      <div className="appt-answers">
+                        {a.answers.map((ans) => (
+                          <div key={ans.question_id ?? ans.label} className="appt-answer-item">
+                            <span className="appt-answer-label">{ans.label}</span>
+                            <span>{ans.answer}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </Fragment>
             ))}
           </tbody>
         </table>

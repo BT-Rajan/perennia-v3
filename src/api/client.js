@@ -56,8 +56,18 @@ export const api = {
     };
   },
 
-  async getSlots(date) {
-    const data = await tryFetch(`booking/slots?date=${date}`);
+  // Pass 8 (docs/CALENDAR_MODULE_PLAN.md): the bookable service catalog.
+  // No mock fallback beyond an empty list — a fresh/offline install with
+  // no backend simply shows the old free-text "what are you interested
+  // in?" field, same as before this pass existed.
+  async getServices() {
+    const data = await tryFetch("booking/services");
+    return data || [];
+  },
+
+  async getSlots(date, serviceId) {
+    const qs = serviceId ? `booking/slots?date=${date}&service_id=${serviceId}` : `booking/slots?date=${date}`;
+    const data = await tryFetch(qs);
     if (data) return data.slots;
     return mockSlotsFor(date);
   },

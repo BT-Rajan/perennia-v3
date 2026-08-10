@@ -169,13 +169,46 @@ class Appointment(Base):
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     email: Mapped[str] = mapped_column(String(254), nullable=False, index=True)
     phone: Mapped[str] = mapped_column(String(40), default="", nullable=False)
+    # Free-text description, kept for appointments made before a Service
+    # catalog existed (and as a fallback if someone books without
+    # picking one). Not shown on the booking form once service_id is set.
     service: Mapped[str] = mapped_column(String(200), default="", nullable=False)
+    # Nullable on purpose: a booking made against the catalog (Pass 8)
+    # points here; nothing enforces every booking having one, since a
+    # site can run booking without ever defining a Service, exactly as
+    # it did before this pass. When null, slot duration/buffers fall
+    # back to the global booking.slot_minutes setting — see
+    # booking_service.py.
+    service_id: Mapped[str | None] = mapped_column(String(32), ForeignKey("service.id"), nullable=True)
     notes: Mapped[str] = mapped_column(String(1000), default="", nullable=False)
     status: Mapped[str] = mapped_column(String(16), default="confirmed", nullable=False)  # confirmed | cancelled
     created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
     updated_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, onupdate=_utcnow)
 
     __table_args__ = (Index("ix_appointment_date_status", "date", "status"),)
+
+
+class AppointmentQuestionAnswer(Base):
+    """One row per answer to a Service's custom intake question,
+    captured at booking time. `question_label` is a denormalized copy
+    of the question's label as it read when this appointment was
+    booked — if an admin later edits or deletes the question, this
+    historical answer still reads sensibly instead of showing a blank
+    or a dangling id. `question_id` is kept (nullable, SET NULL on
+    delete) purely so a future UI *can* still link back to the live
+    question when it still exists; nothing depends on it being set."""
+
+    __tablename__ = "appointment_question_answer"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    appointment_id: Mapped[str] = mapped_column(
+        String(16), ForeignKey("appointment.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    question_id: Mapped[str | None] = mapped_column(
+        String(32), ForeignKey("service_custom_question.id", ondelete="SET NULL"), nullable=True
+    )
+    question_label: Mapped[str] = mapped_column(String(200), nullable=False)
+    answer: Mapped[str] = mapped_column(String(2000), default="", nullable=False)
 
 
 class Service(Base):

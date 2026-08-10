@@ -11,6 +11,11 @@ from app.settings_service import get_setting
 router = APIRouter(prefix="/api/booking", tags=["public-booking"])
 
 
+class AnswerIn(BaseModel):
+    question_id: str
+    answer: str = Field(default="", max_length=2000)
+
+
 class CreateAppointmentRequest(BaseModel):
     date: str
     slot: str
@@ -20,6 +25,8 @@ class CreateAppointmentRequest(BaseModel):
     service: str = Field(default="", max_length=200)
     notes: str = Field(default="", max_length=1000)
     lang: str = Field(default="en", max_length=8)
+    service_id: str | None = None
+    answers: list[AnswerIn] = Field(default_factory=list)
 
 
 class LookupRequest(BaseModel):
@@ -39,14 +46,36 @@ class RescheduleRequest(BaseModel):
     time: str
 
 
+@router.get("/services")
+def list_services(db: Session = Depends(get_db)):
+    """Active services only — a service becomes visible here the moment
+    an admin activates it (services_service.py), with no
+    features.booking_enabled gate: browsing what's offered is harmless
+    even while booking itself is switched off."""
+    from app import services_service
+    return [
+        {
+            "id": s.id, "name": s.name, "slug": s.slug, "duration_minutes": s.duration_minutes,
+            "location_type": s.location_type,
+            "questions": [
+                {"id": q.id, "kind": q.kind, "label": q.label, "required": q.required}
+                for q in s.questions
+            ],
+        }
+        for s in services_service.list_services(db, active_only=True)
+    ]
+
+
 @router.get("/slots")
-def get_slots(date: str, db: Session = Depends(get_db)):
+def get_slots(date: str, service_id: str | None = None, db: Session = Depends(get_db)):
     if not get_setting(db, "features.booking_enabled"):
         return {"slots": []}
     try:
-        return {"slots": booking_service.available_slots(db, date)}
+        return {"slots": booking_service.available_slots(db, date, service_id=service_id)}
     except ValueError:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Invalid date")
+    except booking_service.InvalidServiceError:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Unknown or inactive service")
 
 
 @router.post("/appointments")
@@ -57,6 +86,7 @@ def create_appointment(request: Request, body: CreateAppointmentRequest, db: Ses
     result = booking_service.create_appointment(
         db, date_str=body.date, time_str=body.slot, name=body.name, email=body.email,
         phone=body.phone, service=body.service, notes=body.notes, lang=body.lang,
+        service_id=body.service_id, answers=[a.model_dump() for a in body.answers],
     )
     db.commit()
     if result["ok"]:
