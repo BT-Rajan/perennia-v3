@@ -21,6 +21,11 @@ export default function ChatPage({ onBack, onNavigate, initialMessage, onConsume
   const [bookingOpen, setBookingOpen] = useState(false);
   const scrollRef = useRef(null);
   const initialMessageSentRef = useRef(false);
+  // Tracks whether the assistant has already gathered this visitor's
+  // name/phone/email this session, so chat_service skips re-running
+  // the lead-capture instructions once it's done. Reset alongside the
+  // transcript on a language switch, same as a fresh session.
+  const leadCapturedRef = useRef(false);
 
   // Reset the transcript with a fresh welcome message whenever language
   // changes, mirroring the original app's bilingual restart behavior. If the
@@ -30,6 +35,7 @@ export default function ChatPage({ onBack, onNavigate, initialMessage, onConsume
   useEffect(() => {
     const welcome = { from: "ai", text: t.welcomeMsg };
     setMessages([welcome]);
+    leadCapturedRef.current = false;
 
     if (initialMessage && !initialMessageSentRef.current) {
       initialMessageSentRef.current = true;
@@ -53,7 +59,8 @@ export default function ChatPage({ onBack, onNavigate, initialMessage, onConsume
     setDraft("");
     setTyping(true);
     const history = historyOverride ?? messages.map(({ from, text }) => ({ from, text }));
-    const reply = await api.chat(outgoing, lang, history);
+    const { reply, leadCaptured } = await api.chat(outgoing, lang, history, leadCapturedRef.current);
+    leadCapturedRef.current = leadCaptured;
     setTyping(false);
     setMessages((m) => [...m, { from: "ai", text: reply }]);
   }

@@ -285,6 +285,16 @@ _DEFS: list[SettingDef] = [
               "Would you like to book a time to talk?",
         "ar": "شكرًا لك! سيقوم أحد أعضاء فريقنا بمتابعة رسالتك قريبًا. هل ترغب في حجز موعد؟",
     }, i18n=True, help_text="Shown when no LLM provider is configured, or if a request to it fails."),
+    SettingDef("chat.max_turns", "chat", "Max exchanges per session", SettingType.INT, 15,
+               help_text="Once a visitor's user-turn count in one session passes this, the turn-limit "
+                          "message below is shown instead of calling the LLM again.",
+               validator=_int_range(3, 100)),
+    SettingDef("chat.turn_limit_message", "chat", "Turn-limit message", SettingType.TEXT, {
+        "en": "You've reached the message limit for this session. We'd love to keep the conversation "
+              "going directly — please book a quick call with our team.",
+        "ar": "لقد وصلت إلى الحد الأقصى لعدد الرسائل في هذه الجلسة. يسعدنا مواصلة الحديث مباشرة — "
+              "احجز موعداً سريعاً مع فريقنا.",
+    }, i18n=True, help_text="Shown once a visitor exceeds the max exchanges above, in place of a real reply."),
 
     # notifications — outbound email/WhatsApp for booking confirmations
     # and internal staff alerts. Every send is best-effort: a

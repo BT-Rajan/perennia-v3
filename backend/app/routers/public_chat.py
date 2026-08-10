@@ -21,14 +21,16 @@ class ChatRequest(BaseModel):
     message: str = Field(min_length=1, max_length=4000)
     lang: str = Field(default="en", max_length=8)
     history: list[HistoryEntry] = Field(default_factory=list, max_length=50)
+    leadCaptured: bool = False
 
 
 @router.post("")
 @limiter.limit(settings.RATE_LIMIT_APPOINTMENT)  # same conservative per-IP budget as booking actions
 def chat(request: Request, body: ChatRequest, db: Session = Depends(get_db)):
-    reply = chat_service.get_reply(
+    reply, lead_captured = chat_service.get_reply(
         db, message=body.message, lang=body.lang,
         history=[{"from": h.from_, "text": h.text} for h in body.history],
+        lead_captured=body.leadCaptured,
     )
     db.commit()
-    return {"reply": reply}
+    return {"reply": reply, "leadCaptured": lead_captured}
