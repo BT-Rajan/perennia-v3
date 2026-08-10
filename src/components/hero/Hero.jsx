@@ -53,7 +53,6 @@ function HeroButtons({ buttons, lang }) {
 function FitOneLine({ text, className }) {
   const outerRef = useRef(null);
   const innerRef = useRef(null);
-  const [scale, setScale] = useState(1);
 
   useLayoutEffect(() => {
     const outer = outerRef.current;
@@ -70,7 +69,20 @@ function FitOneLine({ text, className }) {
       // ResizeObserver only fires on width *changes*, so if the width
       // never moves off 0→real in one observed step it never re-fires.
       if (outerWidth === 0 || innerWidth === 0) return;
-      setScale(innerWidth > outerWidth ? outerWidth / innerWidth : 1);
+      const nextScale = innerWidth > outerWidth ? outerWidth / innerWidth : 1;
+      // Applied straight to the DOM instead of through React state.
+      // fit() always resets the element to scale(1) before it
+      // re-measures — if the final scale is set via setState and the
+      // freshly computed value happens to match whatever was already
+      // in state (very common: multiple ResizeObserver callbacks
+      // firing for the same settled width), React bails out of the
+      // re-render since the state didn't change, and the scale(1)
+      // reset is left on screen — that's the desktop headline
+      // clipping bug (text overflows both edges of the container's
+      // overflow: hidden box). Writing the style directly guarantees
+      // every fit() call ends with the correct scale applied, with no
+      // dependency on whether the value changed since last time.
+      inner.style.transform = `scale(${nextScale})`;
     }
 
     fit();
@@ -85,7 +97,7 @@ function FitOneLine({ text, className }) {
 
   return (
     <div ref={outerRef} className={`fit-one-line ${className || ""}`.trim()}>
-      <span ref={innerRef} className="fit-one-line-inner" style={{ transform: `scale(${scale})` }}>
+      <span ref={innerRef} className="fit-one-line-inner">
         {text}
       </span>
     </div>
