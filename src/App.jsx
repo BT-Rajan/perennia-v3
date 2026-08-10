@@ -13,6 +13,10 @@ const SPECIAL_PAGE_IDS = new Set(["home", "chat", "contact"]);
 
 export default function App() {
   const [page, setPage] = useState("home"); // "home" | "chat" | "contact" | any configured page slug
+  // Message typed into the hero's quick-start chat box, carried across
+  // into ChatPage so hitting Enter there feels like continuing the same
+  // conversation rather than starting over.
+  const [pendingMessage, setPendingMessage] = useState("");
 
   const handleStickyChat = () => {
     setPage("chat");
@@ -22,10 +26,22 @@ export default function App() {
     }
   };
 
+  const handleHeroEnter = (initialMessage) => {
+    if (initialMessage) setPendingMessage(initialMessage);
+    setPage("chat");
+  };
+
   return (
     <LangProvider>
-      {page === "home" && <Hero onEnter={() => setPage("chat")} onNavigate={setPage} />}
-      {page === "chat" && <ChatPage onBack={() => setPage("home")} onNavigate={setPage} />}
+      {page === "home" && <Hero onEnter={handleHeroEnter} onNavigate={setPage} />}
+      {page === "chat" && (
+        <ChatPage
+          onBack={() => setPage("home")}
+          onNavigate={setPage}
+          initialMessage={pendingMessage}
+          onConsumeInitialMessage={() => setPendingMessage("")}
+        />
+      )}
       {page === "contact" && <ContactPage onBack={() => setPage("home")} onNavigate={setPage} />}
       {!SPECIAL_PAGE_IDS.has(page) && (
         <ContentPage pageId={page} onBack={() => setPage("home")} onNavigate={setPage} />
