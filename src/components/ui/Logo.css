@@ -9,13 +9,13 @@
      setting — lets a logo with a lot of built-in padding be sized up
      to actually read next to the header text, without a rebuild. */
 
-  /* Desktop (>1024px) — sized close to the 64px header's full height
-     (--header-h in tokens.css) so the logo reads clearly instead of
-     sitting as a small icon in a tall bar. */
-  height: calc(56px * var(--logo-scale, 1));
+  /* Desktop (>1024px) — matched to the 200px desktop --header-h in
+     tokens.css, with headroom above/below so it reads as a real logo
+     rather than a small icon in a tall bar. */
+  height: calc(175px * var(--logo-scale, 1));
   width: auto; /* let width follow the image's natural aspect ratio */
-  max-height: 60px;
-  max-width: 180px;
+  max-height: 175px;
+  max-width: 380px;
   flex: none;
   object-fit: contain;
   border-radius: var(--radius-sm);

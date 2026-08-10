@@ -9,6 +9,12 @@
   animation: content-fade-in 0.5s var(--ease);
 }
 
+/* Matches the 200px desktop header override in TopBar.css — see the
+   comment there on why this can't just go through --header-h. */
+@media (min-width: 1025px) {
+  .content-page { padding-top: calc(200px + var(--space-4)); }
+}
+
 .content-main {
   flex: 1;
   display: flex;

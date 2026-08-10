@@ -8,6 +8,13 @@
   animation: fade-in 0.6s var(--ease);
 }
 
+/* Matches the 200px desktop header override in TopBar.css — see the
+   comment there on why this can't just go through --header-h. */
+@media (min-width: 1025px) {
+  .hero-page { padding-top: calc(200px + var(--space-6)); }
+  .hero-section { scroll-margin-top: calc(200px + var(--space-4)); }
+}
+
 .hero-center {
   min-height: calc(100dvh - var(--space-6) - var(--space-7));
   display: flex;
