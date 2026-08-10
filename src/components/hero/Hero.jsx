@@ -1,16 +1,66 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useLang } from "../../context/LangContext.jsx";
 import TopBar from "../layout/TopBar.jsx";
+import ChatInput from "../chat/ChatInput.jsx";
 import "./Hero.css";
+
+/**
+ * Renders `text` as a single unbroken line that always fits its
+ * container, at any viewport width and at any string length (the
+ * headline is admin-configurable copy, so we can't assume how long
+ * it will be). Rather than guessing a font-size breakpoint by
+ * breakpoint, it measures the natural width of the text after
+ * render and uniformly scales it down just enough to fit — same
+ * idea as `text-overflow: clamp`-by-hand. Re-measures on resize and
+ * whenever the text itself changes (e.g. a language switch).
+ */
+function FitOneLine({ text, className }) {
+  const outerRef = useRef(null);
+  const innerRef = useRef(null);
+  const [scale, setScale] = useState(1);
+
+  useLayoutEffect(() => {
+    const outer = outerRef.current;
+    const inner = innerRef.current;
+    if (!outer || !inner) return;
+
+    function fit() {
+      inner.style.transform = "scale(1)";
+      const outerWidth = outer.clientWidth;
+      const innerWidth = inner.scrollWidth;
+      setScale(innerWidth > outerWidth ? outerWidth / innerWidth : 1);
+    }
+
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(outer);
+    return () => ro.disconnect();
+  }, [text]);
+
+  const words = text.split(" ");
+
+  return (
+    <div ref={outerRef} className={`fit-one-line ${className || ""}`.trim()}>
+      <span ref={innerRef} className="fit-one-line-inner" style={{ transform: `scale(${scale})` }}>
+        {words.map((word, i) => (
+          <span key={i} className="ripple-word" style={{ animationDelay: `${i * 0.12}s` }}>
+            {word}
+            {i < words.length - 1 ? "\u00A0" : ""}
+          </span>
+        ))}
+      </span>
+    </div>
+  );
+}
 
 /**
  * Landing page. Auto-advances into the chat assistant after a short
  * countdown (length set by theme.heroAutoAdvanceSeconds — see
- * useLang().theme), or the person can jump in early via the CTA. A
- * pulsing "voice orb" behind the headline is the page's signature
- * visual — pure CSS, entirely derived from the configurable primary/
- * accent colors, so a full re-theme (see the admin Theme settings)
- * recolors it automatically with no code change.
+ * useLang().theme), or the person can jump in early via the CTA or
+ * by typing straight into the quick-start chat box. The rippling,
+ * always-single-line headline (see FitOneLine above) sits where the
+ * old pulsing "voice orb" used to be — it's the page's signature
+ * visual now.
  *
  * The cards below double as the mobile entry point into the
  * standalone content pages (whichever pages are currently configured
@@ -20,7 +70,15 @@ import "./Hero.css";
 export default function Hero({ onEnter, onNavigate }) {
   const { copy, sections, nav, branding, theme } = useLang();
   const [progress, setProgress] = useState(0);
+  const [quickDraft, setQuickDraft] = useState("");
   const autoAdvanceMs = (theme.heroAutoAdvanceSeconds ?? 7) * 1000;
+
+  function handleQuickSend() {
+    const text = quickDraft.trim();
+    if (!text) return;
+    setQuickDraft("");
+    onEnter(text);
+  }
 
   useEffect(() => {
     let rafId;
@@ -51,16 +109,22 @@ export default function Hero({ onEnter, onNavigate }) {
       <TopBar onNavigate={onNavigate} />
 
       <div className="hero-center">
-        <div className="hero-orb" aria-hidden="true">
-          <span className="hero-orb-ring hero-orb-ring-1" />
-          <span className="hero-orb-ring hero-orb-ring-2" />
-          <span className="hero-orb-ring hero-orb-ring-3" />
-          <span className="hero-orb-core" />
+        <h1 className="hero-welcome">
+          <FitOneLine text={copy.home.welcome} />
+        </h1>
+        <div className="hero-tagline">{copy.home.tagline}</div>
+
+        <div className="hero-quick-chat">
+          <ChatInput
+            value={quickDraft}
+            onChange={setQuickDraft}
+            onSend={handleQuickSend}
+            placeholder={copy.chat.inputPlaceholder}
+            sendLabel={copy.common.send}
+          />
         </div>
 
-        <div className="hero-welcome">{copy.home.welcome}</div>
-        <div className="hero-tagline">{copy.home.tagline}</div>
-        <button className="hero-cta" onClick={onEnter}>
+        <button className="hero-cta" onClick={() => onEnter()}>
           {copy.home.hint}
         </button>
         <div className="hero-progress-track">

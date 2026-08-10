@@ -21,70 +21,76 @@
   position: relative;
 }
 
-/* ── Voice orb — the page's signature visual: concentric pulsing
-   rings around a glowing core, built entirely from the two
-   configurable brand colors via color-mix(), so it recolors itself
-   automatically whenever an admin changes the theme. Purely
-   decorative (aria-hidden in the markup), sits behind the headline. */
-.hero-orb {
-  position: relative;
-  width: 180px;
-  height: 180px;
-  margin-bottom: var(--space-2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.hero-orb-ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 1.5px solid color-mix(in srgb, var(--gold) 45%, transparent);
-  animation: orb-pulse 3.2s var(--ease) infinite;
-}
-.hero-orb-ring-2 {
-  border-color: color-mix(in srgb, var(--blue-light) 40%, transparent);
-  animation-delay: 0.9s;
-}
-.hero-orb-ring-3 {
-  border-color: color-mix(in srgb, var(--gold) 30%, transparent);
-  animation-delay: 1.8s;
-}
-
-.hero-orb-core {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, var(--white-soft) 0%, var(--gold) 38%, var(--blue-light) 100%);
-  box-shadow:
-    0 0 40px color-mix(in srgb, var(--gold) 55%, transparent),
-    0 0 80px color-mix(in srgb, var(--blue-light) 35%, transparent);
-  animation: orb-core-breathe 2.6s var(--ease) infinite;
-}
-
-@keyframes orb-pulse {
-  0% { transform: scale(0.55); opacity: 0.9; }
-  100% { transform: scale(1.55); opacity: 0; }
-}
-@keyframes orb-core-breathe {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.08); }
-}
-
+/* ── Headline — the page's signature visual now: a single-line,
+   gently rippling title that sits where the old pulsing orb used to
+   be. FitOneLine (see Hero.jsx) measures the rendered text and
+   scales it to fit, so this stays one line at any width and at any
+   text length — no fixed breakpoints to keep in sync. */
 .hero-welcome {
+  width: 100%;
+  margin-bottom: var(--space-2);
+}
+
+.fit-one-line {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.fit-one-line-inner {
+  display: inline-block;
+  white-space: nowrap;
+  transform-origin: center top;
   font-family: var(--font-display);
   font-weight: 600;
   font-size: var(--fs-hero);
   letter-spacing: 0.01em;
-  line-height: 1.15;
+  line-height: 1.3;
+  padding-block: 0.15em; /* headroom for the ripple's upward bob + gradient descenders */
   background: linear-gradient(135deg, var(--white-soft) 0%, var(--gold) 50%, var(--blue-light) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-[dir="rtl"] .hero-welcome { font-family: var(--font-ar); font-weight: 500; }
+[dir="rtl"] .fit-one-line-inner { font-family: var(--font-ar); font-weight: 500; }
+
+/* Each word bobs on its own delay so the wave visibly travels
+   across the headline rather than the whole line pulsing at once. */
+.ripple-word {
+  display: inline-block;
+  animation: ripple-wave 2.8s var(--ease) infinite;
+}
+
+@keyframes ripple-wave {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-0.12em); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ripple-word { animation: none; }
+}
+
+/* ── Quick-start chat box — lets someone jump straight into a
+   conversation from the landing page instead of only via the CTA
+   button. Reuses the same ChatInput component/styling as the full
+   chat page so it reads as one continuous surface. */
+.hero-quick-chat {
+  width: 100%;
+  max-width: 560px;
+  margin-top: var(--space-2);
+  border-radius: var(--radius-lg);
+  border: 1px solid color-mix(in srgb, var(--gold) 15%, transparent);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  overflow: hidden;
+}
+.hero-quick-chat .chat-input-area {
+  border-top: none;
+  background: none;
+}
 
 .hero-tagline {
   font-size: var(--fs-body);
@@ -249,12 +255,5 @@
 
 @media (max-width: 480px) {
   .hero-page { padding: var(--space-5) var(--space-3); }
-  .hero-orb { width: 132px; height: 132px; }
-  .hero-orb-core { width: 48px; height: 48px; }
   .hero-sections { grid-template-columns: 1fr; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero-orb-ring { animation: none; opacity: 0.5; }
-  .hero-orb-core { animation: none; }
 }

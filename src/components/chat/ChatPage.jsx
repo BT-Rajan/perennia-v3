@@ -11,7 +11,7 @@ import FaqTray from "./FaqTray.jsx";
 import BookingPanel from "../booking/BookingPanel.jsx";
 import "./ChatPage.css";
 
-export default function ChatPage({ onBack, onNavigate }) {
+export default function ChatPage({ onBack, onNavigate, initialMessage, onConsumeInitialMessage }) {
   const { copy, lang, features, branding } = useLang();
   const t = copy.chat;
 
@@ -20,11 +20,22 @@ export default function ChatPage({ onBack, onNavigate }) {
   const [typing, setTyping] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
   const scrollRef = useRef(null);
+  const initialMessageSentRef = useRef(false);
 
-  // Reset the transcript with a fresh welcome message whenever language changes,
-  // mirroring the original app's bilingual restart behavior.
+  // Reset the transcript with a fresh welcome message whenever language
+  // changes, mirroring the original app's bilingual restart behavior. If the
+  // person arrived here by typing into the hero's quick-start box and hitting
+  // Enter, that message rides along as `initialMessage` — send it right after
+  // the welcome message so the conversation continues rather than restarting.
   useEffect(() => {
-    setMessages([{ from: "ai", text: t.welcomeMsg }]);
+    const welcome = { from: "ai", text: t.welcomeMsg };
+    setMessages([welcome]);
+
+    if (initialMessage && !initialMessageSentRef.current) {
+      initialMessageSentRef.current = true;
+      sendMessage(initialMessage, [welcome]);
+      onConsumeInitialMessage?.();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lang]);
 
@@ -32,13 +43,16 @@ export default function ChatPage({ onBack, onNavigate }) {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, typing]);
 
-  async function sendMessage(text) {
+  // `historyOverride` lets callers (like the initial-message effect above)
+  // supply the conversation history explicitly, since it may not yet be
+  // reflected in `messages` state at the point they fire.
+  async function sendMessage(text, historyOverride) {
     const outgoing = text.trim();
     if (!outgoing) return;
     setMessages((m) => [...m, { from: "user", text: outgoing }]);
     setDraft("");
     setTyping(true);
-    const history = messages.map(({ from, text }) => ({ from, text }));
+    const history = historyOverride ?? messages.map(({ from, text }) => ({ from, text }));
     const reply = await api.chat(outgoing, lang, history);
     setTyping(false);
     setMessages((m) => [...m, { from: "ai", text: reply }]);
