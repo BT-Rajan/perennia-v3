@@ -137,16 +137,16 @@ function buildFromApi(publicConfig, contentPages, faqItems, supportedLanguages) 
 // so there's no visual "pop" if these get overridden a moment later
 // once the live backend theme arrives.
 const FALLBACK_THEME = {
-  backgroundColor: "#0a0e27",
-  primaryColor: "#fbbf24",
-  accentColor: "#3b82f6",
-  textColor: "#f0f5ff",
-  fontDisplay: '"Cormorant Garamond", Georgia, serif',
+  backgroundColor: "#0c0a16",
+  primaryColor: "#ff7a45",
+  accentColor: "#a855f7",
+  textColor: "#f4f0fa",
+  fontDisplay: '"Space Grotesk", system-ui, -apple-system, sans-serif',
   fontBody: '"Inter", system-ui, -apple-system, sans-serif',
   fontAr: '"Noto Kufi Arabic", "Arial Unicode MS", sans-serif',
   googleFontsUrl:
     "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700" +
-    "&family=Cormorant+Garamond:wght@500;600;700&family=Noto+Kufi+Arabic:wght@300;400;500;600;700&display=swap",
+    "&family=Space+Grotesk:wght@500;600;700&family=Noto+Kufi+Arabic:wght@300;400;500;600;700&display=swap",
   headerHeightPx: 64,
   contentMaxWidthPx: 1180,
   cornerRadiusPx: 16,

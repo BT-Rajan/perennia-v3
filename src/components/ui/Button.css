@@ -18,25 +18,25 @@
 .btn-primary {
   background: linear-gradient(135deg, var(--gold) 0%, var(--gold-shade-2) 50%, var(--gold-shade-3) 100%);
   color: var(--on-gold-text);
-  box-shadow: 0 8px 24px rgba(251, 191, 36, 0.35), 0 0 12px rgba(251, 191, 36, 0.15);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--gold) 35%, transparent), 0 0 12px color-mix(in srgb, var(--gold) 15%, transparent);
 }
 .btn-primary:not(:disabled):hover { 
   filter: brightness(1.12);
-  box-shadow: 0 12px 32px rgba(251, 191, 36, 0.45), 0 0 16px rgba(251, 191, 36, 0.25);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--gold) 45%, transparent), 0 0 16px color-mix(in srgb, var(--gold) 25%, transparent);
   transform: translateY(-2px);
 }
 
 .btn-ghost {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
-  border: 1px solid rgba(251, 191, 36, 0.15);
+  border: 1px solid color-mix(in srgb, var(--gold) 15%, transparent);
   color: var(--white-pure);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
 .btn-ghost:not(:disabled):hover { 
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
-  border-color: rgba(251, 191, 36, 0.3);
-  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.1);
+  border-color: color-mix(in srgb, var(--gold) 30%, transparent);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--gold) 10%, transparent);
 }
 
 .btn-text {

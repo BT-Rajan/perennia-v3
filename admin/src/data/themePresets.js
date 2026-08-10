@@ -82,6 +82,27 @@ export const THEME_PRESETS = [
       "theme.corner_radius_px": 20,
     },
   },
+  {
+    id: "ember-pulse",
+    name: "Ember Pulse",
+    description: "Deep violet-black with a warm coral signature and an electric violet accent — bold, modern, voice-tech energy.",
+    values: {
+      "theme.background_color": "#0c0a16",
+      "theme.primary_color": "#ff7a45",
+      "theme.accent_color": "#a855f7",
+      "theme.text_color": "#f4f0fa",
+      "theme.font_display": '"Space Grotesk", system-ui, -apple-system, sans-serif',
+      "theme.font_body": '"Inter", system-ui, -apple-system, sans-serif',
+      "theme.font_ar": '"Noto Kufi Arabic", "Arial Unicode MS", sans-serif',
+      "theme.google_fonts_url":
+        "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700" +
+        "&family=Space+Grotesk:wght@500;600;700&family=Noto+Kufi+Arabic:wght@300;400;500;600;700" +
+        "&display=swap",
+      "theme.header_height_px": 64,
+      "theme.content_max_width_px": 1180,
+      "theme.corner_radius_px": 18,
+    },
+  },
 ];
 
 // Which of the 4 signature color fields identify a preset — used to

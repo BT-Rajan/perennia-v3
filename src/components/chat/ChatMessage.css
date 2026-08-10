@@ -14,7 +14,7 @@
 
 .msg-ai .msg-bubble {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
-  border: 1px solid rgba(251, 191, 36, 0.15);
+  border: 1px solid color-mix(in srgb, var(--gold) 15%, transparent);
   border-start-start-radius: 4px;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -25,7 +25,7 @@
   background: linear-gradient(135deg, var(--gold) 0%, var(--gold-shade-2) 50%, var(--gold-shade-3) 100%);
   color: var(--on-gold-text);
   border-start-end-radius: 4px;
-  box-shadow: 0 4px 16px rgba(251, 191, 36, 0.3);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--gold) 30%, transparent);
   font-weight: 500;
 }
 

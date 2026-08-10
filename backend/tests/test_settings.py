@@ -3,7 +3,7 @@ def test_public_config_uses_defaults_when_nothing_set(client):
     assert resp.status_code == 200
     body = resp.json()
     assert body["branding.site_name"] == {"en": "Perennia", "ar": "بيرينيا"}
-    assert body["theme.primary_color"] == "#fbbf24"
+    assert body["theme.primary_color"] == "#ff7a45"
     assert body["features.booking_enabled"] is True
 
 
@@ -53,7 +53,7 @@ def test_bulk_update_is_atomic_on_validation_failure(logged_in_client):
     assert resp.status_code == 400
 
     check = logged_in_client.get("/admin/api/settings/theme")
-    assert check.json()["values"]["theme.accent_color"] == "#3b82f6"  # unchanged default
+    assert check.json()["values"]["theme.accent_color"] == "#a855f7"  # unchanged default
 
 
 def test_update_without_csrf_header_rejected(client):

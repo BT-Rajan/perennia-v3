@@ -204,7 +204,7 @@ def test_admin_alert_sent_on_new_booking(logged_in_client, monkeypatch):
     try:
         date = _future_workday(min_days_ahead=13)
         logged_in_client.post("/api/booking/appointments", json={
-            "date": date, "slot": "09:00", "email": "leadgen@example.com", "lang": "en", **VALID_APPT,
+            "date": date, "slot": "10:00", "email": "leadgen@example.com", "lang": "en", **VALID_APPT,
         })
         assert "staff@example.com" in sent  # admin alert
         assert "leadgen@example.com" in sent  # visitor confirmation

@@ -10,8 +10,8 @@ PNG_1PX = bytes.fromhex(
 
 def test_theme_color_settings_have_expected_defaults(client):
     body = client.get("/api/config/public").json()
-    assert body["theme.primary_color"] == "#fbbf24"
-    assert body["theme.background_color"] == "#0a0e27"
+    assert body["theme.primary_color"] == "#ff7a45"
+    assert body["theme.background_color"] == "#0c0a16"
     assert body["theme.header_height_px"] == 64
 
 

@@ -7,7 +7,7 @@
   padding: 10px 18px;
   border-radius: var(--radius-pill);
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
-  border: 1px solid rgba(251, 191, 36, 0.15);
+  border: 1px solid color-mix(in srgb, var(--gold) 15%, transparent);
   color: var(--white-soft);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -17,13 +17,13 @@
 }
 .chip:hover { 
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
-  border-color: rgba(251, 191, 36, 0.25);
-  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.15);
+  border-color: color-mix(in srgb, var(--gold) 25%, transparent);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--gold) 15%, transparent);
 }
 .chip-active { 
-  background: rgba(251, 191, 36, 0.2);
-  border-color: rgba(251, 191, 36, 0.35);
+  background: color-mix(in srgb, var(--gold) 20%, transparent);
+  border-color: color-mix(in srgb, var(--gold) 35%, transparent);
   color: var(--gold);
-  box-shadow: 0 4px 16px rgba(251, 191, 36, 0.2);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--gold) 20%, transparent);
 }
 .chip-icon { line-height: 0; }

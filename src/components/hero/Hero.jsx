@@ -6,11 +6,16 @@ import "./Hero.css";
 /**
  * Landing page. Auto-advances into the chat assistant after a short
  * countdown (length set by theme.heroAutoAdvanceSeconds — see
- * useLang().theme), or the person can jump in early via the CTA. The
- * cards below double as the mobile entry point into the standalone
- * content pages (whichever pages are currently configured to show in
- * the nav — see the `nav` list from useLang()), since the header nav
- * menu only shows at desktop widths.
+ * useLang().theme), or the person can jump in early via the CTA. A
+ * pulsing "voice orb" behind the headline is the page's signature
+ * visual — pure CSS, entirely derived from the configurable primary/
+ * accent colors, so a full re-theme (see the admin Theme settings)
+ * recolors it automatically with no code change.
+ *
+ * The cards below double as the mobile entry point into the
+ * standalone content pages (whichever pages are currently configured
+ * to show in the nav — see the `nav` list from useLang()), since the
+ * header nav menu only shows at desktop widths.
  */
 export default function Hero({ onEnter, onNavigate }) {
   const { copy, sections, nav, branding, theme } = useLang();
@@ -44,7 +49,15 @@ export default function Hero({ onEnter, onNavigate }) {
   return (
     <div className="hero-page">
       <TopBar onNavigate={onNavigate} />
+
       <div className="hero-center">
+        <div className="hero-orb" aria-hidden="true">
+          <span className="hero-orb-ring hero-orb-ring-1" />
+          <span className="hero-orb-ring hero-orb-ring-2" />
+          <span className="hero-orb-ring hero-orb-ring-3" />
+          <span className="hero-orb-core" />
+        </div>
+
         <div className="hero-welcome">{copy.home.welcome}</div>
         <div className="hero-tagline">{copy.home.tagline}</div>
         <button className="hero-cta" onClick={onEnter}>

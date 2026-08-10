@@ -15,12 +15,12 @@
    ────────────────────────────────────────────────────────── */
 :root {
   /* ---- Base tokens (admin-configurable) --------------------------- */
-  --brand-bg: #0a0e27;        /* theme.background_color */
-  --brand-primary: #fbbf24;   /* theme.primary_color */
-  --brand-accent: #3b82f6;    /* theme.accent_color */
-  --brand-text: #f0f5ff;      /* theme.text_color */
+  --brand-bg: #0c0a16;        /* theme.background_color */
+  --brand-primary: #ff7a45;   /* theme.primary_color */
+  --brand-accent: #a855f7;    /* theme.accent_color */
+  --brand-text: #f4f0fa;      /* theme.text_color */
 
-  --font-display: "Cormorant Garamond", Georgia, serif;                 /* theme.font_display */
+  --font-display: "Space Grotesk", system-ui, -apple-system, sans-serif;  /* theme.font_display */
   --font-body: "Inter", system-ui, -apple-system, sans-serif;           /* theme.font_body */
   --font-ar: "Noto Kufi Arabic", "Arial Unicode MS", sans-serif;        /* theme.font_ar */
 

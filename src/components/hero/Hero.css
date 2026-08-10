@@ -18,6 +18,59 @@
   gap: var(--space-4);
   max-width: 640px;
   width: 100%;
+  position: relative;
+}
+
+/* ── Voice orb — the page's signature visual: concentric pulsing
+   rings around a glowing core, built entirely from the two
+   configurable brand colors via color-mix(), so it recolors itself
+   automatically whenever an admin changes the theme. Purely
+   decorative (aria-hidden in the markup), sits behind the headline. */
+.hero-orb {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  margin-bottom: var(--space-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hero-orb-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid color-mix(in srgb, var(--gold) 45%, transparent);
+  animation: orb-pulse 3.2s var(--ease) infinite;
+}
+.hero-orb-ring-2 {
+  border-color: color-mix(in srgb, var(--blue-light) 40%, transparent);
+  animation-delay: 0.9s;
+}
+.hero-orb-ring-3 {
+  border-color: color-mix(in srgb, var(--gold) 30%, transparent);
+  animation-delay: 1.8s;
+}
+
+.hero-orb-core {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--white-soft) 0%, var(--gold) 38%, var(--blue-light) 100%);
+  box-shadow:
+    0 0 40px color-mix(in srgb, var(--gold) 55%, transparent),
+    0 0 80px color-mix(in srgb, var(--blue-light) 35%, transparent);
+  animation: orb-core-breathe 2.6s var(--ease) infinite;
+}
+
+@keyframes orb-pulse {
+  0% { transform: scale(0.55); opacity: 0.9; }
+  100% { transform: scale(1.55); opacity: 0; }
+}
+@keyframes orb-core-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
 }
 
 .hero-welcome {
@@ -26,7 +79,7 @@
   font-size: var(--fs-hero);
   letter-spacing: 0.01em;
   line-height: 1.15;
-  background: linear-gradient(135deg, var(--white-soft) 0%, var(--gold) 50%, var(--accent-cyan) 100%);
+  background: linear-gradient(135deg, var(--white-soft) 0%, var(--gold) 50%, var(--blue-light) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -49,14 +102,14 @@
   color: var(--on-gold-text);
   font-weight: 700;
   font-size: var(--fs-body);
-  box-shadow: 0 12px 32px rgba(251, 191, 36, 0.4), 0 0 20px rgba(251, 191, 36, 0.2);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--gold) 40%, transparent), 0 0 20px color-mix(in srgb, var(--gold) 20%, transparent);
   transition: transform var(--dur-fast) var(--ease), filter var(--dur-fast) var(--ease), box-shadow var(--dur-med) var(--ease);
   border: none;
   cursor: pointer;
 }
-.hero-cta:hover { 
+.hero-cta:hover {
   filter: brightness(1.12);
-  box-shadow: 0 16px 40px rgba(251, 191, 36, 0.5), 0 0 24px rgba(251, 191, 36, 0.3);
+  box-shadow: 0 16px 40px color-mix(in srgb, var(--gold) 50%, transparent), 0 0 24px color-mix(in srgb, var(--gold) 30%, transparent);
   transform: translateY(-2px);
 }
 .hero-cta:active { transform: scale(0.97); }
@@ -72,17 +125,20 @@
 }
 .hero-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--gold) 0%, var(--gold-shade-2) 50%, var(--accent-cyan) 100%);
+  background: linear-gradient(90deg, var(--gold) 0%, var(--gold-shade-2) 50%, var(--blue-light) 100%);
   transition: width 0.1s linear;
-  box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--gold) 50%, transparent);
 }
 
+/* ── Feature grid — responsive card grid (was a full-width vertical
+   stack) so the "explore the site" entry points read as a modern
+   product grid rather than a list. */
 .hero-sections {
   width: 100%;
   max-width: var(--content-max);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-4);
   padding: var(--space-7) 0 var(--space-6);
 }
 
@@ -91,14 +147,16 @@
   padding: var(--space-5);
   border-radius: var(--radius-lg);
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
-  border: 1px solid rgba(251, 191, 36, 0.2);
+  border: 1px solid color-mix(in srgb, var(--gold) 20%, transparent);
   backdrop-filter: blur(20px) saturate(150%);
   -webkit-backdrop-filter: blur(20px) saturate(150%);
   transition: all var(--dur-med) var(--ease);
   position: relative;
   overflow: hidden;
-  display: block;
+  display: flex;
+  flex-direction: column;
   width: 100%;
+  min-height: 148px;
   text-align: start;
   font: inherit;
   color: inherit;
@@ -117,15 +175,16 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.3), transparent);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--gold) 30%, transparent), transparent);
   opacity: 0;
   transition: opacity var(--dur-med) var(--ease);
 }
 
 .hero-section:hover {
-  border-color: rgba(251, 191, 36, 0.4);
+  border-color: color-mix(in srgb, var(--gold) 40%, transparent);
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
-  box-shadow: 0 8px 32px rgba(251, 191, 36, 0.1);
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--gold) 10%, transparent);
+  transform: translateY(-3px);
 }
 
 .hero-section:hover::before {
@@ -135,8 +194,8 @@
 .hero-section h2 {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 1.5rem;
-  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-shade-2) 50%, var(--accent-cyan) 100%);
+  font-size: 1.3rem;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-shade-2) 50%, var(--blue-light) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -145,10 +204,10 @@
 [dir="rtl"] .hero-section h2 { font-family: var(--font-ar); font-weight: 500; }
 .hero-section p {
   color: var(--muted-strong);
-  font-size: var(--fs-body);
+  font-size: var(--fs-sm);
   line-height: 1.6;
-  max-width: 60ch;
-  padding-inline-end: var(--space-6);
+  padding-inline-end: var(--space-5);
+  flex: 1;
 }
 
 .hero-section-arrow {
@@ -176,11 +235,11 @@
   padding: var(--space-4) 0;
   font-size: var(--fs-sm);
   color: var(--muted);
-  border-top: 1px solid rgba(251, 191, 36, 0.1);
+  border-top: 1px solid color-mix(in srgb, var(--gold) 10%, transparent);
   margin-top: var(--space-6);
   width: 100%;
   text-align: center;
-  background: linear-gradient(180deg, transparent 0%, rgba(10, 14, 39, 0.3) 100%);
+  background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--brand-bg) 30%, transparent) 100%);
 }
 
 @keyframes fade-in {
@@ -190,4 +249,12 @@
 
 @media (max-width: 480px) {
   .hero-page { padding: var(--space-5) var(--space-3); }
+  .hero-orb { width: 132px; height: 132px; }
+  .hero-orb-core { width: 48px; height: 48px; }
+  .hero-sections { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-orb-ring { animation: none; opacity: 0.5; }
+  .hero-orb-core { animation: none; }
 }

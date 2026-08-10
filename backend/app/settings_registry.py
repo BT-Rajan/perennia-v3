@@ -171,23 +171,23 @@ _DEFS: list[SettingDef] = [
     # these few values using CSS color-mix(), so a full re-theme only
     # ever requires changing what's here — see src/styles/tokens.css
     # and PASS3_NOTES.md for the derivation.
-    SettingDef("theme.primary_color", "theme", "Primary color", SettingType.COLOR, "#fbbf24",
+    SettingDef("theme.primary_color", "theme", "Primary color", SettingType.COLOR, "#ff7a45",
                help_text="Main accent — buttons, links, highlights."),
-    SettingDef("theme.accent_color", "theme", "Accent color", SettingType.COLOR, "#3b82f6",
+    SettingDef("theme.accent_color", "theme", "Accent color", SettingType.COLOR, "#a855f7",
                help_text="Secondary accent, used alongside the primary color in gradients."),
-    SettingDef("theme.background_color", "theme", "Background color", SettingType.COLOR, "#0a0e27",
+    SettingDef("theme.background_color", "theme", "Background color", SettingType.COLOR, "#0c0a16",
                help_text="Base dark surface color the whole app is built on."),
-    SettingDef("theme.text_color", "theme", "Text color", SettingType.COLOR, "#f0f5ff",
+    SettingDef("theme.text_color", "theme", "Text color", SettingType.COLOR, "#f4f0fa",
                help_text="Primary light text color against the background."),
     SettingDef("theme.font_display", "theme", "Display font (headings)", SettingType.STRING,
-               '"Cormorant Garamond", Georgia, serif'),
+               '"Space Grotesk", system-ui, -apple-system, sans-serif'),
     SettingDef("theme.font_body", "theme", "Body font", SettingType.STRING,
                '"Inter", system-ui, -apple-system, sans-serif'),
     SettingDef("theme.font_ar", "theme", "Arabic font", SettingType.STRING,
                '"Noto Kufi Arabic", "Arial Unicode MS", sans-serif'),
     SettingDef("theme.google_fonts_url", "theme", "Google Fonts stylesheet URL", SettingType.URL,
                "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700"
-               "&family=Cormorant+Garamond:wght@500;600;700&family=Noto+Kufi+Arabic:wght@300;400;500;600;700"
+               "&family=Space+Grotesk:wght@500;600;700&family=Noto+Kufi+Arabic:wght@300;400;500;600;700"
                "&display=swap",
                help_text="Must include every font family referenced above, or those fonts won't load."),
     SettingDef("theme.header_height_px", "theme", "Header height (px)", SettingType.INT, 64,
