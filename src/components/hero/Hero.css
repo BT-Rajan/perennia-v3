@@ -48,28 +48,33 @@
   font-size: var(--fs-hero);
   letter-spacing: 0.01em;
   line-height: 1.3;
-  padding-block: 0.15em; /* headroom for the ripple's upward bob + gradient descenders */
-  background: linear-gradient(135deg, var(--white-soft) 0%, var(--gold) 50%, var(--blue-light) 100%);
+  padding-block: 0.15em; /* headroom so gradient descenders don't get clipped */
+  background: linear-gradient(
+    100deg,
+    var(--white-soft) 25%,
+    var(--gold) 40%,
+    var(--blue-light) 50%,
+    var(--gold) 60%,
+    var(--white-soft) 75%
+  );
+  background-size: 250% 100%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  animation: ripple-shimmer 4s linear infinite;
 }
 [dir="rtl"] .fit-one-line-inner { font-family: var(--font-ar); font-weight: 500; }
 
-/* Each word bobs on its own delay so the wave visibly travels
-   across the headline rather than the whole line pulsing at once. */
-.ripple-word {
-  display: inline-block;
-  animation: ripple-wave 2.8s var(--ease) infinite;
-}
-
-@keyframes ripple-wave {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-0.12em); }
+/* The "ripple" — a light sweep travels through the gradient fill.
+   Kept on a single text node (no per-word/letter spans) so it can
+   never disturb text layout or shaping, in any language. */
+@keyframes ripple-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -100% 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ripple-word { animation: none; }
+  .fit-one-line-inner { animation: none; }
 }
 
 /* ── Quick-start chat box — lets someone jump straight into a
@@ -119,22 +124,6 @@
   transform: translateY(-2px);
 }
 .hero-cta:active { transform: scale(0.97); }
-
-.hero-progress-track {
-  margin-top: var(--space-5);
-  width: min(220px, 60vw);
-  height: 4px;
-  border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, 0.1);
-  overflow: hidden;
-  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-.hero-progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--gold) 0%, var(--gold-shade-2) 50%, var(--blue-light) 100%);
-  transition: width 0.1s linear;
-  box-shadow: 0 0 8px color-mix(in srgb, var(--gold) 50%, transparent);
-}
 
 /* ── Feature grid — responsive card grid (was a full-width vertical
    stack) so the "explore the site" entry points read as a modern
