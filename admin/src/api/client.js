@@ -70,6 +70,11 @@ export const adminApi = {
   getSettingCategory: (category) => request(`admin/api/settings/${category}`),
   updateSettingCategory: (category, values) =>
     request(`admin/api/settings/${category}`, { method: "PUT", body: JSON.stringify(values) }),
+  uploadImage: (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return request("admin/api/uploads/image", { method: "POST", body: formData });
+  },
 
   // -- knowledge base (chat grounding: uploaded documents + web pages) --
   listKnowledge: () => request("admin/api/knowledge"),

@@ -3,7 +3,6 @@ import { useLang } from "../../context/LangContext.jsx";
 import { api } from "../../api/client.js";
 import TopBar from "../layout/TopBar.jsx";
 import GlassPanel from "../ui/GlassPanel.jsx";
-import BackButton from "../ui/BackButton.jsx";
 import Chip from "../ui/Chip.jsx";
 import ChatMessage from "./ChatMessage.jsx";
 import TypingIndicator from "./TypingIndicator.jsx";
@@ -59,7 +58,6 @@ export default function ChatPage({ onBack, onNavigate }) {
       <TopBar
         onNavigate={onNavigate}
         onLogoClick={onBack}
-        leading={<BackButton onClick={onBack} title={copy.common.back} />}
       >
         {features.bookingEnabled && (
           <Chip icon="💬" onClick={() => setBookingOpen(true)}>{t.bookBtn}</Chip>

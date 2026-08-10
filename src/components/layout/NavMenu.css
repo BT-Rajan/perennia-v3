@@ -30,4 +30,13 @@
   }
   .nav-menu-link:hover { color: var(--gold); }
   .nav-menu-link:hover::after { transform: scaleX(1); }
+
+  .nav-menu-home {
+    display: inline-flex;
+    align-items: center;
+  }
+  .nav-menu-home svg {
+    width: 18px;
+    height: 18px;
+  }
 }

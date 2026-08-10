@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useLang } from "../../context/LangContext.jsx";
 import TopBar from "../layout/TopBar.jsx";
 import GlassPanel from "../ui/GlassPanel.jsx";
-import BackButton from "../ui/BackButton.jsx";
 import Button from "../ui/Button.jsx";
 import Markdown from "../ui/Markdown.jsx";
 import BookingPanel from "../booking/BookingPanel.jsx";
@@ -34,7 +33,7 @@ export default function ContactPage({ onBack, onNavigate }) {
 
   return (
     <div className="content-page">
-      <TopBar onNavigate={onNavigate} onLogoClick={onBack} leading={<BackButton onClick={onBack} title={copy.common.back} />} />
+      <TopBar onNavigate={onNavigate} onLogoClick={onBack} />
 
       <main className="content-main">
         <div className="content-tagline">

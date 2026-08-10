@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { adminApi } from "../api/client.js";
 import "./SettingField.css";
 
 const LANG_LABELS = { en: "English", ar: "Arabic" };
@@ -33,6 +34,60 @@ function JsonTextArea({ value, onChange, onError, rows = 4 }) {
       onBlur={handleBlur}
       spellCheck={false}
     />
+  );
+}
+
+// Backs any `image`-typed setting (branding.logo_url, branding.favicon_url).
+// An admin can either paste a URL directly or upload a file — uploading
+// posts to the existing /admin/api/uploads/image endpoint (PNG/JPEG/WEBP/
+// ICO, sniffed server-side) and drops the returned URL straight into the
+// text field, so both paths end up setting the exact same string value.
+function ImageField({ value, onChange, onError }) {
+  const [uploading, setUploading] = useState(false);
+  const inputId = `img-upload-${Math.random().toString(36).slice(2)}`;
+
+  async function handleFileChange(e) {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-selecting the same file next time
+    if (!file) return;
+    setUploading(true);
+    onError(null);
+    try {
+      const { url } = await adminApi.uploadImage(file);
+      onChange(url);
+    } catch (err) {
+      onError(err.message || "Upload failed.");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  return (
+    <div className="setting-image-field">
+      {value && (
+        <img src={value} alt="" className="setting-image-preview" onError={(e) => (e.target.style.display = "none")} />
+      )}
+      <div className="setting-image-controls">
+        <input
+          type="text"
+          className="setting-input"
+          value={value ?? ""}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="/path/to/image.png or https://…"
+        />
+        <label htmlFor={inputId} className="setting-image-upload-btn">
+          {uploading ? "Uploading…" : "Upload file"}
+        </label>
+        <input
+          id={inputId}
+          type="file"
+          accept="image/png,image/jpeg,image/webp,.ico"
+          onChange={handleFileChange}
+          disabled={uploading}
+          hidden
+        />
+      </div>
+    </div>
   );
 }
 
@@ -131,15 +186,7 @@ function SingleControl({ def, value, onChange, onError }) {
       );
 
     case "image":
-      return (
-        <input
-          type="text"
-          className="setting-input"
-          value={value ?? ""}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder="/path/to/image.png or https://…"
-        />
-      );
+      return <ImageField value={value} onChange={onChange} onError={onError} />;
 
     case "string":
     default:

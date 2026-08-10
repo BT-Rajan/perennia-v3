@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { useLang } from "../../context/LangContext.jsx";
 import TopBar from "../layout/TopBar.jsx";
 import GlassPanel from "../ui/GlassPanel.jsx";
-import BackButton from "../ui/BackButton.jsx";
 import Markdown from "../ui/Markdown.jsx";
 import "./ContentPage.css";
 
@@ -15,7 +14,7 @@ import "./ContentPage.css";
  * renders inside the shell.
  */
 export default function ContentPage({ pageId, onBack, onNavigate }) {
-  const { copy, pages, branding } = useLang();
+  const { pages, branding } = useLang();
   const meta = pages[pageId];
 
   useEffect(() => {
@@ -26,7 +25,7 @@ export default function ContentPage({ pageId, onBack, onNavigate }) {
 
   return (
     <div className="content-page">
-      <TopBar onNavigate={onNavigate} onLogoClick={onBack} leading={<BackButton onClick={onBack} title={copy.common.back} />} />
+      <TopBar onNavigate={onNavigate} onLogoClick={onBack} />
 
       <main className="content-main">
         <div className="content-tagline">
@@ -37,6 +36,7 @@ export default function ContentPage({ pageId, onBack, onNavigate }) {
           <div className="content-tagline-divider" />
           <div className="content-tagline-sub">{meta.sub}</div>
         </div>
+
 
         <GlassPanel className="content-shell" as="section">
           <Markdown source={meta.body} />

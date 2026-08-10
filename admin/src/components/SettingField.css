@@ -101,3 +101,47 @@
   letter-spacing: 0.03em;
   color: var(--text-faint);
 }
+
+.setting-image-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.setting-image-preview {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  padding: 6px;
+}
+
+.setting-image-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.setting-image-controls .setting-input {
+  flex: 1;
+}
+
+.setting-image-upload-btn {
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--surface);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.setting-image-upload-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}

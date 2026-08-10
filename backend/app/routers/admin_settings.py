@@ -9,8 +9,8 @@ from sqlalchemy.orm import Session
 from app.db import get_db
 from app.deps import get_current_admin, require_csrf
 from app.models import AdminUser
-from app.settings_registry import CATEGORIES, REGISTRY, SettingType, defs_for_category
-from app.settings_service import get_all, get_category, set_many, _secret_placeholder
+from app.settings_registry import CATEGORIES, SettingType, defs_for_category
+from app.settings_service import get_all, get_category, set_many, all_secret_placeholders
 
 router = APIRouter(prefix="/admin/api/settings", tags=["admin-settings"], dependencies=[Depends(require_csrf)])
 
@@ -93,7 +93,5 @@ def get_all_settings(admin: AdminUser = Depends(get_current_admin), db: Session 
     admin export/overview screen. Secrets are masked, never decrypted
     back to the browser — write-only from the admin's perspective."""
     out = get_all(db, include_secrets=False)
-    for key, d in REGISTRY.items():
-        if d.secret:
-            out[key] = _secret_placeholder(db, key)
+    out.update(all_secret_placeholders(db))
     return out
