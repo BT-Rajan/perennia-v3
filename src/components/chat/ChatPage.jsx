@@ -88,7 +88,7 @@ export default function ChatPage({ onBack, onNavigate, initialMessage, onConsume
       <main className="chat-main">
         <div className="chat-tagline">
           <div className="chat-tagline-main">
-            <span>{t.taglineLine1}</span>
+            <span>{t.taglineLine1}</span>{" "}
             <span className="gold">{t.taglineLine2}</span>
           </div>
           <div className="chat-tagline-divider" />
