@@ -4,6 +4,7 @@ import LoginPage from "./pages/LoginPage.jsx";
 import DashboardLayout from "./pages/DashboardLayout.jsx";
 import OverviewPage from "./pages/OverviewPage.jsx";
 import AppointmentsPage from "./pages/AppointmentsPage.jsx";
+import ServicesPage from "./pages/ServicesPage.jsx";
 import LeadsPage from "./pages/LeadsPage.jsx";
 import SettingsPage from "./pages/SettingsPage.jsx";
 import KnowledgePage from "./pages/KnowledgePage.jsx";
@@ -38,6 +39,7 @@ export default function App() {
           >
             <Route index element={<OverviewPage />} />
             <Route path="appointments" element={<AppointmentsPage />} />
+            <Route path="services" element={<ServicesPage />} />
             <Route path="leads" element={<LeadsPage />} />
             <Route path="settings" element={<SettingsPage />} />
             <Route path="settings/:category" element={<SettingsPage />} />

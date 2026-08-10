@@ -178,6 +178,72 @@ class Appointment(Base):
     __table_args__ = (Index("ix_appointment_date_status", "date", "status"),)
 
 
+class Service(Base):
+    """One row per bookable service — the calendar module's equivalent
+    of Cal.com's per-user "event type," scoped to this single business
+    instead of to an account. This is Pass 0 of the plan in
+    docs/CALENDAR_MODULE_PLAN.md: the admin-managed catalog of services
+    exists as its own resource, but the public booking flow
+    (app/booking_service.py, app/models.py::Appointment) is not yet
+    wired to it — that migration is the next slice of Pass 8. Until
+    then `booking.slot_minutes` in the settings registry remains the
+    live scheduling value; it becomes only a default once Appointment
+    gains a service_id.
+
+    `translations` follows the same {lang_code: {field_key: str}}
+    pattern as ContentPage, for a public-facing name/description once
+    the public booking page is updated to show these."""
+
+    __tablename__ = "service"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    name: Mapped[str] = mapped_column(String(120), nullable=False)
+    slug: Mapped[str] = mapped_column(String(64), unique=True, index=True, nullable=False)
+    duration_minutes: Mapped[int] = mapped_column(Integer, nullable=False)
+    buffer_before_minutes: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    buffer_after_minutes: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    requires_confirmation: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    payment_required: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    # in_person | phone | link_provided — no embedded video-conferencing
+    # integration; see docs/CALENDAR_MODULE_PLAN.md §2.5 for why that
+    # was deliberately dropped from this plan.
+    location_type: Mapped[str] = mapped_column(String(20), default="in_person", nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    position: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    translations: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+    updated_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, onupdate=_utcnow)
+    updated_by: Mapped[str | None] = mapped_column(String(32), ForeignKey("admin_user.id"), nullable=True)
+
+    questions: Mapped[list["ServiceCustomQuestion"]] = relationship(
+        back_populates="service", cascade="all, delete-orphan", order_by="ServiceCustomQuestion.position"
+    )
+
+    __table_args__ = (Index("ix_service_active_position", "is_active", "position"),)
+
+
+class ServiceCustomQuestion(Base):
+    """A per-service intake question for the public booking form
+    (rendered once the public flow adopts Service in a later pass).
+    Its own table rather than a JSON column on Service, since questions
+    are added/removed/reordered independently of the service they
+    belong to, and each answer will need a stable id to reference back
+    to (AppointmentQuestionAnswer, added alongside the public wiring)."""
+
+    __tablename__ = "service_custom_question"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    service_id: Mapped[str] = mapped_column(
+        String(32), ForeignKey("service.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    kind: Mapped[str] = mapped_column(String(16), nullable=False)  # text | textarea | number | bool | phone
+    label: Mapped[str] = mapped_column(String(200), nullable=False)
+    required: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    position: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+
+    service: Mapped["Service"] = relationship(back_populates="questions")
+
+
 class Lead(Base):
     """A contact worth following up with — captured automatically
     whenever a booking is made (source='booking') or an email address

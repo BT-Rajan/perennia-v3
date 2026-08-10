@@ -76,6 +76,24 @@ export const adminApi = {
     return request("admin/api/uploads/image", { method: "POST", body: formData });
   },
 
+  // -- calendar module: services (Pass 0 — admin-only catalog, see
+  //    docs/CALENDAR_MODULE_PLAN.md) --
+  listServices: () => request("admin/api/services"),
+  getService: (id) => request(`admin/api/services/${id}`),
+  createService: (body) => request("admin/api/services", { method: "POST", body: JSON.stringify(body) }),
+  updateService: (id, body) => request(`admin/api/services/${id}`, { method: "PATCH", body: JSON.stringify(body) }),
+  deleteService: (id) => request(`admin/api/services/${id}`, { method: "DELETE" }),
+  addServiceQuestion: (serviceId, body) =>
+    request(`admin/api/services/${serviceId}/questions`, { method: "POST", body: JSON.stringify(body) }),
+  updateServiceQuestion: (serviceId, questionId, body) =>
+    request(`admin/api/services/${serviceId}/questions/${questionId}`, { method: "PATCH", body: JSON.stringify(body) }),
+  deleteServiceQuestion: (serviceId, questionId) =>
+    request(`admin/api/services/${serviceId}/questions/${questionId}`, { method: "DELETE" }),
+  reorderServiceQuestions: (serviceId, orderedIds) =>
+    request(`admin/api/services/${serviceId}/questions/reorder`, {
+      method: "POST", body: JSON.stringify({ ordered_ids: orderedIds }),
+    }),
+
   // -- knowledge base (chat grounding: uploaded documents + web pages) --
   listKnowledge: () => request("admin/api/knowledge"),
   getKnowledgeSource: (id) => request(`admin/api/knowledge/${id}`),
