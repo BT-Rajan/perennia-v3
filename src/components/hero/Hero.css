@@ -101,6 +101,9 @@
   font-size: var(--fs-body);
   color: var(--muted-strong);
   letter-spacing: 0.04em;
+  /* same flex-item max-content sizing issue as .chat-tagline — see
+     ChatPage.css */
+  width: 100%;
   max-width: 70ch;
   margin: 0 auto;
 }

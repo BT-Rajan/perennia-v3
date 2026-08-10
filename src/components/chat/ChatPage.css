@@ -85,7 +85,22 @@
 }
 
 .chat-conversation-wrap { flex: 1; display: flex; flex-direction: column; min-height: 0; position: relative; }
-.chat-conversation { flex: 1; overflow-y: auto; padding: var(--space-4); min-width: 0; }
+.chat-conversation {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+  min-width: 0;
+  /* .chat-shell has a fixed min/max-height on desktop, so a short
+     conversation (e.g. just the welcome message) doesn't fill it.
+     Without this, .chat-messages sits in normal block flow and pins
+     to the top, leaving a large dead gap above the input instead of
+     reading as a chat anchored to the bottom. Once messages overflow
+     the available height, margin-top: auto collapses to 0 and this
+     container's own overflow-y: auto takes over scrolling as usual. */
+  display: flex;
+  flex-direction: column;
+}
+.chat-messages { margin-top: auto; }
 
 .chat-footer {
   text-align: center;
