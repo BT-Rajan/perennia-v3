@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { useLang } from "../../context/LangContext.jsx";
 import TopBar from "../layout/TopBar.jsx";
 import ChatInput from "../chat/ChatInput.jsx";
@@ -13,6 +13,13 @@ import "./Hero.css";
  * render and uniformly scales it down just enough to fit — same
  * idea as `text-overflow: clamp`-by-hand. Re-measures on resize and
  * whenever the text itself changes (e.g. a language switch).
+ *
+ * Deliberately kept as ONE text node (no per-word/per-letter
+ * splitting) — splitting the string into separate inline elements
+ * broke text shaping and caused the words to overlap instead of
+ * flowing normally. The ripple is done separately as a shimmer
+ * sweep across the gradient fill (see .fit-one-line-inner in
+ * Hero.css), which animates safely without touching layout at all.
  */
 function FitOneLine({ text, className }) {
   const outerRef = useRef(null);
@@ -34,33 +41,28 @@ function FitOneLine({ text, className }) {
     fit();
     const ro = new ResizeObserver(fit);
     ro.observe(outer);
+    // Re-fit once webfonts finish loading — the first measurement can
+    // run before the display font swaps in, which would otherwise
+    // lock in a scale sized for the fallback font's (different) width.
+    document.fonts?.ready?.then(fit);
     return () => ro.disconnect();
   }, [text]);
-
-  const words = text.split(" ");
 
   return (
     <div ref={outerRef} className={`fit-one-line ${className || ""}`.trim()}>
       <span ref={innerRef} className="fit-one-line-inner" style={{ transform: `scale(${scale})` }}>
-        {words.map((word, i) => (
-          <span key={i} className="ripple-word" style={{ animationDelay: `${i * 0.12}s` }}>
-            {word}
-            {i < words.length - 1 ? "\u00A0" : ""}
-          </span>
-        ))}
+        {text}
       </span>
     </div>
   );
 }
 
 /**
- * Landing page. Auto-advances into the chat assistant after a short
- * countdown (length set by theme.heroAutoAdvanceSeconds — see
- * useLang().theme), or the person can jump in early via the CTA or
- * by typing straight into the quick-start chat box. The rippling,
- * always-single-line headline (see FitOneLine above) sits where the
- * old pulsing "voice orb" used to be — it's the page's signature
- * visual now.
+ * Landing page. The person can jump into the chat assistant via the
+ * CTA, or by typing straight into the quick-start chat box. The
+ * rippling, always-single-line headline (see FitOneLine above) sits
+ * where the old pulsing "voice orb" used to be — it's the page's
+ * signature visual now.
  *
  * The cards below double as the mobile entry point into the
  * standalone content pages (whichever pages are currently configured
@@ -68,10 +70,8 @@ function FitOneLine({ text, className }) {
  * header nav menu only shows at desktop widths.
  */
 export default function Hero({ onEnter, onNavigate }) {
-  const { copy, sections, nav, branding, theme } = useLang();
-  const [progress, setProgress] = useState(0);
+  const { copy, sections, nav, branding } = useLang();
   const [quickDraft, setQuickDraft] = useState("");
-  const autoAdvanceMs = (theme.heroAutoAdvanceSeconds ?? 7) * 1000;
 
   function handleQuickSend() {
     const text = quickDraft.trim();
@@ -79,30 +79,6 @@ export default function Hero({ onEnter, onNavigate }) {
     setQuickDraft("");
     onEnter(text);
   }
-
-  useEffect(() => {
-    let rafId;
-    let cancelled = false;
-    const start = performance.now();
-
-    function tick(now) {
-      if (cancelled) return;
-      const pct = Math.min(100, ((now - start) / autoAdvanceMs) * 100);
-      setProgress(pct);
-      if (pct >= 100) {
-        onEnter();
-      } else {
-        rafId = requestAnimationFrame(tick);
-      }
-    }
-    rafId = requestAnimationFrame(tick);
-
-    return () => {
-      cancelled = true;
-      cancelAnimationFrame(rafId);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoAdvanceMs]);
 
   return (
     <div className="hero-page">
@@ -127,9 +103,6 @@ export default function Hero({ onEnter, onNavigate }) {
         <button className="hero-cta" onClick={() => onEnter()}>
           {copy.home.hint}
         </button>
-        <div className="hero-progress-track">
-          <div className="hero-progress-fill" style={{ width: `${progress}%` }} />
-        </div>
       </div>
 
       <div className="hero-sections">
