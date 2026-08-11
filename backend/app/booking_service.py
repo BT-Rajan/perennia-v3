@@ -152,13 +152,44 @@ def _booked_intervals(db: Session, cfg: dict, date_str: str, *, exclude_id: str 
     return intervals
 
 
+class CalendarSyncUnavailableError(Exception):
+    """Raised internally when calendar sync is enabled, connected, and
+    the Google API call failed, AND booking.calendar_sync_fail_open is
+    False (the default) — signals available_slots to return no slots
+    for the day rather than book against unconfirmed real availability.
+    Never escapes available_slots itself."""
+
+
+def _google_busy_intervals(db: Session, cfg: dict, date_str: str) -> list[tuple[int, int]]:
+    """Busy ranges from the connected Google Calendar, or [] if sync
+    isn't enabled/connected. Raises CalendarSyncUnavailableError if
+    sync is enabled+connected but the Google API call failed and
+    booking.calendar_sync_fail_open is False — the caller propagates
+    that straight into "no slots today," the documented safety-over-
+    convenience default (see PASS12_NOTES.md)."""
+    if not get_setting(db, "features.calendar_sync_enabled"):
+        return []
+    from app import calendar_sync_service
+    credential = calendar_sync_service.get_active_credential(db)
+    if credential is None or not credential.calendar_id:
+        return []
+    try:
+        return calendar_sync_service.busy_minutes_for_date(db, credential, date_str, timezone=cfg["timezone"])
+    except Exception:
+        if get_setting(db, "booking.calendar_sync_fail_open"):
+            return []  # ignore the external calendar for this request, admin opted into this
+        raise CalendarSyncUnavailableError(date_str)
+
+
 def available_slots(
     db: Session, date_str: str, *, service_id: str | None = None, exclude_id: str | None = None
 ) -> list[str]:
     """Raises ValueError on a malformed date string, InvalidServiceError
     if service_id doesn't resolve to an active Service. Returns [] (not
     an error) for any date that's simply unbookable - closed day, past,
-    too far ahead - since "no slots" is a normal, expected outcome."""
+    too far ahead, or (Pass 12) an unreachable synced calendar with
+    fail-open turned off - since "no slots" is the normal, safe outcome
+    for all of these rather than a request error."""
     date = dt.date.fromisoformat(date_str)  # raises ValueError on bad format
     cfg = _booking_config(db)
     service = _resolve_service(db, service_id)  # raises InvalidServiceError
@@ -176,8 +207,13 @@ def available_slots(
     if not all_slots:
         return []
 
+    try:
+        google_busy = _google_busy_intervals(db, cfg, date_str)
+    except CalendarSyncUnavailableError:
+        return []
+
     duration, buf_before, buf_after = _duration_and_buffers(cfg, service)
-    blocked = _booked_intervals(db, cfg, date_str, exclude_id=exclude_id)
+    blocked = _booked_intervals(db, cfg, date_str, exclude_id=exclude_id) + google_busy
     earliest_bookable = now + dt.timedelta(hours=cfg["min_notice_hours"])
 
     out = []
@@ -347,6 +383,7 @@ def _serialize(db: Session, appt: Appointment) -> dict:
         "service": appt.service, "service_id": appt.service_id, "service_name": service_name,
         "notes": appt.notes, "status": appt.status,
         "confirmed_at": appt.confirmed_at.isoformat() if appt.confirmed_at else None,
+        "external_event_id": appt.external_event_id,
         "answers": answers,
     }
 

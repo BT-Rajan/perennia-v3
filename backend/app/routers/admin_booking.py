@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from app import booking_service, notification_service, webhook_service
+from app import booking_service, calendar_sync_service, notification_service, webhook_service
 from app.db import get_db
 from app.deps import get_current_admin, require_csrf
 from app.models import AdminUser
@@ -30,6 +30,8 @@ def admin_cancel(appt_id: str, admin: AdminUser = Depends(get_current_admin), db
     db.commit()
     if not result["ok"]:
         raise HTTPException(status.HTTP_404_NOT_FOUND, f"No appointment {appt_id!r}")
+    calendar_sync_service.delete_event_for_appointment(db, appt_id)
+    db.commit()
     return result
 
 
@@ -49,6 +51,9 @@ def admin_accept(appt_id: str, admin: AdminUser = Depends(get_current_admin), db
         _raise_for_error(result["error"], appt_id)
     notification_service.notify_booking_accepted(db, result["appointment"])
     webhook_service.dispatch_event(db, "booking.accepted", result["appointment"])
+    event_id = calendar_sync_service.create_event_for_appointment(db, appt_id)
+    if event_id:
+        result["appointment"]["external_event_id"] = event_id
     db.commit()
     return result
 

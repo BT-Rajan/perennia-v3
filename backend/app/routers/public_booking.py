@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from app import booking_service, notification_service, webhook_service
+from app import booking_service, calendar_sync_service, notification_service, webhook_service
 from app.config import settings
 from app.db import get_db
 from app.rate_limit import limiter
@@ -71,11 +71,19 @@ def get_slots(date: str, service_id: str | None = None, db: Session = Depends(ge
     if not get_setting(db, "features.booking_enabled"):
         return {"slots": []}
     try:
-        return {"slots": booking_service.available_slots(db, date, service_id=service_id)}
+        slots = booking_service.available_slots(db, date, service_id=service_id)
     except ValueError:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Invalid date")
     except booking_service.InvalidServiceError:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Unknown or inactive service")
+    # Otherwise read-only, but Pass 12's calendar sync can refresh and
+    # cache a Google access token as a side effect of computing these
+    # slots (calendar_sync_service._ensure_fresh_access_token) — commit
+    # so that refresh is actually persisted rather than silently
+    # discarded when this session closes, which would otherwise force
+    # a fresh token refresh on every single slots request.
+    db.commit()
+    return {"slots": slots}
 
 
 @router.post("/appointments")
@@ -96,7 +104,10 @@ def create_appointment(request: Request, body: CreateAppointmentRequest, db: Ses
         else:
             notification_service.notify_booking_confirmed(db, result["appointment"])
             webhook_service.dispatch_event(db, "booking.confirmed", result["appointment"])
-        db.commit()  # notification/webhook sending may have touched the session; flush any of its own state
+            event_id = calendar_sync_service.create_event_for_appointment(db, result["id"])
+            if event_id:
+                result["appointment"]["external_event_id"] = event_id
+        db.commit()  # notification/webhook/calendar-sync activity may have touched the session
     return result
 
 
@@ -113,6 +124,8 @@ def cancel_appointment(request: Request, body: CancelRequest, db: Session = Depe
     if result["ok"] and not result.get("already_cancelled"):
         notification_service.notify_booking_cancelled(db, result["appointment"])
         webhook_service.dispatch_event(db, "booking.cancelled", result["appointment"])
+        calendar_sync_service.delete_event_for_appointment(db, body.id)
+        result["appointment"]["external_event_id"] = None
         db.commit()
     return result
 
@@ -125,5 +138,15 @@ def reschedule_appointment(request: Request, body: RescheduleRequest, db: Sessio
     if result["ok"]:
         notification_service.notify_booking_rescheduled(db, result["appointment"])
         webhook_service.dispatch_event(db, "booking.rescheduled", result["appointment"])
+        # The old event's time is now wrong rather than useful — drop it
+        # and create a fresh one at the new time, rather than trying to
+        # PATCH an existing Google event (simpler, and this is an
+        # explicitly optional sub-feature per the plan).
+        calendar_sync_service.delete_event_for_appointment(db, body.id)
+        if result["appointment"]["status"] != "pending":
+            event_id = calendar_sync_service.create_event_for_appointment(db, body.id)
+            result["appointment"]["external_event_id"] = event_id
+        else:
+            result["appointment"]["external_event_id"] = None
         db.commit()
     return result

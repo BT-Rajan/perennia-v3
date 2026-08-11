@@ -24,6 +24,7 @@ from app.config import settings
 
 _pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
 _signer = URLSafeTimedSerializer(settings.SECRET_KEY, salt="admin-session")
+_oauth_state_signer = URLSafeTimedSerializer(settings.SECRET_KEY, salt="calendar-sync-oauth-state")
 _fernet = Fernet(settings.ENCRYPTION_KEY.encode() if isinstance(settings.ENCRYPTION_KEY, str) else settings.ENCRYPTION_KEY)
 
 SESSION_COOKIE_NAME = "perennia_admin_session"
@@ -55,6 +56,24 @@ def sign_session_id(session_id: str) -> str:
 def unsign_session_id(cookie_value: str, max_age: int) -> str | None:
     try:
         return _signer.loads(cookie_value, max_age=max_age)
+    except BadSignature:
+        return None
+
+
+# ── OAuth state signing (Pass 12: Calendar Sync connect flow) ──────────
+# Google's OAuth `state` parameter is our only CSRF/tampering defense
+# across the redirect round-trip to Google and back — a signed,
+# timestamped opaque token (the admin's id, so the callback can attribute
+# the connection to who initiated it) rather than a DB row, since the
+# whole point is it only needs to survive one redirect and expire fast.
+
+def sign_oauth_state(admin_id: str) -> str:
+    return _oauth_state_signer.dumps(admin_id)
+
+
+def unsign_oauth_state(state: str, max_age: int = 600) -> str | None:
+    try:
+        return _oauth_state_signer.loads(state, max_age=max_age)
     except BadSignature:
         return None
 

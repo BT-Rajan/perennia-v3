@@ -229,6 +229,10 @@ _DEFS: list[SettingDef] = [
     SettingDef("features.booking_enabled", "features", "Enable appointment booking", SettingType.BOOL, True),
     SettingDef("features.chat_enabled", "features", "Enable AI chat widget", SettingType.BOOL, True),
     SettingDef("features.whatsapp_widget_enabled", "features", "Enable WhatsApp widget", SettingType.BOOL, False),
+    SettingDef("features.calendar_sync_enabled", "features", "Enable Google Calendar sync", SettingType.BOOL, False,
+               help_text="Pass 12: once connected (see Calendar Sync), busy time on the linked Google "
+                         "Calendar blocks booking slots. Off by default even after connecting — a "
+                         "deliberate two-step opt-in."),
 
     # booking — business rules for the appointment scheduler. Slot
     # generation, availability, and notice-window enforcement all read
@@ -254,6 +258,12 @@ _DEFS: list[SettingDef] = [
                validator=_int_range(1, 365)),
     SettingDef("booking.min_notice_hours", "booking", "Minimum notice (hours)", SettingType.INT, 6,
                help_text="Required lead time to book, cancel, or reschedule.", validator=_int_range(0, 168)),
+    SettingDef("booking.calendar_sync_fail_open", "booking", "If Google Calendar is unreachable, show slots anyway",
+               SettingType.BOOL, False,
+               help_text="Pass 12: when the connected Google Calendar can't be reached (timeout, revoked "
+                         "access, quota), the safe default is to show NO slots rather than risk double-"
+                         "booking against busy time we can't currently see. Turn this on only if you'd "
+                         "rather keep taking bookings — ignoring the external calendar — when it's down."),
 
     # chat — LLM-powered assistant configuration. The API key is the
     # only secret setting in the app so far (Fernet-encrypted at rest
@@ -295,6 +305,23 @@ _DEFS: list[SettingDef] = [
         "ar": "لقد وصلت إلى الحد الأقصى لعدد الرسائل في هذه الجلسة. يسعدنا مواصلة الحديث مباشرة — "
               "احجز موعداً سريعاً مع فريقنا.",
     }, i18n=True, help_text="Shown once a visitor exceeds the max exchanges above, in place of a real reply."),
+
+    # calendar_sync — Pass 12 (docs/CALENDAR_MODULE_PLAN.md): Google
+    # OAuth app credentials for the Calendar Sync connect flow. These
+    # identify *this deployment* to Google (same client id/secret for
+    # every admin who ever connects, since there's one business
+    # per install) — separate from the per-connection tokens stored in
+    # CalendarCredential (app/models.py), which identify *which Google
+    # account* got connected and are Fernet-encrypted the same way
+    # google_client_secret is.
+    SettingDef("calendar_sync.google_client_id", "calendar_sync", "Google OAuth client ID", SettingType.STRING, "",
+               help_text="From Google Cloud Console — an OAuth 2.0 Client ID for a 'Web application'."),
+    SettingDef("calendar_sync.google_client_secret", "calendar_sync", "Google OAuth client secret",
+               SettingType.STRING, "", secret=True),
+    SettingDef("calendar_sync.google_redirect_uri", "calendar_sync", "OAuth redirect URI", SettingType.URL, "",
+               help_text="Must exactly match an 'Authorized redirect URI' configured on the Google OAuth "
+                         "client — typically https://yourdomain.com/admin/api/calendar-sync/callback.",
+               validator=_url_or_empty),
 
     # notifications — outbound email/WhatsApp for booking confirmations
     # and internal staff alerts. Every send is best-effort: a

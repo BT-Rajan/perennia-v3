@@ -194,6 +194,14 @@ class Appointment(Base):
     # for anything that was auto-confirmed, so "was this ever pending"
     # is reconstructable from the data without a separate history table.
     confirmed_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    # Pass 12: set when this appointment's confirmation created a
+    # matching event on the connected Google Calendar, so a later
+    # cancel/reschedule knows which external event to delete/update
+    # instead of leaving a stale entry on the business's real calendar.
+    # Null for every appointment made before sync existed, and for any
+    # made while sync was off or event-creation itself failed
+    # (best-effort — see calendar_sync_service.py).
+    external_event_id: Mapped[str | None] = mapped_column(String(512), nullable=True)
     created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
     updated_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, onupdate=_utcnow)
 
@@ -373,6 +381,34 @@ class WebhookDelivery(Base):
     response_status: Mapped[int | None] = mapped_column(Integer, nullable=True)
     duration_ms: Mapped[int] = mapped_column(Integer, nullable=False)
     attempted_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, index=True)
+
+
+class CalendarCredential(Base):
+    """Pass 12 (docs/CALENDAR_MODULE_PLAN.md): one connected external
+    calendar account for the whole business — deliberately not a
+    per-admin-user thing, since there's one calendar to sync, not one
+    per admin login. `provider` is a plain string rather than a
+    hardcoded enum so a second provider (Office 365, CalDAV — neither
+    built yet, see docs/CALENDAR_MODULE_PLAN.md §2.4 Pass 12) wouldn't
+    need a schema migration, just a new value.
+
+    `access_token`/`refresh_token` get the exact same at-rest treatment
+    as `Webhook.secret` and `SiteSetting.is_secret` rows — Fernet-
+    encrypted via app/security.py, no new crypto path. `calendar_id` is
+    nullable: a row can exist mid-connect (tokens stored, calendar not
+    yet chosen) before `POST /admin/api/calendar-sync/select` sets it
+    and flips `is_active`."""
+
+    __tablename__ = "calendar_credential"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    provider: Mapped[str] = mapped_column(String(32), default="google", nullable=False)
+    access_token: Mapped[str] = mapped_column(Text, nullable=False)  # Fernet-encrypted
+    refresh_token: Mapped[str] = mapped_column(Text, nullable=False)  # Fernet-encrypted
+    token_expires_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    calendar_id: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    connected_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
 
 class Lead(Base):
