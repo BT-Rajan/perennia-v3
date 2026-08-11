@@ -273,7 +273,7 @@ _DEFS: list[SettingDef] = [
     # configured — is ordinary admin-editable config, so the whole
     # assistant's behavior and persona can be retuned without a deploy.
     SettingDef("chat.llm_provider", "chat", "LLM provider", SettingType.ENUM, "none",
-               choices=("none", "anthropic", "openai"),
+               choices=("none", "anthropic", "openai", "deepseek"),
                help_text="'none' disables real LLM calls; the assistant uses the fallback message below."),
     SettingDef("chat.llm_model", "chat", "Model", SettingType.STRING, "claude-sonnet-4-6"),
     SettingDef("chat.llm_api_key", "chat", "API key", SettingType.STRING, "", secret=True),

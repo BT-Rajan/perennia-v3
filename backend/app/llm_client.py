@@ -14,6 +14,7 @@ import httpx
 
 ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
 OPENAI_URL = "https://api.openai.com/v1/chat/completions"
+DEEPSEEK_URL = "https://api.deepseek.com/chat/completions"
 
 REQUEST_TIMEOUT_SECONDS = 20.0
 
@@ -93,7 +94,37 @@ def _call_openai(*, api_key: str, model: str, system_prompt: str, history: list[
         raise LLMError(f"OpenAI API request failed: {e}") from e
 
 
-_PROVIDERS = {"anthropic": _call_anthropic, "openai": _call_openai}
+def _call_deepseek(*, api_key: str, model: str, system_prompt: str, history: list[dict], message: str,
+                    max_tokens: int, temperature: float) -> str:
+    # DeepSeek's API is OpenAI-compatible (same chat-completions request/
+    # response shape), just a different base URL and key — so this is
+    # deliberately a near-duplicate of _call_openai rather than a shared
+    # helper, to keep each provider's error handling independently
+    # editable as the two APIs inevitably drift.
+    messages = [{"role": "system", "content": system_prompt}, *_history_to_messages(history),
+                {"role": "user", "content": message}]
+    try:
+        resp = httpx.post(
+            DEEPSEEK_URL,
+            headers={"Authorization": f"Bearer {api_key}", "content-type": "application/json"},
+            json={"model": model, "messages": messages, "max_tokens": max_tokens, "temperature": temperature},
+            timeout=REQUEST_TIMEOUT_SECONDS,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        text = data["choices"][0]["message"]["content"].strip()
+        if not text:
+            raise LLMError("DeepSeek response contained no text content")
+        return text
+    except (KeyError, IndexError) as e:
+        raise LLMError(f"Unexpected DeepSeek response shape: {e}") from e
+    except httpx.HTTPStatusError as e:
+        raise LLMError(f"DeepSeek API returned {e.response.status_code}") from e
+    except httpx.HTTPError as e:
+        raise LLMError(f"DeepSeek API request failed: {e}") from e
+
+
+_PROVIDERS = {"anthropic": _call_anthropic, "openai": _call_openai, "deepseek": _call_deepseek}
 
 
 def generate_reply(*, provider: str, api_key: str, model: str, system_prompt: str, history: list[dict],

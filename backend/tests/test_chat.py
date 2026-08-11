@@ -159,6 +159,37 @@ def test_llm_provider_enum_validation(logged_in_client):
     assert resp.status_code == 400
 
 
+def test_chat_calls_configured_deepseek_provider(logged_in_client, client, monkeypatch):
+    """Same plumbing check as test_chat_calls_configured_llm_provider,
+    but for the 'deepseek' provider — confirms it's accepted by the
+    chat.llm_provider enum and correctly passed through to
+    llm_client.generate_reply."""
+    captured = {}
+
+    def fake_generate_reply(**kwargs):
+        captured.update(kwargs)
+        return "This is a canned DeepSeek reply."
+
+    monkeypatch.setattr("app.chat_service.llm_client.generate_reply", fake_generate_reply)
+
+    resp = logged_in_client.put("/admin/api/settings/chat", json={
+        "chat.llm_provider": "deepseek", "chat.llm_api_key": "ds-fake-test-key",
+        "chat.llm_model": "deepseek-chat",
+    })
+    assert resp.status_code == 200
+    try:
+        chat_resp = client.post("/api/chat", json={
+            "message": "What services do you offer?", "lang": "en", "history": [],
+        })
+        assert chat_resp.status_code == 200
+        assert chat_resp.json()["reply"] == "This is a canned DeepSeek reply."
+        assert captured["provider"] == "deepseek"
+        assert captured["api_key"] == "ds-fake-test-key"
+        assert captured["model"] == "deepseek-chat"
+    finally:
+        logged_in_client.put("/admin/api/settings/chat", json={"chat.llm_provider": "none"})
+
+
 def test_chat_lead_tag_is_captured_and_stripped_from_reply(logged_in_client, client, monkeypatch):
     """The assistant's hidden [[LEAD_CAPTURED ...]] tag must produce a
     real lead with name/phone/email and never reach the visitor."""
