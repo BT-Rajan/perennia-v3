@@ -8,7 +8,6 @@ import ServicesPage from "./pages/ServicesPage.jsx";
 import LeadsPage from "./pages/LeadsPage.jsx";
 import SettingsPage from "./pages/SettingsPage.jsx";
 import KnowledgePage from "./pages/KnowledgePage.jsx";
-import PagesPage from "./pages/PagesPage.jsx";
 
 function RequireAuth({ children }) {
   const { user, loading } = useAuth();
@@ -43,8 +42,9 @@ export default function App() {
             <Route path="services" element={<ServicesPage />} />
             {/* Webhooks moved under Settings — keep old links/bookmarks working */}
             <Route path="webhooks" element={<Navigate to="/settings/webhooks" replace />} />
+            {/* Pages moved under Settings — keep old links/bookmarks working */}
+            <Route path="pages" element={<Navigate to="/settings/pages" replace />} />
             <Route path="leads" element={<LeadsPage />} />
-            <Route path="pages" element={<PagesPage />} />
             <Route path="settings" element={<SettingsPage />} />
             <Route path="settings/:category" element={<SettingsPage />} />
             <Route path="knowledge" element={<KnowledgePage />} />
