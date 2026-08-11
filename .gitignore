@@ -2,3 +2,4 @@ node_modules/
 dist/
 .env
 ADMIN_CREDENTIALS.txt
+ecosystem.config.cjs
