@@ -14,7 +14,7 @@ import re
 
 from sqlalchemy.orm import Session
 
-from app import knowledge_service, leads_service, llm_client
+from app import chat_tools, knowledge_service, leads_service, llm_client
 from app.settings_service import get_setting
 
 EMAIL_RE = re.compile(r"[^\s@,;:!?()<>\[\]\"']+@[^\s@,;:!?()<>\[\]\"']+\.[^\s@,;:!?()<>\[\]\"']+")
@@ -76,6 +76,54 @@ def _nudge_text(lang: str, turns_used: int, max_turns: int) -> str:
     )
 
 
+def _brevity_instructions(lang: str) -> str:
+    """Always appended, regardless of what the admin wrote in
+    chat.system_prompt — a persona edit shouldn't have to remember to
+    re-state "keep it short" every time, and a visitor on a chat widget
+    wants a quick back-and-forth, not an essay per turn."""
+    if lang == "ar":
+        return (
+            "\n\nمهم بخصوص طول الرد: اجعل ردودك قصيرة ومحادثة — عادة من جملة إلى ثلاث جمل، وفقرة "
+            "قصيرة واحدة كحد أقصى. لا تسرد كل التفاصيل دفعة واحدة؛ أعط أهم نقطة أو نقطتين واسأل "
+            "إن كان الزائر يريد المزيد. استثناء: إذا طلب الزائر صراحة شرحاً أو قائمة مفصلة."
+        )
+    return (
+        "\n\nIMPORTANT about reply length: keep responses short and conversational — normally "
+        "1-3 sentences, one short paragraph at most. Don't dump every detail at once; give the "
+        "one or two most relevant points and offer to say more if they want it. Exception: if the "
+        "visitor explicitly asks for a detailed explanation or a list."
+    )
+
+
+def _booking_instructions(lang: str) -> str:
+    """Tells the assistant it can complete a real booking with its
+    tools (see chat_tools.py) rather than only collecting contact
+    details for a human follow-up call. Only included when booking
+    tools are actually being passed to the LLM this turn — see
+    get_reply — so the model is never told about tools it doesn't
+    have."""
+    if lang == "ar":
+        return (
+            "\n\nيمكنك حجز موعد فعلي مباشرة ضمن هذه المحادثة باستخدام أدواتك: ابدأ بـ "
+            "list_services لمعرفة الخدمات المتاحة إن لم تكن تعرفها، ثم استخدم check_availability "
+            "للحصول على الأوقات الحقيقية المتاحة ليوم معيّن — لا تخمّن وقتاً أبداً. لا تستدعِ "
+            "book_appointment إلا بعد موافقة الزائر الصريحة على تاريخ ووقت محددين من نتائج "
+            "check_availability، وبعد الحصول على الاسم والبريد الإلكتروني على الأقل. إذا كانت "
+            "الخدمة المختارة لها أسئلة مطلوبة (من list_services)، اجمع إجاباتها قبل الحجز. بعد "
+            "نجاح الحجز، أخبر الزائر بوضوح برمز التأكيد الذي أعادته الأداة."
+        )
+    return (
+        "\n\nYou can complete a real booking directly in this conversation using your tools: "
+        "start with list_services if you don't already know what's offered, then use "
+        "check_availability to get real open times for a specific date — never guess or invent a "
+        "time. Only call book_appointment once the visitor has explicitly agreed to a specific "
+        "date and time from check_availability's results, and you have at least their name and "
+        "email. If the chosen service has required questions (from list_services), collect those "
+        "answers before booking. After a successful booking, clearly tell the visitor the "
+        "confirmation code the tool returned."
+    )
+
+
 def _lead_capture_instructions(lang: str) -> str:
     """Instructs the assistant to collect name, then phone, then
     email - one at a time, politely framed - before getting into
@@ -110,7 +158,9 @@ def _lead_capture_instructions(lang: str) -> str:
     )
 
 
-def _build_system_prompt(db: Session, *, lang: str, turns_used: int, max_turns: int, lead_captured: bool) -> str:
+def _build_system_prompt(
+    db: Session, *, lang: str, turns_used: int, max_turns: int, lead_captured: bool, booking_enabled: bool
+) -> str:
     base = _lang_value(get_setting(db, "chat.system_prompt"), lang)
 
     kb_block = knowledge_service.build_prompt_block(db)
@@ -119,9 +169,11 @@ def _build_system_prompt(db: Session, *, lang: str, turns_used: int, max_turns: 
 
     contact_block = _contact_block(db, lang)
     lead_block = "" if lead_captured else _lead_capture_instructions(lang)
+    booking_block = _booking_instructions(lang) if booking_enabled else ""
     nudge_block = _nudge_text(lang, turns_used, max_turns)
+    brevity_block = _brevity_instructions(lang)
 
-    return f"{base}{kb_block}{contact_block}{lead_block}{nudge_block}"
+    return f"{base}{kb_block}{contact_block}{lead_block}{booking_block}{nudge_block}{brevity_block}"
 
 
 def _extract_conversational_lead(reply: str) -> tuple[str, dict | None]:
@@ -164,9 +216,11 @@ def get_reply(
     if provider == "none":
         reply = unavailable
     else:
+        booking_enabled = bool(get_setting(db, "features.booking_enabled"))
         try:
             system_prompt = _build_system_prompt(
-                db, lang=lang, turns_used=turns_used, max_turns=max_turns, lead_captured=lead_captured
+                db, lang=lang, turns_used=turns_used, max_turns=max_turns, lead_captured=lead_captured,
+                booking_enabled=booking_enabled,
             )
             reply = llm_client.generate_reply(
                 provider=provider,
@@ -177,6 +231,8 @@ def get_reply(
                 message=message,
                 max_tokens=get_setting(db, "chat.max_tokens"),
                 temperature=get_setting(db, "chat.temperature"),
+                tools=chat_tools.BOOKING_TOOLS if booking_enabled else None,
+                tool_executor=chat_tools.make_executor(db, lang=lang) if booking_enabled else None,
             )
         except llm_client.LLMError:
             reply = unavailable
