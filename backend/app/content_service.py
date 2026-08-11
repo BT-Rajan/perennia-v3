@@ -86,6 +86,18 @@ def rollback_page(db: Session, slug: str, version_id: str, *, actor_id: str | No
     return upsert_page(db, slug, translations=version.translations, actor_id=actor_id, actor_username=actor_username)
 
 
+def reorder_pages(db: Session, ordered_slugs: list[str], *, actor_id: str | None, actor_username: str | None) -> None:
+    """Same pattern as reorder_faq: bulk-assign `order` from list position
+    so the admin UI can drag-reorder pages without one PUT per row."""
+    pages = {p.slug: p for p in db.scalars(select(ContentPage).where(ContentPage.slug.in_(ordered_slugs)))}
+    missing = set(ordered_slugs) - set(pages)
+    if missing:
+        raise KeyError(f"Unknown page slug(s): {sorted(missing)}")
+    for idx, slug in enumerate(ordered_slugs):
+        pages[slug].order = idx
+    db.add(AuditLog(actor_id=actor_id, actor_username=actor_username, action="content_page.reorder"))
+
+
 # ── FAQ items ────────────────────────────────────────────────────────
 
 def list_faq(db: Session, *, active_only: bool) -> list[FaqItem]:

@@ -178,6 +178,7 @@ export function buildFallbackSite() {
     defaultLanguage: "en",
     theme: FALLBACK_THEME,
     features: { bookingEnabled: true, chatEnabled: true, whatsappWidgetEnabled: false },
+    contact: FALLBACK_CONTACT,
     branding: {
       siteNameByLang: { en: BRAND.name, ar: BRAND.wordmarkAr },
       logoUrl: "/static/logo.svg",
@@ -196,6 +197,19 @@ function apiFeatures(publicConfig) {
     whatsappWidgetEnabled: publicConfig["features.whatsapp_widget_enabled"],
   };
 }
+
+// contact.address is i18n ({en, ar}); email/phone/whatsapp_number are
+// plain scalars in the settings registry (see settings_registry.py).
+function apiContact(publicConfig) {
+  return {
+    email: publicConfig["contact.email"] ?? "",
+    phone: publicConfig["contact.phone"] ?? "",
+    whatsappNumber: publicConfig["contact.whatsapp_number"] ?? "",
+    addressByLang: publicConfig["contact.address"] ?? { en: "", ar: "" },
+  };
+}
+
+const FALLBACK_CONTACT = { email: "", phone: "", whatsappNumber: "", addressByLang: { en: "", ar: "" } };
 
 function apiTheme(publicConfig) {
   return {
@@ -243,6 +257,7 @@ export async function loadSiteContent() {
     features: haveFullApiData
       ? apiFeatures(publicConfig)
       : { bookingEnabled: true, chatEnabled: true, whatsappWidgetEnabled: false },
+    contact: haveFullApiData ? apiContact(publicConfig) : FALLBACK_CONTACT,
     branding: {
       siteNameByLang: publicConfig?.["branding.site_name"] ?? { en: BRAND.name, ar: BRAND.wordmarkAr },
       logoUrl: publicConfig?.["branding.logo_url"] ?? "/static/logo.svg",

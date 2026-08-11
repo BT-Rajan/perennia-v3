@@ -217,7 +217,7 @@ if (fs.existsSync(envPath)) {
 module.exports = {
   apps: [
     {
-      name: "perennia-backend",
+      name: "perennia_web",
       cwd: path.join(__dirname, "backend"),
       script: path.join(__dirname, "backend", "venv", "bin", "uvicorn"),
       args: `app.main:app --host ${host} --port ${port}`,
@@ -229,12 +229,12 @@ module.exports = {
 };
 JSEOF
 
-    if pm2 describe perennia-backend >/dev/null 2>&1; then
-        pm2 restart perennia-backend --update-env
-        ok "pm2: restarted existing 'perennia-backend' process"
+    if pm2 describe perennia_web >/dev/null 2>&1; then
+        pm2 restart perennia_web --update-env
+        ok "pm2: restarted existing 'perennia_web' process"
     else
         pm2 start "$ROOT_DIR/ecosystem.config.cjs"
-        ok "pm2: started 'perennia-backend'"
+        ok "pm2: started 'perennia_web'"
     fi
     pm2 save
     ok "pm2 process list saved"
@@ -249,10 +249,10 @@ echo ""
 echo "${GREEN}${BOLD}Perennia v2 is set up.${RESET}"
 echo ""
 if [ "$PM2_ATTACHED" = true ]; then
-    echo "The backend is running under pm2 as 'perennia-backend'."
+    echo "The backend is running under pm2 as 'perennia_web'."
     echo "  ${BOLD}pm2 status${RESET}                 — check it's up"
-    echo "  ${BOLD}pm2 logs perennia-backend${RESET}   — tail logs"
-    echo "  ${BOLD}pm2 restart perennia-backend${RESET} — restart after config changes"
+    echo "  ${BOLD}pm2 logs perennia_web${RESET}   — tail logs"
+    echo "  ${BOLD}pm2 restart perennia_web${RESET} — restart after config changes"
 else
     echo "Everything runs behind a single port — start the backend and it"
     echo "serves the public site, the admin dashboard, and the API:"

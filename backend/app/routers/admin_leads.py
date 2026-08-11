@@ -28,6 +28,14 @@ class LeadUpdateIn(BaseModel):
     notes: str | None = None
 
 
+class LeadCreateIn(BaseModel):
+    name: str = ""
+    email: str
+    phone: str = ""
+    notes: str = ""
+    status: str = "new"
+
+
 def _serialize(lead) -> LeadOut:
     return LeadOut(
         id=lead.id, name=lead.name, email=lead.email, phone=lead.phone,
@@ -42,6 +50,20 @@ def list_leads(
     admin: AdminUser = Depends(get_current_admin), db: Session = Depends(get_db),
 ):
     return [_serialize(l) for l in leads_service.list_leads(db, status=status_filter, source=source)]
+
+
+@router.post("", response_model=LeadOut)
+def create_lead(body: LeadCreateIn, admin: AdminUser = Depends(get_current_admin), db: Session = Depends(get_db)):
+    try:
+        lead = leads_service.create_lead(
+            db, name=body.name, email=body.email, phone=body.phone, notes=body.notes, status=body.status,
+        )
+        db.commit()
+    except ValueError as e:
+        db.rollback()
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, str(e))
+    db.refresh(lead)
+    return _serialize(lead)
 
 
 @router.get("/{lead_id}", response_model=LeadOut)

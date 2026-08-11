@@ -2,6 +2,7 @@ import { Fragment, useCallback, useEffect, useState } from "react";
 import { adminApi } from "../api/client.js";
 import { useAuth } from "../context/AuthContext.jsx";
 import PageHeader from "../components/PageHeader.jsx";
+import AppointmentCreatePanel from "../components/AppointmentCreatePanel.jsx";
 import "./AppointmentsPage.css";
 
 const STATUS_OPTIONS = [
@@ -20,6 +21,7 @@ export default function AppointmentsPage() {
   const [error, setError] = useState("");
   const [busyId, setBusyId] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
+  const [creating, setCreating] = useState(false);
 
   const load = useCallback(() => {
     adminApi
@@ -76,7 +78,22 @@ export default function AppointmentsPage() {
 
   return (
     <div>
-      <PageHeader title="Appointments" subtitle="Every booking made through the site." />
+      <PageHeader
+        title="Appointments"
+        subtitle="Every booking made through the site."
+        actions={
+          <button className="row-action primary" onClick={() => setCreating(true)}>
+            + New appointment
+          </button>
+        }
+      />
+
+      {creating && (
+        <AppointmentCreatePanel
+          onClose={() => setCreating(false)}
+          onCreated={() => { setCreating(false); load(); }}
+        />
+      )}
 
       <div className="filters-row">
         <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>

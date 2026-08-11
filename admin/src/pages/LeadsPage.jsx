@@ -3,6 +3,7 @@ import { adminApi } from "../api/client.js";
 import { useAuth } from "../context/AuthContext.jsx";
 import PageHeader from "../components/PageHeader.jsx";
 import LeadDetailPanel from "../components/LeadDetailPanel.jsx";
+import LeadCreatePanel from "../components/LeadCreatePanel.jsx";
 import "./LeadsPage.css";
 
 const STATUS_OPTIONS = ["", "new", "contacted", "qualified", "converted", "lost"];
@@ -15,6 +16,7 @@ export default function LeadsPage() {
   const [sourceFilter, setSourceFilter] = useState("");
   const [error, setError] = useState("");
   const [selectedId, setSelectedId] = useState(null);
+  const [creating, setCreating] = useState(false);
 
   const load = useCallback(() => {
     adminApi
@@ -31,6 +33,12 @@ export default function LeadsPage() {
     setLeads((prev) => prev.map((l) => (l.id === updatedLead.id ? updatedLead : l)));
   }
 
+  function handleCreated(lead) {
+    setLeads((prev) => [lead, ...(prev ?? [])]);
+    setCreating(false);
+    setSelectedId(lead.id);
+  }
+
   function handleDeleted(id) {
     setLeads((prev) => prev.filter((l) => l.id !== id));
     setSelectedId(null);
@@ -40,7 +48,15 @@ export default function LeadsPage() {
 
   return (
     <div>
-      <PageHeader title="Leads" subtitle="Everyone who's booked a call or left an email in chat." />
+      <PageHeader
+        title="Leads"
+        subtitle="Everyone who's booked a call or left an email in chat."
+        actions={
+          <button className="row-action primary" onClick={() => { setCreating(true); setSelectedId(null); }}>
+            + New lead
+          </button>
+        }
+      />
 
       <div className="filters-row">
         <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
@@ -79,7 +95,7 @@ export default function LeadsPage() {
                 <tr
                   key={l.id}
                   className={selectedId === l.id ? "row-selected" : ""}
-                  onClick={() => setSelectedId(l.id)}
+                  onClick={() => { setSelectedId(l.id); setCreating(false); }}
                   style={{ cursor: "pointer" }}
                 >
                   <td>
@@ -95,7 +111,11 @@ export default function LeadsPage() {
           </table>
         </div>
 
-        {selectedLead && (
+        {creating && (
+          <LeadCreatePanel onClose={() => setCreating(false)} onCreated={handleCreated} />
+        )}
+
+        {!creating && selectedLead && (
           <LeadDetailPanel
             lead={selectedLead}
             onClose={() => setSelectedId(null)}

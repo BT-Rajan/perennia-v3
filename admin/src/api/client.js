@@ -79,6 +79,11 @@ export const adminApi = {
     const qs = new URLSearchParams(Object.entries(params).filter(([, v]) => v));
     return request(`admin/api/booking/appointments?${qs}`);
   },
+  createAppointment: (body) => request("admin/api/booking/appointments", { method: "POST", body: JSON.stringify(body) }),
+  // Public slot-availability check, reused here so the admin's manual
+  // "Add appointment" form can only pick a slot the grid actually allows.
+  getSlots: (date, serviceId) =>
+    request(`api/booking/slots?date=${encodeURIComponent(date)}${serviceId ? `&service_id=${encodeURIComponent(serviceId)}` : ""}`),
   cancelAppointment: (id) => request(`admin/api/booking/appointments/${id}/cancel`, { method: "POST" }),
   acceptAppointment: (id) => request(`admin/api/booking/appointments/${id}/accept`, { method: "POST" }),
   rejectAppointment: (id, reason) =>
@@ -88,6 +93,7 @@ export const adminApi = {
     const qs = new URLSearchParams(Object.entries(params).filter(([, v]) => v));
     return request(`admin/api/leads?${qs}`);
   },
+  createLead: (body) => request("admin/api/leads", { method: "POST", body: JSON.stringify(body) }),
   getLead: (id) => request(`admin/api/leads/${id}`),
   updateLead: (id, body) => request(`admin/api/leads/${id}`, { method: "PATCH", body: JSON.stringify(body) }),
   deleteLead: (id) => request(`admin/api/leads/${id}`, { method: "DELETE" }),
@@ -152,6 +158,17 @@ export const adminApi = {
   setKnowledgeSourceActive: (id, isActive) =>
     request(`admin/api/knowledge/${id}`, { method: "PATCH", body: JSON.stringify({ is_active: isActive }) }),
   deleteKnowledgeSource: (id) => request(`admin/api/knowledge/${id}`, { method: "DELETE" }),
+
+  // -- content: pages + FAQ (admin-editable, served publicly via /api/content) --
+  getPageSchema: () => request("admin/api/content/pages/schema"),
+  listPages: () => request("admin/api/content/pages"),
+  getPage: (slug) => request(`admin/api/content/pages/${slug}`),
+  upsertPage: (slug, body) => request(`admin/api/content/pages/${slug}`, { method: "PUT", body: JSON.stringify(body) }),
+  deletePage: (slug) => request(`admin/api/content/pages/${slug}`, { method: "DELETE" }),
+  reorderPages: (orderedSlugs) =>
+    request("admin/api/content/pages/reorder", { method: "POST", body: JSON.stringify({ ordered_slugs: orderedSlugs }) }),
+  listPageVersions: (slug) => request(`admin/api/content/pages/${slug}/versions`),
+  rollbackPage: (slug, versionId) => request(`admin/api/content/pages/${slug}/rollback/${versionId}`, { method: "POST" }),
 };
 
 export { ApiError };

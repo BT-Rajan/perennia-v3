@@ -51,6 +51,29 @@ def capture_lead(
     return lead, created
 
 
+def create_lead(
+    db: Session, *, name: str, email: str, phone: str = "", notes: str = "", status: str = "new",
+) -> Lead:
+    """Manual entry point for the admin 'Add lead' button — everywhere
+    else a Lead is created via capture_lead's auto-upsert-by-email
+    (booking/chat signals), but an admin adding one directly should
+    still land in the same table with the same shape, not a separate
+    path. Reuses capture_lead's upsert-by-email so pasting in an email
+    that already has a lead record merges into it instead of duplicating.
+    """
+    email_norm = email.strip().lower()
+    if not email_norm:
+        raise ValueError("email is required")
+    if status not in VALID_STATUSES:
+        raise ValueError(f"status must be one of {VALID_STATUSES}")
+    lead, _created = capture_lead(db, email=email_norm, source="manual", name=name, phone=phone)
+    if notes.strip():
+        lead.notes = notes.strip()
+    lead.status = status
+    db.flush()
+    return lead
+
+
 def list_leads(db: Session, *, status: str | None = None, source: str | None = None) -> list[Lead]:
     stmt = select(Lead).order_by(Lead.created_at.desc())
     if status:

@@ -26,7 +26,13 @@ from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(BASE_DIR / ".env")
+# override=True: this server also runs other apps, and python-dotenv's
+# default behavior is to NOT overwrite a DATABASE_URL (or any var) that's
+# already present in the OS environment. Without override=True, a stray
+# env var from another app/service on this box silently wins over this
+# app's own .env, and the backend ends up talking to the wrong database
+# (or falling back to the SQLite default) with no error at all.
+load_dotenv(BASE_DIR / ".env", override=True)
 
 
 def _fail(message: str) -> None:

@@ -35,6 +35,10 @@ class PageUpsertIn(BaseModel):
     show_in_nav: bool | None = None
 
 
+class PageReorderIn(BaseModel):
+    ordered_slugs: list[str]
+
+
 class VersionOut(BaseModel):
     id: str
     saved_at: str
@@ -105,6 +109,18 @@ def delete_page(slug: str, admin: AdminUser = Depends(get_current_admin), db: Se
     db.commit()
     if not ok:
         raise HTTPException(status.HTTP_404_NOT_FOUND, f"No page {slug!r}")
+    return {"ok": True}
+
+
+@router.post("/pages/reorder")
+def reorder_pages(body: PageReorderIn, admin: AdminUser = Depends(get_current_admin), db: Session = Depends(get_db)):
+    from app import content_service
+    try:
+        content_service.reorder_pages(db, body.ordered_slugs, actor_id=admin.id, actor_username=admin.username)
+        db.commit()
+    except KeyError as e:
+        db.rollback()
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, str(e))
     return {"ok": True}
 
 

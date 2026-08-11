@@ -22,6 +22,12 @@ function resolveBranding(branding, lang, defaultLanguage) {
   };
 }
 
+function resolveContact(contact, lang, defaultLanguage) {
+  const addressByLang = contact.addressByLang || {};
+  const address = addressByLang[lang] ?? addressByLang[defaultLanguage] ?? Object.values(addressByLang)[0] ?? "";
+  return { email: contact.email, phone: contact.phone, whatsappNumber: contact.whatsappNumber, address };
+}
+
 // Built once, synchronously, at module load — this is what the very
 // first render uses, so there's no loading spinner and no flash of
 // empty UI while the backend request (kicked off in the effect below)
@@ -56,6 +62,11 @@ export function LangProvider({ children }) {
     [site, lang]
   );
 
+  const resolvedContact = useMemo(
+    () => resolveContact(site.contact, lang, site.defaultLanguage),
+    [site, lang]
+  );
+
   useEffect(() => {
     document.documentElement.lang = lang;
     document.documentElement.dir = dirFor(lang);
@@ -75,13 +86,14 @@ export function LangProvider({ children }) {
       pages: site.pages[lang],
       heroButtons: site.heroButtons,
       branding: resolvedBranding,
+      contact: resolvedContact,
       theme: site.theme,
       features: site.features,
       supportedLanguages: langs,
       toggleLang: () => setLang(langs[(idx + 1) % langs.length]),
       setLang,
     };
-  }, [site, lang, resolvedBranding]);
+  }, [site, lang, resolvedBranding, resolvedContact]);
 
   return <LangContext.Provider value={value}>{children}</LangContext.Provider>;
 }
