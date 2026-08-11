@@ -19,6 +19,29 @@ class ApiError extends Error {
   }
 }
 
+// Parses a response body as JSON without ever throwing a raw
+// SyntaxError at the caller. Reads the text first, so a non-JSON body
+// (an HTML error/login page from a proxy, a stale SPA fallback, a
+// gateway timeout page, etc.) turns into a clear ApiError instead of
+// an uncaught `Unexpected token '<', "<!doctype "... is not valid
+// JSON` — that message was the underlying bug: the old code called
+// `res.json()` directly on every 2xx response and let it throw
+// whatever the JSON parser produced.
+async function parseJsonSafe(res) {
+  const text = await res.text();
+  if (!text) return null;
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new ApiError(
+      "The server sent back an unexpected response instead of data — this usually means the request " +
+        "didn't reach the API (a proxy/deployment routing issue) or the session needs a refresh. " +
+        "Please reload the page and try again.",
+      res.status
+    );
+  }
+}
+
 async function request(path, options = {}) {
   const method = options.method || "GET";
   const isFormData = options.body instanceof FormData;
@@ -33,15 +56,15 @@ async function request(path, options = {}) {
   if (!res.ok) {
     let detail = `Request failed (${res.status})`;
     try {
-      const body = await res.json();
-      detail = body.detail || detail;
+      const body = await parseJsonSafe(res);
+      detail = body?.detail || detail;
     } catch {
       // response wasn't JSON; keep the generic message
     }
     throw new ApiError(detail, res.status);
   }
   if (res.status === 204) return null;
-  return res.json();
+  return parseJsonSafe(res);
 }
 
 export const adminApi = {

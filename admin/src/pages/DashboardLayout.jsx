@@ -6,7 +6,6 @@ const NAV_ITEMS = [
   { to: "/", label: "Overview", end: true },
   { to: "/appointments", label: "Appointments" },
   { to: "/services", label: "Services" },
-  { to: "/webhooks", label: "Webhooks" },
   { to: "/leads", label: "Leads" },
   { to: "/knowledge", label: "Knowledge Base" },
   { to: "/settings", label: "Settings" },

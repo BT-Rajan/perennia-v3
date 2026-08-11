@@ -7,6 +7,7 @@ import SettingField from "../components/SettingField.jsx";
 import ThemePresetPicker from "../components/ThemePresetPicker.jsx";
 import LogoZoomControl from "../components/LogoZoomControl.jsx";
 import CalendarSyncConnector from "../components/CalendarSyncConnector.jsx";
+import WebhooksPage from "./WebhooksPage.jsx";
 import "./SettingsPage.css";
 
 // Nicer labels for the sidebar than a raw category key. Anything not
@@ -24,7 +25,14 @@ const CATEGORY_LABELS = {
   templates: "Message templates",
   copy: "On-screen text",
   calendar_sync: "Calendar Sync",
+  webhooks: "Webhooks",
 };
+
+// Webhooks isn't a schema-driven category from the backend registry
+// like the rest (it's its own CRUD resource — see WebhooksPage.jsx) —
+// it's pinned into the sidebar as a virtual entry instead, so it lives
+// under Settings without needing a settings_registry entry of its own.
+const VIRTUAL_CATEGORY_WEBHOOKS = "webhooks";
 
 function labelFor(category) {
   return CATEGORY_LABELS[category] || category[0].toUpperCase() + category.slice(1);
@@ -84,7 +92,10 @@ export default function SettingsPage() {
   );
 
   useEffect(() => {
-    if (categoryParam) loadCategory(categoryParam);
+    // Webhooks is rendered as its own self-contained panel below, not
+    // through the generic schema form — don't ask the settings API
+    // for a category that doesn't exist there.
+    if (categoryParam && categoryParam !== VIRTUAL_CATEGORY_WEBHOOKS) loadCategory(categoryParam);
   }, [categoryParam, loadCategory]);
 
   function handleFieldChange(key, value) {
@@ -148,59 +159,71 @@ export default function SettingsPage() {
               {labelFor(c)}
             </button>
           ))}
+          <button
+            className={
+              categoryParam === VIRTUAL_CATEGORY_WEBHOOKS ? "settings-nav-item active" : "settings-nav-item"
+            }
+            onClick={() => navigate(`/settings/${VIRTUAL_CATEGORY_WEBHOOKS}`)}
+          >
+            {labelFor(VIRTUAL_CATEGORY_WEBHOOKS)}
+          </button>
         </nav>
 
-        <div className="card settings-form-wrap">
-          {loading || !schema ? (
-            <div className="page-loading">Loading…</div>
-          ) : (
-            <form onSubmit={handleSave}>
-              <h2 className="settings-form-title">{labelFor(categoryParam)}</h2>
+        {categoryParam === VIRTUAL_CATEGORY_WEBHOOKS ? (
+          <WebhooksPage />
+        ) : (
+          <div className="card settings-form-wrap">
+            {loading || !schema ? (
+              <div className="page-loading">Loading…</div>
+            ) : (
+              <form onSubmit={handleSave}>
+                <h2 className="settings-form-title">{labelFor(categoryParam)}</h2>
 
-              {categoryParam === "theme" && (
-                <ThemePresetPicker
-                  values={values}
-                  onApply={(presetValues) => setValues((prev) => ({ ...prev, ...presetValues }))}
-                />
-              )}
+                {categoryParam === "theme" && (
+                  <ThemePresetPicker
+                    values={values}
+                    onApply={(presetValues) => setValues((prev) => ({ ...prev, ...presetValues }))}
+                  />
+                )}
 
-              {schema.map((field) => {
-                // Superseded by the LogoZoomControl composite below
-                // (rendered right after branding.logo_url) — a bare
-                // number input for a zoom factor isn't useful without
-                // a live preview next to it.
-                if (field.key === "branding.logo_scale") return null;
-                return (
-                  <div key={field.key}>
-                    <SettingField
-                      field={field}
-                      value={values[field.key]}
-                      error={fieldErrors[field.key]}
-                      onChange={(v) => handleFieldChange(field.key, v)}
-                      onError={(msg) => handleFieldError(field.key, msg)}
-                    />
-                    {field.key === "branding.logo_url" && (
-                      <LogoZoomControl
-                        logoUrl={values["branding.logo_url"]}
-                        scale={values["branding.logo_scale"]}
-                        onScaleChange={(v) => handleFieldChange("branding.logo_scale", v)}
+                {schema.map((field) => {
+                  // Superseded by the LogoZoomControl composite below
+                  // (rendered right after branding.logo_url) — a bare
+                  // number input for a zoom factor isn't useful without
+                  // a live preview next to it.
+                  if (field.key === "branding.logo_scale") return null;
+                  return (
+                    <div key={field.key}>
+                      <SettingField
+                        field={field}
+                        value={values[field.key]}
+                        error={fieldErrors[field.key]}
+                        onChange={(v) => handleFieldChange(field.key, v)}
+                        onError={(msg) => handleFieldError(field.key, msg)}
                       />
-                    )}
-                  </div>
-                );
-              })}
+                      {field.key === "branding.logo_url" && (
+                        <LogoZoomControl
+                          logoUrl={values["branding.logo_url"]}
+                          scale={values["branding.logo_scale"]}
+                          onScaleChange={(v) => handleFieldChange("branding.logo_scale", v)}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
 
-              <div className="settings-form-footer">
-                <button type="submit" className="btn-primary" disabled={saving || Object.keys(fieldErrors).length > 0}>
-                  {saving ? "Saving…" : "Save changes"}
-                </button>
-                {savedAt && <span className="settings-saved-msg">Saved.</span>}
-              </div>
+                <div className="settings-form-footer">
+                  <button type="submit" className="btn-primary" disabled={saving || Object.keys(fieldErrors).length > 0}>
+                    {saving ? "Saving…" : "Save changes"}
+                  </button>
+                  {savedAt && <span className="settings-saved-msg">Saved.</span>}
+                </div>
 
-              {categoryParam === "calendar_sync" && <CalendarSyncConnector />}
-            </form>
-          )}
-        </div>
+                {categoryParam === "calendar_sync" && <CalendarSyncConnector />}
+              </form>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
