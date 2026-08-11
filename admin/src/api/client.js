@@ -57,6 +57,9 @@ export const adminApi = {
     return request(`admin/api/booking/appointments?${qs}`);
   },
   cancelAppointment: (id) => request(`admin/api/booking/appointments/${id}/cancel`, { method: "POST" }),
+  acceptAppointment: (id) => request(`admin/api/booking/appointments/${id}/accept`, { method: "POST" }),
+  rejectAppointment: (id, reason) =>
+    request(`admin/api/booking/appointments/${id}/reject`, { method: "POST", body: JSON.stringify({ reason: reason || "" }) }),
 
   listLeads: (params = {}) => {
     const qs = new URLSearchParams(Object.entries(params).filter(([, v]) => v));
@@ -93,6 +96,25 @@ export const adminApi = {
     request(`admin/api/services/${serviceId}/questions/reorder`, {
       method: "POST", body: JSON.stringify({ ordered_ids: orderedIds }),
     }),
+
+  // -- calendar module: webhooks (Pass 11, see docs/CALENDAR_MODULE_PLAN.md) --
+  listWebhooks: () => request("admin/api/webhooks"),
+  createWebhook: (body) => request("admin/api/webhooks", { method: "POST", body: JSON.stringify(body) }),
+  updateWebhook: (id, body) => request(`admin/api/webhooks/${id}`, { method: "PATCH", body: JSON.stringify(body) }),
+  deleteWebhook: (id) => request(`admin/api/webhooks/${id}`, { method: "DELETE" }),
+  regenerateWebhookSecret: (id) => request(`admin/api/webhooks/${id}/regenerate-secret`, { method: "POST" }),
+  listWebhookDeliveries: (id) => request(`admin/api/webhooks/${id}/deliveries`),
+  testWebhook: (id) => request(`admin/api/webhooks/${id}/test`, { method: "POST" }),
+
+  // -- calendar module: calendar sync (Pass 12, see docs/CALENDAR_MODULE_PLAN.md) --
+  getCalendarSyncStatus: () => request("admin/api/calendar-sync/status"),
+  completeCalendarSyncCallback: (code, state) =>
+    request(`admin/api/calendar-sync/callback?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state)}`),
+  selectCalendarSyncCalendar: (credentialId, calendarId) =>
+    request("admin/api/calendar-sync/select", {
+      method: "POST", body: JSON.stringify({ credential_id: credentialId, calendar_id: calendarId }),
+    }),
+  disconnectCalendarSync: () => request("admin/api/calendar-sync/disconnect", { method: "POST" }),
 
   // -- knowledge base (chat grounding: uploaded documents + web pages) --
   listKnowledge: () => request("admin/api/knowledge"),

@@ -55,8 +55,23 @@
   color: var(--danger);
 }
 
+.row-action.primary {
+  background: var(--navy-950);
+  color: var(--gold);
+  border-color: var(--navy-950);
+}
+.row-action.primary:hover {
+  color: var(--gold);
+  border-color: var(--navy-950);
+}
+
 .row-action:disabled {
   opacity: 0.5;
+}
+
+.appt-pending-actions {
+  display: flex;
+  gap: 6px;
 }
 
 .appt-answers-row td {

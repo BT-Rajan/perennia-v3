@@ -6,6 +6,7 @@ import PageHeader from "../components/PageHeader.jsx";
 import SettingField from "../components/SettingField.jsx";
 import ThemePresetPicker from "../components/ThemePresetPicker.jsx";
 import LogoZoomControl from "../components/LogoZoomControl.jsx";
+import CalendarSyncConnector from "../components/CalendarSyncConnector.jsx";
 import "./SettingsPage.css";
 
 // Nicer labels for the sidebar than a raw category key. Anything not
@@ -22,6 +23,7 @@ const CATEGORY_LABELS = {
   notifications: "Notifications",
   templates: "Message templates",
   copy: "On-screen text",
+  calendar_sync: "Calendar Sync",
 };
 
 function labelFor(category) {
@@ -194,6 +196,8 @@ export default function SettingsPage() {
                 </button>
                 {savedAt && <span className="settings-saved-msg">Saved.</span>}
               </div>
+
+              {categoryParam === "calendar_sync" && <CalendarSyncConnector />}
             </form>
           )}
         </div>

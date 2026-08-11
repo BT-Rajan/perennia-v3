@@ -320,7 +320,9 @@ _DEFS: list[SettingDef] = [
                SettingType.STRING, "", secret=True),
     SettingDef("calendar_sync.google_redirect_uri", "calendar_sync", "OAuth redirect URI", SettingType.URL, "",
                help_text="Must exactly match an 'Authorized redirect URI' configured on the Google OAuth "
-                         "client — typically https://yourdomain.com/admin/api/calendar-sync/callback.",
+                         "client. Point this at the admin Settings page itself — "
+                         "https://yourdomain.com/admin/settings/calendar_sync — the page picks up "
+                         "Google's ?code=&state= and completes the connection without a full page reload.",
                validator=_url_or_empty),
 
     # notifications — outbound email/WhatsApp for booking confirmations
@@ -342,6 +344,12 @@ _DEFS: list[SettingDef] = [
                help_text="Falls back to the site name if left blank."),
     SettingDef("notifications.admin_alert_email", "notifications", "Internal alert email", SettingType.EMAIL, "",
                help_text="Where new-booking and new-lead alerts are sent. Leave blank to disable."),
+    SettingDef("notifications.admin_alert_whatsapp_number", "notifications", "Internal alert WhatsApp number",
+               SettingType.STRING, "",
+               help_text="Pass 13: where the 'a booking needs your confirmation' alert is sent by "
+                         "WhatsApp (in addition to, or instead of, the email above — whichever of "
+                         "the two is configured is used). Requires WhatsApp notifications enabled "
+                         "below. Leave blank to skip WhatsApp for this alert."),
     SettingDef("notifications.whatsapp_enabled", "notifications", "Enable WhatsApp notifications", SettingType.BOOL, False),
     SettingDef("notifications.whatsapp_provider", "notifications", "WhatsApp provider", SettingType.ENUM, "none",
                choices=("none", "twilio", "meta_cloud")),
@@ -413,6 +421,11 @@ _DEFS: list[SettingDef] = [
                "body": "{name} ({email}) requested {date} at {time}.\nService: {service}\nCode: {id}\n\n"
                        "This service requires confirmation — accept or decline it from the admin dashboard."},
     }, help_text="Internal alert, English only by default — this is for staff, not visitors."),
+    SettingDef("templates.booking_requested_admin_whatsapp", "templates", "Booking requested — internal WhatsApp",
+               SettingType.TEXT, "New booking request from {name} for {date} at {time} ({service}, code {id}) "
+                                  "needs your confirmation — check the admin dashboard.",
+               help_text="Pass 13: sent to notifications.admin_alert_whatsapp_number when set, alongside "
+                         "(or instead of) the email alert above."),
     SettingDef("templates.booking_accepted_email", "templates", "Booking request accepted — email", SettingType.JSON, {
         "en": {"subject": "Your appointment is confirmed — {id}",
                "body": "Hi {name},\n\nGood news — your request for {date} at {time} has been accepted "

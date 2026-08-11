@@ -225,3 +225,32 @@ def test_admin_list_filters_to_pending_only(logged_in_client, client):
     ids = [a["id"] for a in resp.json()]
     assert pending_appt["id"] in ids
     assert all(a["status"] == "pending" for a in resp.json())
+
+
+# ── Admin alert channel selection (Pass 13) ─────────────────────────
+
+def test_pending_request_alert_sent_via_whichever_channel_is_configured(logged_in_client, client, monkeypatch):
+    """Email and WhatsApp are attempted independently — whichever of
+    the two the admin has actually configured fires, the other doesn't."""
+    whatsapp_calls = []
+    monkeypatch.setattr("app.notification_service.whatsapp_client.send_message",
+                         lambda **kw: whatsapp_calls.append(kw))
+
+    logged_in_client.put("/admin/api/settings/notifications", json={
+        "notifications.whatsapp_enabled": True, "notifications.whatsapp_provider": "twilio",
+        "notifications.whatsapp_account_id": "ACxxxx", "notifications.whatsapp_api_key": "secrettoken",
+        "notifications.whatsapp_from_number": "+15550000000",
+        "notifications.admin_alert_whatsapp_number": "+15551234567",
+        "notifications.admin_alert_email": "",  # explicitly unset — WhatsApp only should fire
+    })
+    try:
+        svc = _create_service(logged_in_client)
+        date = _nth_future_workday(115)
+        _book(client, date, svc["id"])
+
+        assert len(whatsapp_calls) == 1
+        assert whatsapp_calls[0]["to_number"] == "+15551234567"
+    finally:
+        logged_in_client.put("/admin/api/settings/notifications", json={
+            "notifications.whatsapp_enabled": False, "notifications.admin_alert_whatsapp_number": "",
+        })

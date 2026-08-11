@@ -7,6 +7,7 @@ import "./AppointmentsPage.css";
 const STATUS_OPTIONS = [
   { value: "", label: "All statuses" },
   { value: "confirmed", label: "Confirmed" },
+  { value: "pending", label: "Pending confirmation" },
   { value: "cancelled", label: "Cancelled" },
 ];
 
@@ -17,7 +18,7 @@ export default function AppointmentsPage() {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [error, setError] = useState("");
-  const [cancellingId, setCancellingId] = useState(null);
+  const [busyId, setBusyId] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
 
   const load = useCallback(() => {
@@ -33,7 +34,7 @@ export default function AppointmentsPage() {
 
   async function handleCancel(id) {
     if (!confirm(`Cancel appointment ${id}? The visitor's cancellation email will still go out if notifications are enabled.`)) return;
-    setCancellingId(id);
+    setBusyId(id);
     try {
       await adminApi.cancelAppointment(id);
       load();
@@ -41,7 +42,35 @@ export default function AppointmentsPage() {
       if (e.status === 401) handleSessionExpired();
       else alert(e.message);
     } finally {
-      setCancellingId(null);
+      setBusyId(null);
+    }
+  }
+
+  async function handleAccept(id) {
+    setBusyId(id);
+    try {
+      await adminApi.acceptAppointment(id);
+      load();
+    } catch (e) {
+      if (e.status === 401) handleSessionExpired();
+      else alert(e.message);
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function handleReject(id) {
+    const reason = prompt("Reason for declining (optional, shown to the visitor):", "");
+    if (reason === null) return; // dismissed the prompt — leave the request untouched
+    setBusyId(id);
+    try {
+      await adminApi.rejectAppointment(id, reason);
+      load();
+    } catch (e) {
+      if (e.status === 401) handleSessionExpired();
+      else alert(e.message);
+    } finally {
+      setBusyId(null);
     }
   }
 
@@ -104,11 +133,29 @@ export default function AppointmentsPage() {
                     {a.status === "confirmed" && (
                       <button
                         className="row-action danger"
-                        disabled={cancellingId === a.id}
+                        disabled={busyId === a.id}
                         onClick={(e) => { e.stopPropagation(); handleCancel(a.id); }}
                       >
-                        {cancellingId === a.id ? "Cancelling…" : "Cancel"}
+                        {busyId === a.id ? "Cancelling…" : "Cancel"}
                       </button>
+                    )}
+                    {a.status === "pending" && (
+                      <div className="appt-pending-actions">
+                        <button
+                          className="row-action primary"
+                          disabled={busyId === a.id}
+                          onClick={(e) => { e.stopPropagation(); handleAccept(a.id); }}
+                        >
+                          Accept
+                        </button>
+                        <button
+                          className="row-action danger"
+                          disabled={busyId === a.id}
+                          onClick={(e) => { e.stopPropagation(); handleReject(a.id); }}
+                        >
+                          Decline
+                        </button>
+                      </div>
                     )}
                   </td>
                 </tr>

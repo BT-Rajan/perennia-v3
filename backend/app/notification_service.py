@@ -148,19 +148,33 @@ def notify_booking_rescheduled(db: Session, appt: dict) -> None:
 
 def notify_booking_requested(db: Session, appt: dict) -> None:
     """Organizer-facing only — no attendee email/WhatsApp here, since
-    nothing about their appointment is settled yet. Reuses the same
-    internal-alert channel as _notify_admin_new_booking."""
-    to = _admin_email(db)
-    if not to:
-        return
-    try:
-        rendered = render(get_setting(db, "templates.booking_requested_admin_alert"), "en", **{
-            "name": appt["name"], "email": appt["email"], "date": appt["date"], "time": appt["time"],
-            "id": appt["id"], "service": appt.get("service_name") or appt.get("service") or "general enquiry",
-        })
-        send_email(db, to_email=to, subject=rendered["subject"], body_text=rendered["body"])
-    except Exception:
-        logger.exception("Booking-requested admin alert failed for appointment %s", appt.get("id"))
+    nothing about their appointment is settled yet.
+
+    Pass 13: goes out via whichever internal-alert channel(s) are
+    configured — email (notifications.admin_alert_email), WhatsApp
+    (notifications.admin_alert_whatsapp_number), both, or neither if
+    nothing's set. Each channel is attempted independently so one
+    being unconfigured or failing never blocks the other."""
+    ctx = {
+        "name": appt["name"], "email": appt["email"], "date": appt["date"], "time": appt["time"],
+        "id": appt["id"], "service": appt.get("service_name") or appt.get("service") or "general enquiry",
+    }
+
+    to_email = _admin_email(db)
+    if to_email:
+        try:
+            rendered = render(get_setting(db, "templates.booking_requested_admin_alert"), "en", **ctx)
+            send_email(db, to_email=to_email, subject=rendered["subject"], body_text=rendered["body"])
+        except Exception:
+            logger.exception("Booking-requested admin email alert failed for appointment %s", appt.get("id"))
+
+    to_whatsapp = get_setting(db, "notifications.admin_alert_whatsapp_number")
+    if to_whatsapp:
+        try:
+            message = render_text(get_setting(db, "templates.booking_requested_admin_whatsapp"), "en", **ctx)
+            send_whatsapp(db, to_number=to_whatsapp, message=message)
+        except Exception:
+            logger.exception("Booking-requested admin WhatsApp alert failed for appointment %s", appt.get("id"))
 
 
 def notify_booking_accepted(db: Session, appt: dict) -> None:
