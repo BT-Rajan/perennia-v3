@@ -1,12 +1,35 @@
 import datetime as dt
 
+import pytest
 
-def _future_workday(min_days_ahead=3):
+from app.db import session_scope
+from app.settings_service import set_setting
+
+
+@pytest.fixture(autouse=True)
+def _widen_booking_window():
+    """This file's dates start at nth-workday 220, clear of every other
+    file's window — see the identical note in test_leads.py (and
+    PASS9_NOTES.md) for the real, date-dependent collision bug this
+    fixes: the old raw-day-offset helper could alias several different
+    offsets onto the same calendar date whenever a weekend fell between
+    them."""
+    with session_scope() as db:
+        set_setting(db, "booking.max_days_ahead", 365, actor_id=None, actor_username="test-setup")
+    yield
+    with session_scope() as db:
+        set_setting(db, "booking.max_days_ahead", 30, actor_id=None, actor_username="test-teardown")
+
+
+def _nth_future_workday(n: int) -> str:
     d = dt.date.today()
+    found = 0
     while True:
         d += dt.timedelta(days=1)
-        if d.weekday() < 5 and (d - dt.date.today()).days >= min_days_ahead:
-            return d.isoformat()
+        if d.weekday() < 5:
+            found += 1
+            if found == n:
+                return d.isoformat()
 
 
 VALID_APPT = {"name": "Notify Test", "phone": "555-0177", "service": "Consulting", "notes": ""}
@@ -166,7 +189,7 @@ def test_booking_confirmation_email_sent_when_enabled(logged_in_client, monkeypa
     monkeypatch.setattr("smtplib.SMTP", FakeSMTP)
     _enable_email(logged_in_client)
     try:
-        date = _future_workday(min_days_ahead=11)
+        date = _nth_future_workday(220)
         resp = logged_in_client.post("/api/booking/appointments", json={
             "date": date, "slot": "09:00", "email": "confirmtest@example.com", "lang": "en", **VALID_APPT,
         })
@@ -181,7 +204,7 @@ def test_booking_confirmation_email_sent_when_enabled(logged_in_client, monkeypa
 def test_no_email_sent_when_notifications_disabled(logged_in_client, monkeypatch):
     calls = []
     monkeypatch.setattr("smtplib.SMTP", lambda *a, **k: calls.append(1))
-    date = _future_workday(min_days_ahead=12)
+    date = _nth_future_workday(221)
     resp = logged_in_client.post("/api/booking/appointments", json={
         "date": date, "slot": "09:00", "email": "noemail@example.com", "lang": "en", **VALID_APPT,
     })
@@ -202,7 +225,7 @@ def test_admin_alert_sent_on_new_booking(logged_in_client, monkeypatch):
     _enable_email(logged_in_client, **{})
     logged_in_client.put("/admin/api/settings/notifications", json={"notifications.admin_alert_email": "staff@example.com"})
     try:
-        date = _future_workday(min_days_ahead=13)
+        date = _nth_future_workday(222)
         logged_in_client.post("/api/booking/appointments", json={
             "date": date, "slot": "10:00", "email": "leadgen@example.com", "lang": "en", **VALID_APPT,
         })
@@ -223,7 +246,7 @@ def test_cancellation_email_sent_and_not_duplicated_on_repeat_cancel(logged_in_c
             sent.append(msg["Subject"])
 
     monkeypatch.setattr("smtplib.SMTP", FakeSMTP)
-    date = _future_workday(min_days_ahead=14)
+    date = _nth_future_workday(223)
     created = logged_in_client.post("/api/booking/appointments", json={
         "date": date, "slot": "11:00", "email": "canceltest@example.com", "lang": "en", **VALID_APPT,
     }).json()
@@ -253,14 +276,14 @@ def test_reschedule_email_sent(logged_in_client, monkeypatch):
             sent.append(msg["Subject"])
 
     monkeypatch.setattr("smtplib.SMTP", FakeSMTP)
-    date = _future_workday(min_days_ahead=15)
+    date = _nth_future_workday(224)
     created = logged_in_client.post("/api/booking/appointments", json={
         "date": date, "slot": "12:00", "email": "reschedtest@example.com", "lang": "en", **VALID_APPT,
     }).json()
 
     _enable_email(logged_in_client)
     try:
-        new_date = _future_workday(min_days_ahead=16)
+        new_date = _nth_future_workday(225)
         resp = logged_in_client.post("/api/booking/appointments/reschedule", json={
             "id": created["id"], "email": "reschedtest@example.com", "date": new_date, "time": "10:00",
         })
@@ -278,7 +301,7 @@ def test_notification_failure_never_breaks_booking_response(logged_in_client, mo
     monkeypatch.setattr("smtplib.SMTP", boom)
     _enable_email(logged_in_client)
     try:
-        date = _future_workday(min_days_ahead=17)
+        date = _nth_future_workday(226)
         resp = logged_in_client.post("/api/booking/appointments", json={
             "date": date, "slot": "09:00", "email": "resilient@example.com", "lang": "en", **VALID_APPT,
         })

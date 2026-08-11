@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from app import booking_service, notification_service
+from app import booking_service, notification_service, webhook_service
 from app.db import get_db
 from app.deps import get_current_admin, require_csrf
 from app.models import AdminUser
@@ -48,6 +48,7 @@ def admin_accept(appt_id: str, admin: AdminUser = Depends(get_current_admin), db
     if not result["ok"]:
         _raise_for_error(result["error"], appt_id)
     notification_service.notify_booking_accepted(db, result["appointment"])
+    webhook_service.dispatch_event(db, "booking.accepted", result["appointment"])
     db.commit()
     return result
 
@@ -62,5 +63,6 @@ def admin_reject(
     if not result["ok"]:
         _raise_for_error(result["error"], appt_id)
     notification_service.notify_booking_declined(db, result["appointment"], reason=body.reason)
+    webhook_service.dispatch_event(db, "booking.declined", result["appointment"])
     db.commit()
     return result

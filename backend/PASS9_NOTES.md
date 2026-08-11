@@ -149,6 +149,13 @@ reasonable follow-up cleanup, but out of scope for a pass about
 availability rules, and a decision that shouldn't be made silently
 inside an unrelated pass.
 
+*Update, Pass 11:* this collision stopped being purely a
+reversed-order curiosity once the container's real clock crossed a day
+boundary mid-project and it started firing in *default* order too
+(depends on which weekday "today" is — see `PASS11_NOTES.md` for the
+full trace). Fixed there by giving both files the same
+`_nth_future_workday` treatment already described above.
+
 ## Explicitly not in this pass
 
 The admin UI for editing rules (`AvailabilityPage.jsx`) — bundled into

@@ -332,6 +332,49 @@ class AvailabilityRule(Base):
     )
 
 
+class Webhook(Base):
+    """Pass 11 (docs/CALENDAR_MODULE_PLAN.md): lets the business wire
+    external systems into calendar events without polling. `events` is
+    a JSON list of event-name strings validated against the fixed
+    allow-list in webhook_service.py — the same six strings
+    notification_service.py's six notify_booking_* functions already
+    correspond to one-for-one.
+
+    `secret` is Fernet-encrypted at rest, identical treatment to
+    `SiteSetting.is_secret` rows (see app/security.py) — generated once
+    at creation, returned in plaintext exactly once (the creation
+    response), never again. Regenerating replaces it the same way."""
+
+    __tablename__ = "webhook"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    url: Mapped[str] = mapped_column(String(2048), nullable=False)
+    secret: Mapped[str] = mapped_column(Text, nullable=False)  # Fernet-encrypted
+    events: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+    updated_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, onupdate=_utcnow)
+
+
+class WebhookDelivery(Base):
+    """One row per delivery attempt (no retries in this first pass —
+    see PASS11_NOTES.md), so the admin UI's delivery log is a direct,
+    unfiltered record of what actually happened. `response_status`
+    null means the request never completed at all (DNS failure,
+    connection refused, timeout) as distinct from the target
+    responding with an HTTP error status, which is recorded as-is."""
+
+    __tablename__ = "webhook_delivery"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    webhook_id: Mapped[str] = mapped_column(String(32), ForeignKey("webhook.id", ondelete="CASCADE"), nullable=False, index=True)
+    event: Mapped[str] = mapped_column(String(32), nullable=False)
+    payload: Mapped[dict] = mapped_column(JSON, nullable=False)
+    response_status: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    duration_ms: Mapped[int] = mapped_column(Integer, nullable=False)
+    attempted_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, index=True)
+
+
 class Lead(Base):
     """A contact worth following up with — captured automatically
     whenever a booking is made (source='booking') or an email address

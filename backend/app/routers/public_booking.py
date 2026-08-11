@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from app import booking_service, notification_service
+from app import booking_service, notification_service, webhook_service
 from app.config import settings
 from app.db import get_db
 from app.rate_limit import limiter
@@ -92,9 +92,11 @@ def create_appointment(request: Request, body: CreateAppointmentRequest, db: Ses
     if result["ok"]:
         if result["appointment"]["status"] == "pending":
             notification_service.notify_booking_requested(db, result["appointment"])
+            webhook_service.dispatch_event(db, "booking.requested", result["appointment"])
         else:
             notification_service.notify_booking_confirmed(db, result["appointment"])
-        db.commit()  # notification sending may have touched the session; flush any of its own state
+            webhook_service.dispatch_event(db, "booking.confirmed", result["appointment"])
+        db.commit()  # notification/webhook sending may have touched the session; flush any of its own state
     return result
 
 
@@ -110,6 +112,7 @@ def cancel_appointment(request: Request, body: CancelRequest, db: Session = Depe
     db.commit()
     if result["ok"] and not result.get("already_cancelled"):
         notification_service.notify_booking_cancelled(db, result["appointment"])
+        webhook_service.dispatch_event(db, "booking.cancelled", result["appointment"])
         db.commit()
     return result
 
@@ -121,5 +124,6 @@ def reschedule_appointment(request: Request, body: RescheduleRequest, db: Sessio
     db.commit()
     if result["ok"]:
         notification_service.notify_booking_rescheduled(db, result["appointment"])
+        webhook_service.dispatch_event(db, "booking.rescheduled", result["appointment"])
         db.commit()
     return result

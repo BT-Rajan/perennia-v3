@@ -1,16 +1,44 @@
 import datetime as dt
 
+import pytest
 
-def _future_workday(min_days_ahead=3):
+from app.db import session_scope
+from app.settings_service import set_setting
+
+
+@pytest.fixture(autouse=True)
+def _widen_booking_window():
+    """This file's dates start at nth-workday 200 to stay clear of
+    every other booking-related test file's date window. Also fixes a
+    real, date-dependent bug found in this file: the old
+    `_future_workday(min_days_ahead=N)` helper picked dates by raw day
+    offset, which can alias two different N values onto the exact same
+    calendar date whenever a weekend falls between them (e.g. N=4, 5,
+    and 6 all landing on the same following Monday) — several tests in
+    this file used to collide on both date *and* the same 09:00 slot as
+    a result, intermittently, depending on which weekday "today"
+    happened to be when the suite ran. See PASS9_NOTES.md for the same
+    bug class caught earlier in this project's own new test files."""
+    with session_scope() as db:
+        set_setting(db, "booking.max_days_ahead", 365, actor_id=None, actor_username="test-setup")
+    yield
+    with session_scope() as db:
+        set_setting(db, "booking.max_days_ahead", 30, actor_id=None, actor_username="test-teardown")
+
+
+def _nth_future_workday(n: int) -> str:
     d = dt.date.today()
+    found = 0
     while True:
         d += dt.timedelta(days=1)
-        if d.weekday() < 5 and (d - dt.date.today()).days >= min_days_ahead:
-            return d.isoformat()
+        if d.weekday() < 5:
+            found += 1
+            if found == n:
+                return d.isoformat()
 
 
 def test_booking_captures_a_lead(logged_in_client, client):
-    date = _future_workday(min_days_ahead=4)
+    date = _nth_future_workday(200)
     client.post("/api/booking/appointments", json={
         "date": date, "slot": "09:00", "name": "Lead Test", "email": "leadtest@example.com",
         "phone": "555-0199", "service": "Consulting", "notes": "",
@@ -20,7 +48,7 @@ def test_booking_captures_a_lead(logged_in_client, client):
 
 
 def test_repeated_touches_consolidate_into_one_lead(logged_in_client, client):
-    date = _future_workday(min_days_ahead=5)
+    date = _nth_future_workday(201)
     client.post("/api/chat", json={
         "message": "hi, I'm interested — reach me at consolidated@example.com", "lang": "en", "history": [],
     })
@@ -37,7 +65,7 @@ def test_repeated_touches_consolidate_into_one_lead(logged_in_client, client):
 
 
 def test_admin_lead_update_status_and_notes(logged_in_client, client):
-    date = _future_workday(min_days_ahead=6)
+    date = _nth_future_workday(202)
     client.post("/api/booking/appointments", json={
         "date": date, "slot": "10:00", "name": "Update Me", "email": "updateme@example.com",
         "phone": "", "service": "", "notes": "",
@@ -52,7 +80,7 @@ def test_admin_lead_update_status_and_notes(logged_in_client, client):
 
 
 def test_admin_lead_update_invalid_status_rejected(logged_in_client, client):
-    date = _future_workday(min_days_ahead=6)
+    date = _nth_future_workday(203)
     client.post("/api/booking/appointments", json={
         "date": date, "slot": "10:30", "name": "Bad Status", "email": "badstatus@example.com",
         "phone": "", "service": "", "notes": "",
@@ -65,7 +93,7 @@ def test_admin_lead_update_invalid_status_rejected(logged_in_client, client):
 
 
 def test_admin_lead_delete(logged_in_client, client):
-    date = _future_workday(min_days_ahead=6)
+    date = _nth_future_workday(204)
     client.post("/api/booking/appointments", json={
         "date": date, "slot": "11:00", "name": "Delete Me", "email": "deleteme@example.com",
         "phone": "", "service": "", "notes": "",
@@ -83,7 +111,7 @@ def test_leads_require_auth(client):
 
 
 def test_leads_filter_by_status(logged_in_client, client):
-    date = _future_workday(min_days_ahead=6)
+    date = _nth_future_workday(205)
     client.post("/api/booking/appointments", json={
         "date": date, "slot": "11:30", "name": "Status Filter", "email": "statusfilter@example.com",
         "phone": "", "service": "", "notes": "",
