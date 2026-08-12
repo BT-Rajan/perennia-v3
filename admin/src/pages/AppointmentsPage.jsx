@@ -1,8 +1,10 @@
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { adminApi } from "../api/client.js";
 import { useAuth } from "../context/AuthContext.jsx";
 import PageHeader from "../components/PageHeader.jsx";
 import AppointmentCreatePanel from "../components/AppointmentCreatePanel.jsx";
+import AppointmentDetailPanel from "../components/AppointmentDetailPanel.jsx";
 import "./AppointmentsPage.css";
 
 const STATUS_OPTIONS = [
@@ -14,13 +16,14 @@ const STATUS_OPTIONS = [
 
 export default function AppointmentsPage() {
   const { handleSessionExpired } = useAuth();
+  const navigate = useNavigate();
+  const { id: selectedId } = useParams();
   const [appointments, setAppointments] = useState(null);
   const [statusFilter, setStatusFilter] = useState("confirmed");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [error, setError] = useState("");
   const [busyId, setBusyId] = useState(null);
-  const [expandedId, setExpandedId] = useState(null);
   const [creating, setCreating] = useState(false);
 
   const load = useCallback(() => {
@@ -76,13 +79,19 @@ export default function AppointmentsPage() {
     }
   }
 
+  function handlePanelUpdated() {
+    load();
+  }
+
+  const selectedAppointment = appointments?.find((a) => a.id === selectedId) ?? null;
+
   return (
     <div>
       <PageHeader
         title="Appointments"
         subtitle="Every booking made through the site."
         actions={
-          <button className="row-action primary" onClick={() => setCreating(true)}>
+          <button className="row-action primary" onClick={() => { setCreating(true); navigate("/appointments"); }}>
             + New appointment
           </button>
         }
@@ -110,30 +119,34 @@ export default function AppointmentsPage() {
 
       {error && <div className="page-error">{error}</div>}
 
-      <div className="card">
-        <table>
-          <thead>
-            <tr>
-              <th>Code</th>
-              <th>Name</th>
-              <th>Contact</th>
-              <th>When</th>
-              <th>Service</th>
-              <th>Status</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {appointments === null && (
-              <tr><td colSpan={7} className="table-empty">Loading…</td></tr>
-            )}
-            {appointments?.length === 0 && (
-              <tr><td colSpan={7} className="table-empty">No appointments match these filters.</td></tr>
-            )}
-            {appointments?.map((a) => (
-              <Fragment key={a.id}>
-                <tr onClick={() => a.answers?.length > 0 && setExpandedId(expandedId === a.id ? null : a.id)}
-                    style={{ cursor: a.answers?.length > 0 ? "pointer" : "default" }}>
+      <div className="appointments-layout">
+        <div className="card appointments-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Contact</th>
+                <th>When</th>
+                <th>Service</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {appointments === null && (
+                <tr><td colSpan={7} className="table-empty">Loading…</td></tr>
+              )}
+              {appointments?.length === 0 && (
+                <tr><td colSpan={7} className="table-empty">No appointments match these filters.</td></tr>
+              )}
+              {appointments?.map((a) => (
+                <tr
+                  key={a.id}
+                  className={selectedId === a.id ? "row-selected" : ""}
+                  onClick={() => { setCreating(false); navigate(`/appointments/${a.id}`); }}
+                  style={{ cursor: "pointer" }}
+                >
                   <td><span className="mono-chip">{a.id}</span></td>
                   <td>{a.name}</td>
                   <td>
@@ -176,24 +189,19 @@ export default function AppointmentsPage() {
                     )}
                   </td>
                 </tr>
-                {expandedId === a.id && a.answers?.length > 0 && (
-                  <tr key={`${a.id}-answers`} className="appt-answers-row">
-                    <td colSpan={7}>
-                      <div className="appt-answers">
-                        {a.answers.map((ans) => (
-                          <div key={ans.question_id ?? ans.label} className="appt-answer-item">
-                            <span className="appt-answer-label">{ans.label}</span>
-                            <span>{ans.answer}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </Fragment>
-            ))}
-          </tbody>
-        </table>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {!creating && selectedAppointment && (
+          <AppointmentDetailPanel
+            key={selectedAppointment.id}
+            appointment={selectedAppointment}
+            onClose={() => navigate("/appointments")}
+            onUpdated={handlePanelUpdated}
+          />
+        )}
       </div>
     </div>
   );

@@ -39,12 +39,15 @@ export default function App() {
           >
             <Route index element={<OverviewPage />} />
             <Route path="appointments" element={<AppointmentsPage />} />
+            <Route path="appointments/:id" element={<AppointmentsPage />} />
             <Route path="services" element={<ServicesPage />} />
+            <Route path="services/:id" element={<ServicesPage />} />
             {/* Webhooks moved under Settings — keep old links/bookmarks working */}
             <Route path="webhooks" element={<Navigate to="/settings/webhooks" replace />} />
             {/* Pages moved under Settings — keep old links/bookmarks working */}
             <Route path="pages" element={<Navigate to="/settings/pages" replace />} />
             <Route path="leads" element={<LeadsPage />} />
+            <Route path="leads/:id" element={<LeadsPage />} />
             <Route path="settings" element={<SettingsPage />} />
             <Route path="settings/:category" element={<SettingsPage />} />
             <Route path="knowledge" element={<KnowledgePage />} />

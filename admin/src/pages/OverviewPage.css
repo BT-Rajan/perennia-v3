@@ -14,6 +14,22 @@
   margin-bottom: var(--space-6);
 }
 
+.stat-card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border-radius: var(--radius-md, 8px);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.stat-card-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+.stat-card-link:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
 .stat-card {
   padding: var(--space-4) var(--space-5);
 }
@@ -80,4 +96,11 @@
   padding: 0 var(--space-4);
   color: var(--text-faint);
   font-size: 13px;
+}
+
+.overview-row {
+  cursor: pointer;
+}
+.overview-row:hover td {
+  background: var(--gold-dim);
 }

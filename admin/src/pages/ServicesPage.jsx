@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { adminApi } from "../api/client.js";
 import { useAuth } from "../context/AuthContext.jsx";
 import PageHeader from "../components/PageHeader.jsx";
@@ -9,9 +10,10 @@ const LOCATION_LABEL = { in_person: "In person", phone: "Phone", link_provided: 
 
 export default function ServicesPage() {
   const { handleSessionExpired } = useAuth();
+  const navigate = useNavigate();
+  const { id: selectedId } = useParams();
   const [services, setServices] = useState(null);
   const [error, setError] = useState("");
-  const [selectedId, setSelectedId] = useState(null);
   const [creating, setCreating] = useState(false);
 
   const load = useCallback(() => {
@@ -28,7 +30,7 @@ export default function ServicesPage() {
   function handleCreated(service) {
     setServices((prev) => [...(prev ?? []), service]);
     setCreating(false);
-    setSelectedId(service.id);
+    navigate(`/services/${service.id}`);
   }
 
   function handleUpdated(updated) {
@@ -47,7 +49,7 @@ export default function ServicesPage() {
         title="Services"
         subtitle="What visitors can book — each service has its own duration, buffer time, and intake questions."
         actions={
-          <button className="row-action primary" onClick={() => { setCreating(true); setSelectedId(null); }}>
+          <button className="row-action primary" onClick={() => { setCreating(true); navigate("/services"); }}>
             + New service
           </button>
         }
@@ -78,7 +80,7 @@ export default function ServicesPage() {
                 <tr
                   key={s.id}
                   className={selectedId === s.id ? "row-selected" : ""}
-                  onClick={() => { setSelectedId(s.id); setCreating(false); }}
+                  onClick={() => { setCreating(false); navigate(`/services/${s.id}`); }}
                   style={{ cursor: "pointer" }}
                 >
                   <td>
@@ -108,7 +110,7 @@ export default function ServicesPage() {
             key={selectedService.id}
             mode="edit"
             service={selectedService}
-            onClose={() => setSelectedId(null)}
+            onClose={() => navigate("/services")}
             onUpdated={handleUpdated}
             onDeactivated={handleDeactivated}
           />

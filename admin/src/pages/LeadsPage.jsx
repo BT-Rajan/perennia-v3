@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { adminApi } from "../api/client.js";
 import { useAuth } from "../context/AuthContext.jsx";
 import PageHeader from "../components/PageHeader.jsx";
@@ -11,11 +12,12 @@ const SOURCE_OPTIONS = ["", "chat", "booking"];
 
 export default function LeadsPage() {
   const { handleSessionExpired } = useAuth();
+  const navigate = useNavigate();
+  const { id: selectedId } = useParams();
   const [leads, setLeads] = useState(null);
   const [statusFilter, setStatusFilter] = useState("");
   const [sourceFilter, setSourceFilter] = useState("");
   const [error, setError] = useState("");
-  const [selectedId, setSelectedId] = useState(null);
   const [creating, setCreating] = useState(false);
 
   const load = useCallback(() => {
@@ -36,12 +38,12 @@ export default function LeadsPage() {
   function handleCreated(lead) {
     setLeads((prev) => [lead, ...(prev ?? [])]);
     setCreating(false);
-    setSelectedId(lead.id);
+    navigate(`/leads/${lead.id}`);
   }
 
-  function handleDeleted(id) {
-    setLeads((prev) => prev.filter((l) => l.id !== id));
-    setSelectedId(null);
+  function handleDeleted() {
+    setLeads((prev) => prev.filter((l) => l.id !== selectedId));
+    navigate("/leads");
   }
 
   const selectedLead = leads?.find((l) => l.id === selectedId) ?? null;
@@ -52,7 +54,7 @@ export default function LeadsPage() {
         title="Leads"
         subtitle="Everyone who's booked a call or left an email in chat."
         actions={
-          <button className="row-action primary" onClick={() => { setCreating(true); setSelectedId(null); }}>
+          <button className="row-action primary" onClick={() => { setCreating(true); navigate("/leads"); }}>
             + New lead
           </button>
         }
@@ -95,7 +97,7 @@ export default function LeadsPage() {
                 <tr
                   key={l.id}
                   className={selectedId === l.id ? "row-selected" : ""}
-                  onClick={() => { setSelectedId(l.id); setCreating(false); }}
+                  onClick={() => { setCreating(false); navigate(`/leads/${l.id}`); }}
                   style={{ cursor: "pointer" }}
                 >
                   <td>
@@ -117,8 +119,9 @@ export default function LeadsPage() {
 
         {!creating && selectedLead && (
           <LeadDetailPanel
+            key={selectedLead.id}
             lead={selectedLead}
-            onClose={() => setSelectedId(null)}
+            onClose={() => navigate("/leads")}
             onUpdated={handleUpdated}
             onDeleted={handleDeleted}
           />
