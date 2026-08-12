@@ -96,21 +96,28 @@ def _brevity_instructions(lang: str) -> str:
 
 
 def _booking_instructions(lang: str) -> str:
-    """Tells the assistant it can complete a real booking with its
-    tools (see chat_tools.py) rather than only collecting contact
-    details for a human follow-up call. Only included when booking
-    tools are actually being passed to the LLM this turn — see
-    get_reply — so the model is never told about tools it doesn't
-    have."""
+    """Tells the assistant it can complete a real booking — and manage
+    an existing one — with its tools (see chat_tools.py) rather than
+    only collecting contact details for a human follow-up call. Only
+    included when booking tools are actually being passed to the LLM
+    this turn — see get_reply — so the model is never told about tools
+    it doesn't have."""
     if lang == "ar":
         return (
             "\n\nيمكنك حجز موعد فعلي مباشرة ضمن هذه المحادثة باستخدام أدواتك: ابدأ بـ "
             "list_services لمعرفة الخدمات المتاحة إن لم تكن تعرفها، ثم استخدم check_availability "
             "للحصول على الأوقات الحقيقية المتاحة ليوم معيّن — لا تخمّن وقتاً أبداً. لا تستدعِ "
             "book_appointment إلا بعد موافقة الزائر الصريحة على تاريخ ووقت محددين من نتائج "
-            "check_availability، وبعد الحصول على الاسم والبريد الإلكتروني على الأقل. إذا كانت "
-            "الخدمة المختارة لها أسئلة مطلوبة (من list_services)، اجمع إجاباتها قبل الحجز. بعد "
-            "نجاح الحجز، أخبر الزائر بوضوح برمز التأكيد الذي أعادته الأداة."
+            "check_availability، وبعد الحصول على الاسم والبريد الإلكتروني على الأقل. إذا لم تُرجع "
+            "list_services أي خدمات (لا يوجد كتالوج)، اجمع وصفاً نصياً موجزاً لما يريد الزائر حجزه "
+            "وأرسله في حقل service. إذا كانت الخدمة المختارة لها أسئلة مطلوبة (من list_services)، "
+            "اجمع إجاباتها قبل الحجز. بعد نجاح الحجز، أخبر الزائر بوضوح برمز التأكيد الذي أعادته "
+            "الأداة.\n\nيمكنك أيضاً إدارة موعد سابق: إذا ذكر الزائر رمز تأكيد وبريده الإلكتروني "
+            "وأراد تعديل موعده أو إلغاءه، استخدم lookup_appointment أولاً للتحقق من الموعد قبل أي "
+            "شيء آخر. لا تستدعِ cancel_appointment أو reschedule_appointment إلا بعد أن يؤكد "
+            "الزائر صراحةً أنه يريد إلغاء أو نقل هذا الموعد بالتحديد — لا تفترض النية من مجرد ذكره "
+            "لكلمة إلغاء أو تعديل. عند إعادة الجدولة، استخدم check_availability أولاً للتأكد من "
+            "الوقت الجديد قبل استدعاء reschedule_appointment."
         )
     return (
         "\n\nYou can complete a real booking directly in this conversation using your tools: "
@@ -118,9 +125,17 @@ def _booking_instructions(lang: str) -> str:
         "check_availability to get real open times for a specific date — never guess or invent a "
         "time. Only call book_appointment once the visitor has explicitly agreed to a specific "
         "date and time from check_availability's results, and you have at least their name and "
-        "email. If the chosen service has required questions (from list_services), collect those "
-        "answers before booking. After a successful booking, clearly tell the visitor the "
-        "confirmation code the tool returned."
+        "email. If list_services returns no services (no catalog configured), collect a short "
+        "free-text description of what the visitor wants booked and pass it as the service field. "
+        "If the chosen service has required questions (from list_services), collect those answers "
+        "before booking. After a successful booking, clearly tell the visitor the confirmation "
+        "code the tool returned.\n\nYou can also manage an existing appointment: if the visitor "
+        "gives a confirmation code and the email it was booked under and wants to change or cancel "
+        "it, call lookup_appointment first to verify it before anything else. Only call "
+        "cancel_appointment or reschedule_appointment after the visitor has explicitly confirmed "
+        "they want to cancel or move that specific appointment — never assume intent just because "
+        "they mentioned the word cancel or reschedule. For a reschedule, confirm the new time with "
+        "check_availability before calling reschedule_appointment."
     )
 
 

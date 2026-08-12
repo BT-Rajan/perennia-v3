@@ -1,11 +1,13 @@
 """
-Tool definitions + executor the chat assistant uses to perform a real
-appointment booking inside the conversation — the same underlying
+Tool definitions + executor the chat assistant uses to perform real
+appointment actions inside the conversation — the same underlying
 booking_service/notification_service/webhook_service/calendar_sync_service
-calls routers/public_booking.py makes for the "Talk to Us" form, just
-driven by tool calls instead of form fields, so a visitor who books
-through chat gets identical confirmations, admin alerts, webhooks, and
-calendar events.
+calls routers/public_booking.py makes for the "Talk to Us" form's both
+tabs (new booking AND manage-booking: lookup/cancel/reschedule), just
+driven by tool calls instead of form fields, so a visitor who books,
+looks up, cancels, or reschedules through chat gets identical
+confirmations, admin alerts, webhooks, and calendar events as one who
+uses the form.
 
 Tool schemas are provider-agnostic (a plain {name, description,
 parameters} dict, `parameters` being a JSON Schema object) — llm_client.py
@@ -70,6 +72,14 @@ BOOKING_TOOLS: list[dict[str, Any]] = [
                 "email": {"type": "string"},
                 "phone": {"type": "string", "description": "Optional but preferred."},
                 "service_id": {"type": "string", "description": "Optional — id from list_services."},
+                "service": {
+                    "type": "string",
+                    "description": (
+                        "Free-text description of what the visitor wants booked. Only needed if "
+                        "list_services returned no services (no catalog configured) — otherwise "
+                        "omit it and just pass service_id."
+                    ),
+                },
                 "notes": {"type": "string", "description": "Optional free-text notes for the team."},
                 "answers": {
                     "type": "array",
@@ -85,6 +95,57 @@ BOOKING_TOOLS: list[dict[str, Any]] = [
                 },
             },
             "required": ["date", "slot", "name", "email"],
+        },
+    },
+    {
+        "name": "lookup_appointment",
+        "description": (
+            "Look up an existing appointment by its confirmation code and the email it was booked "
+            "under. Call this before offering to cancel or reschedule — never guess whether an "
+            "appointment exists or what its details are."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "id": {"type": "string", "description": "The confirmation code, e.g. from a previous booking."},
+                "email": {"type": "string", "description": "The email address the appointment was booked under."},
+            },
+            "required": ["id", "email"],
+        },
+    },
+    {
+        "name": "cancel_appointment",
+        "description": (
+            "Cancel an existing appointment. This is irreversible — only call it after the visitor "
+            "has explicitly confirmed they want to cancel this specific appointment (found via "
+            "lookup_appointment first), not just because they mentioned the word 'cancel'."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "id": {"type": "string", "description": "The confirmation code."},
+                "email": {"type": "string", "description": "The email address the appointment was booked under."},
+            },
+            "required": ["id", "email"],
+        },
+    },
+    {
+        "name": "reschedule_appointment",
+        "description": (
+            "Move an existing appointment to a new date/time. Look it up first with "
+            "lookup_appointment, and confirm the new slot with check_availability before calling "
+            "this — never guess a time. Only call once the visitor has explicitly agreed to the "
+            "specific new date and time."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "id": {"type": "string", "description": "The confirmation code."},
+                "email": {"type": "string", "description": "The email address the appointment was booked under."},
+                "date": {"type": "string", "description": "New date, YYYY-MM-DD."},
+                "slot": {"type": "string", "description": "New time, HH:MM — must be one of check_availability's results."},
+            },
+            "required": ["id", "email", "date", "slot"],
         },
     },
 ]
@@ -181,6 +242,52 @@ def _tool_book_appointment(db: Session, lang: str, args: dict[str, Any]) -> dict
     return result
 
 
+def _tool_lookup_appointment(db: Session, args: dict[str, Any]) -> dict[str, Any]:
+    from app import booking_service
+
+    return booking_service.lookup_appointment(db, _str(args, "id"), _str(args, "email"))
+
+
+def _tool_cancel_appointment(db: Session, args: dict[str, Any]) -> dict[str, Any]:
+    from app import booking_service, calendar_sync_service, notification_service, webhook_service
+
+    appt_id = _str(args, "id")
+    result = booking_service.cancel_appointment(db, appt_id, _str(args, "email"))
+    db.commit()
+    # Mirror routers/public_booking.py's cancel_appointment exactly, so a
+    # visitor cancelling through chat gets the same notifications, webhook
+    # events, and calendar cleanup as one cancelling through the form.
+    if result["ok"] and not result.get("already_cancelled"):
+        notification_service.notify_booking_cancelled(db, result["appointment"])
+        webhook_service.dispatch_event(db, "booking.cancelled", result["appointment"])
+        calendar_sync_service.delete_event_for_appointment(db, appt_id)
+        result["appointment"]["external_event_id"] = None
+        db.commit()
+    return result
+
+
+def _tool_reschedule_appointment(db: Session, args: dict[str, Any]) -> dict[str, Any]:
+    from app import booking_service, calendar_sync_service, notification_service, webhook_service
+
+    appt_id = _str(args, "id")
+    result = booking_service.reschedule_appointment(
+        db, appt_id, _str(args, "email"), _str(args, "date"), _str(args, "slot")
+    )
+    db.commit()
+    # Mirror routers/public_booking.py's reschedule_appointment exactly.
+    if result["ok"]:
+        notification_service.notify_booking_rescheduled(db, result["appointment"])
+        webhook_service.dispatch_event(db, "booking.rescheduled", result["appointment"])
+        calendar_sync_service.delete_event_for_appointment(db, appt_id)
+        if result["appointment"]["status"] != "pending":
+            event_id = calendar_sync_service.create_event_for_appointment(db, appt_id)
+            result["appointment"]["external_event_id"] = event_id
+        else:
+            result["appointment"]["external_event_id"] = None
+        db.commit()
+    return result
+
+
 def make_executor(db: Session, *, lang: str) -> ToolExecutor:
     """Builds a tool_executor closure bound to this request's db session
     and language — passed to llm_client.generate_reply, which calls it
@@ -193,6 +300,12 @@ def make_executor(db: Session, *, lang: str) -> ToolExecutor:
             return _tool_check_availability(db, args)
         if name == "book_appointment":
             return _tool_book_appointment(db, lang, args)
+        if name == "lookup_appointment":
+            return _tool_lookup_appointment(db, args)
+        if name == "cancel_appointment":
+            return _tool_cancel_appointment(db, args)
+        if name == "reschedule_appointment":
+            return _tool_reschedule_appointment(db, args)
         return {"ok": False, "error": "unknown_tool"}
 
     return execute

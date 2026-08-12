@@ -99,6 +99,66 @@ def test_unknown_tool_name_is_a_tool_error() -> None:
     assert result == {"ok": False, "error": "unknown_tool"}
 
 
+def test_lookup_appointment_tool_finds_a_real_booking(logged_in_client):
+    date = _next_workday(8)
+    with session_scope() as db:
+        executor = chat_tools.make_executor(db, lang="en")
+        slots = executor("check_availability", {"date": date})["slots"]
+        booked = executor("book_appointment", {
+            "date": date, "slot": slots[0], "name": "Lookup Tester", "email": "lookup@example.com",
+        })
+        result = executor("lookup_appointment", {"id": booked["id"], "email": "lookup@example.com"})
+    assert result["ok"] is True
+    assert result["appointment"]["id"] == booked["id"]
+
+
+def test_lookup_appointment_tool_wrong_email_not_found(logged_in_client):
+    date = _next_workday(9)
+    with session_scope() as db:
+        executor = chat_tools.make_executor(db, lang="en")
+        slots = executor("check_availability", {"date": date})["slots"]
+        booked = executor("book_appointment", {
+            "date": date, "slot": slots[0], "name": "Wrong Email", "email": "right@example.com",
+        })
+        result = executor("lookup_appointment", {"id": booked["id"], "email": "wrong@example.com"})
+    assert result == {"ok": False, "error": "not_found"}
+
+
+def test_cancel_appointment_tool_cancels_a_real_booking(logged_in_client):
+    date = _next_workday(10)
+    with session_scope() as db:
+        executor = chat_tools.make_executor(db, lang="en")
+        slots = executor("check_availability", {"date": date})["slots"]
+        booked = executor("book_appointment", {
+            "date": date, "slot": slots[0], "name": "Cancel Tester", "email": "cancel@example.com",
+        })
+        result = executor("cancel_appointment", {"id": booked["id"], "email": "cancel@example.com"})
+    assert result["ok"] is True
+    assert result["appointment"]["status"] == "cancelled"
+
+    resp = logged_in_client.get("/admin/api/booking/appointments", params={"status_filter": "cancelled"})
+    ids = [a["id"] for a in resp.json()]
+    assert booked["id"] in ids
+
+
+def test_reschedule_appointment_tool_moves_a_real_booking(logged_in_client):
+    date = _next_workday(11)
+    new_date = _next_workday(12)
+    with session_scope() as db:
+        executor = chat_tools.make_executor(db, lang="en")
+        slots = executor("check_availability", {"date": date})["slots"]
+        booked = executor("book_appointment", {
+            "date": date, "slot": slots[0], "name": "Reschedule Tester", "email": "reschedule@example.com",
+        })
+        new_slots = executor("check_availability", {"date": new_date})["slots"]
+        result = executor("reschedule_appointment", {
+            "id": booked["id"], "email": "reschedule@example.com", "date": new_date, "slot": new_slots[0],
+        })
+    assert result["ok"] is True
+    assert result["appointment"]["date"] == new_date
+    assert result["appointment"]["time"] == new_slots[0]
+
+
 # ── llm_client tool-call loop ────────────────────────────────────────
 
 def test_openai_compatible_loop_executes_tool_then_returns_final_text(monkeypatch):
