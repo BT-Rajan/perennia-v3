@@ -1,17 +1,53 @@
 # About Perennia
 
-Perennia is an AI-powered technology and innovation company. We partner with ambitious businesses to design, build, and operate intelligent products — from the first sketch on a whiteboard through to production support.
+## Solving Today. Shaping Tomorrow.
 
-We believe the best AI products are the ones nobody has to think about — they simply make the work faster, the decisions clearer, and the customer experience better.
+Perennia is a **Kuwait-based AI-powered technology and innovation company** developing practical and affordable solutions for organizations and individuals.
 
-## What drives us
+We combine **artificial intelligence, automation, and digital technologies** to solve real problems today and create new opportunities for tomorrow.
 
-- **Practical AI, not hype.** Every assistant, workflow, or platform we ship is judged by the time it saves and the outcomes it improves — not by how impressive the demo looks.
-- **Built with your team, not around it.** We embed alongside your engineers, ops, and support staff so the systems we build actually fit how you work.
-- **Long-term ownership.** We stay through production support and iteration, not just the launch.
+Our belief is simple: technology should create value that people can use, businesses can afford, and organizations can build on.
 
-## Where we work
+## What We Do
 
-We support clients across India and the GCC, with particular depth in Kuwait's business and legal ecosystem, and we build every product to work comfortably in both English and Arabic from day one.
+### For Individuals
 
-Curious what that looks like in practice? Visit **Products** to see what we build, or **Services** for how we work together.
+We create and periodically release practical AI utilities through our GitHub, helping individuals solve everyday problems and explore useful applications of AI.
+
+### For Businesses
+
+We design and build **custom intelligent solutions** for businesses across manufacturing, consulting, healthcare, professional services, and other industries.
+
+We focus on practical opportunities to improve processes, reduce effort, accelerate work, and create better outcomes.
+
+> **AI that goes beyond answers to help get things done.**
+
+### For Enterprises
+
+Through our India-based technology organization, **Cogzidel Technology Solutions**, with **28 years of enterprise technology experience**, we bring established software engineering and delivery capabilities together with modern AI and automation.
+
+This enables Perennia to support organizations in Kuwait as they move from individual AI use cases toward connected, scalable digital transformation.
+
+## Our Approach
+
+We follow a simple roadmap:
+
+**Understand → Identify → Build → Deploy → Improve**
+
+We start with the problem, identify where AI or automation can create genuine value, build the right solution, put it into use, and continuously improve it.
+
+We do not use AI for the sake of using AI. Every solution should be **practical, accessible, and affordable** — with measurable value for the people and organizations using it.
+
+## Our Growth Hackers
+
+Our **Growth Hackers** help clients discover where technology can create the greatest opportunity — from solving operational challenges today to preparing the business for what comes next.
+
+> **Solve more today. Shape tomorrow.**
+
+## Our Guiding Principle
+
+> **Practical AI. Affordable Innovation.**
+
+Perennia is here to make technology useful today, and make tomorrow more achievable.
+
+**Perennia — Solving Today. Shaping Tomorrow.**
