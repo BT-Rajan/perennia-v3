@@ -103,6 +103,8 @@ def create_app() -> FastAPI:
         import sys
         if "pytest" in sys.modules:
             return
+        from app.db import sync_schema
+        sync_schema()
         from app import scheduler
         scheduler.start()
 
