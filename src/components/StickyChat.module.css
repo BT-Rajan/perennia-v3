@@ -8,7 +8,15 @@
   bottom: 32px;
   right: 32px;
   z-index: 999;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 14px;
   /* Ensure it stays above everything except modals/dialogs */
+}
+
+.chatButtonWrap {
+  position: relative;
 }
 
 .chatButton {
@@ -61,6 +69,16 @@
 .chatButton:focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: 3px;
+}
+
+/* Appointments button — same treatment, on-theme accent color so it
+   reads as a distinct action from AI Assistant rather than a duplicate. */
+.booking {
+  background: var(--brand-accent);
+  border-color: color-mix(in srgb, var(--brand-accent) 70%, white);
+}
+.booking:focus-visible {
+  outline-color: var(--brand-accent);
 }
 
 /* Icon styling */
