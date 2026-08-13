@@ -20,8 +20,8 @@ export default function StickyChat({ onChatClick }) {
         onClick={handleClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        aria-label="Chat with assistant"
-        title="Chat with our AI assistant"
+        aria-label="AI Assistant"
+        title="Open our AI Assistant"
       >
         {/* Chat icon SVG */}
         <svg
@@ -40,7 +40,7 @@ export default function StickyChat({ onChatClick }) {
 
         {/* Label on hover */}
         <span className={styles.label}>
-          Chat
+          AI Assistant
         </span>
       </button>
 

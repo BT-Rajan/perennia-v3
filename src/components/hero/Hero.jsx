@@ -105,11 +105,11 @@ function FitOneLine({ text, className }) {
 }
 
 /**
- * Landing page. The person can jump into the chat assistant via the
- * CTA, or by typing straight into the quick-start chat box. The
- * rippling, always-single-line headline (see FitOneLine above) sits
- * where the old pulsing "voice orb" used to be — it's the page's
- * signature visual now.
+ * Landing page. The person can jump into the chat assistant by typing
+ * straight into the quick-start chat box (the rippling, always-single-
+ * line headline — see FitOneLine above — sits where the old pulsing
+ * "voice orb" used to be, and is the page's signature visual now), or
+ * via the always-visible sticky AI Assistant button.
  *
  * The cards below double as the mobile entry point into the
  * standalone content pages (whichever pages are currently configured
@@ -150,10 +150,6 @@ export default function Hero({ onEnter, onNavigate }) {
             sendLabel={copy.common.send}
           />
         </div>
-
-        <button className="hero-cta" onClick={() => onEnter()}>
-          {copy.home.hint}
-        </button>
       </div>
 
       <div className="hero-sections">
