@@ -88,6 +88,8 @@ export const adminApi = {
   acceptAppointment: (id) => request(`admin/api/booking/appointments/${id}/accept`, { method: "POST" }),
   rejectAppointment: (id, reason) =>
     request(`admin/api/booking/appointments/${id}/reject`, { method: "POST", body: JSON.stringify({ reason: reason || "" }) }),
+  rescheduleAppointment: (id, date, time) =>
+    request(`admin/api/booking/appointments/${id}/reschedule`, { method: "POST", body: JSON.stringify({ date, time }) }),
 
   listLeads: (params = {}) => {
     const qs = new URLSearchParams(Object.entries(params).filter(([, v]) => v));
@@ -144,6 +146,17 @@ export const adminApi = {
       method: "POST", body: JSON.stringify({ credential_id: credentialId, calendar_id: calendarId }),
     }),
   disconnectCalendarSync: () => request("admin/api/calendar-sync/disconnect", { method: "POST" }),
+  syncCalendarNow: () => request("admin/api/calendar-sync/sync-now", { method: "POST" }),
+
+  // -- calendar module: direct/manual event management, independent of
+  //    the booking flow — "full calendar controls" for whatever's on
+  //    the connected account's calendar, not just this app's own
+  //    appointment-linked events --
+  listCalendarEvents: (dateFrom, dateTo) =>
+    request(`admin/api/calendar-events?date_from=${encodeURIComponent(dateFrom)}&date_to=${encodeURIComponent(dateTo)}`),
+  createCalendarEvent: (body) => request("admin/api/calendar-events", { method: "POST", body: JSON.stringify(body) }),
+  updateCalendarEvent: (id, body) => request(`admin/api/calendar-events/${id}`, { method: "PATCH", body: JSON.stringify(body) }),
+  deleteCalendarEvent: (id) => request(`admin/api/calendar-events/${id}`, { method: "DELETE" }),
 
   // -- knowledge base (chat grounding: uploaded documents + web pages) --
   listKnowledge: () => request("admin/api/knowledge"),

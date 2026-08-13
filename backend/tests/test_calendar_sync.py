@@ -359,17 +359,20 @@ def test_event_deleted_on_self_service_cancel(client, monkeypatch):
     assert deleted[0]["event_id"] == "gcal-evt-3"
 
 
-def test_event_recreated_on_reschedule(client, monkeypatch):
+def test_event_updated_in_place_on_reschedule(client, monkeypatch):
     _enable_sync()
     _create_active_credential()
-    date = _nth_future_workday(260)
-    new_date = _nth_future_workday(261)
+    date = _nth_future_workday(160)
+    new_date = _nth_future_workday(161)
 
     create_calls = []
+    update_calls = []
     delete_calls = []
     monkeypatch.setattr("app.google_calendar_client.get_busy_times", lambda *a, **k: [])
     monkeypatch.setattr("app.google_calendar_client.create_event",
                          lambda *a, **kw: create_calls.append(kw) or f"gcal-evt-{len(create_calls)}")
+    monkeypatch.setattr("app.google_calendar_client.update_event",
+                         lambda *a, **kw: update_calls.append(kw) or kw["event_id"])
     monkeypatch.setattr("app.google_calendar_client.delete_event", lambda *a, **kw: delete_calls.append(kw))
 
     created = client.post("/api/booking/appointments", json={"date": date, "slot": "09:00", **VALID_APPT}).json()
@@ -380,7 +383,206 @@ def test_event_recreated_on_reschedule(client, monkeypatch):
     })
     body = resp.json()
     assert body["ok"] is True
-    assert len(delete_calls) == 1
-    assert delete_calls[0]["event_id"] == "gcal-evt-1"
-    assert len(create_calls) == 2
+    # PATCHes the existing event in place — same event id, no
+    # delete-then-recreate churn.
+    assert len(update_calls) == 1
+    assert update_calls[0]["event_id"] == "gcal-evt-1"
+    assert len(create_calls) == 1  # only the original creation, never a second
+    assert len(delete_calls) == 0
+    assert body["appointment"]["external_event_id"] == "gcal-evt-1"
+
+
+def test_event_recreated_on_reschedule_if_update_fails(client, monkeypatch):
+    """If the linked event is gone on Google's side (e.g. deleted
+    directly in Google Calendar), the PATCH 404s and reschedule falls
+    back to recreating the event rather than leaving the appointment
+    silently unsynced."""
+    _enable_sync()
+    _create_active_credential()
+    date = _nth_future_workday(162)
+    new_date = _nth_future_workday(163)
+
+    create_calls = []
+    monkeypatch.setattr("app.google_calendar_client.get_busy_times", lambda *a, **k: [])
+    monkeypatch.setattr("app.google_calendar_client.create_event",
+                         lambda *a, **kw: create_calls.append(kw) or f"gcal-evt-{len(create_calls)}")
+
+    def boom_update(*a, **kw):
+        from app.google_calendar_client import GoogleCalendarError
+        raise GoogleCalendarError("simulated 404 — event no longer exists")
+
+    monkeypatch.setattr("app.google_calendar_client.update_event", boom_update)
+
+    created = client.post("/api/booking/appointments", json={"date": date, "slot": "09:00", **VALID_APPT}).json()
+    assert created["appointment"]["external_event_id"] == "gcal-evt-1"
+
+    resp = client.post("/api/booking/appointments/reschedule", json={
+        "id": created["id"], "email": VALID_APPT["email"], "date": new_date, "time": "10:00",
+    })
+    body = resp.json()
+    assert body["ok"] is True
+    assert len(create_calls) == 2  # original + the fallback recreate
     assert body["appointment"]["external_event_id"] == "gcal-evt-2"
+
+
+# ── Admin-side reschedule/edit ───────────────────────────────────────
+
+def test_admin_reschedule_updates_event_in_place(logged_in_client, client, monkeypatch):
+    _enable_sync()
+    _create_active_credential()
+    date = _nth_future_workday(164)
+    new_date = _nth_future_workday(165)
+
+    update_calls = []
+    monkeypatch.setattr("app.google_calendar_client.get_busy_times", lambda *a, **k: [])
+    monkeypatch.setattr("app.google_calendar_client.create_event", lambda *a, **kw: "gcal-evt-1")
+    monkeypatch.setattr("app.google_calendar_client.update_event",
+                         lambda *a, **kw: update_calls.append(kw) or kw["event_id"])
+
+    created = client.post("/api/booking/appointments", json={"date": date, "slot": "09:00", **VALID_APPT}).json()
+
+    resp = logged_in_client.post(
+        f"/admin/api/booking/appointments/{created['id']}/reschedule",
+        json={"date": new_date, "time": "10:00"},
+    )
+    body = resp.json()
+    assert resp.status_code == 200, resp.text
+    assert body["ok"] is True
+    assert body["appointment"]["date"] == new_date
+    assert body["appointment"]["time"] == "10:00"
+    assert len(update_calls) == 1
+    assert update_calls[0]["event_id"] == "gcal-evt-1"
+
+
+def test_admin_reschedule_requires_open_slot(logged_in_client, client):
+    date = _nth_future_workday(166)
+    first = client.post("/api/booking/appointments", json={"date": date, "slot": "09:00", **VALID_APPT}).json()
+    second = client.post("/api/booking/appointments", json={
+        "date": date, "slot": "09:30", "name": "Sam Lee", "email": "sam@example.com", "phone": "555-0101",
+    }).json()
+
+    resp = logged_in_client.post(
+        f"/admin/api/booking/appointments/{first['id']}/reschedule",
+        json={"date": date, "time": "09:30"},
+    )
+    assert resp.status_code == 409
+    assert resp.json()["detail"] == "slot_unavailable"
+
+
+# ── Manual calendar event management ─────────────────────────────────
+
+def test_manual_event_crud(logged_in_client, monkeypatch):
+    _create_active_credential()
+
+    created_calls, updated_calls, deleted_calls = [], [], []
+    monkeypatch.setattr("app.google_calendar_client.create_event",
+                         lambda *a, **kw: created_calls.append(kw) or "manual-evt-1")
+    monkeypatch.setattr("app.google_calendar_client.update_event",
+                         lambda *a, **kw: updated_calls.append(kw) or kw["event_id"])
+    monkeypatch.setattr("app.google_calendar_client.delete_event",
+                         lambda *a, **kw: deleted_calls.append(kw))
+    monkeypatch.setattr("app.google_calendar_client.list_all_events", lambda *a, **kw: ([
+        {"id": "manual-evt-1", "summary": "Staff meeting",
+         "start": {"dateTime": "2026-09-01T10:00:00+00:00"}, "end": {"dateTime": "2026-09-01T11:00:00+00:00"}},
+    ], None))
+
+    create_resp = logged_in_client.post("/admin/api/calendar-events", json={
+        "summary": "Staff meeting", "description": "Weekly sync",
+        "start": "2026-09-01T10:00:00", "end": "2026-09-01T11:00:00", "timezone": "UTC",
+    })
+    assert create_resp.status_code == 200, create_resp.text
+    assert create_resp.json()["id"] == "manual-evt-1"
+    assert len(created_calls) == 1
+
+    list_resp = logged_in_client.get("/admin/api/calendar-events?date_from=2026-09-01&date_to=2026-09-07")
+    assert list_resp.status_code == 200, list_resp.text
+    events = list_resp.json()
+    assert len(events) == 1
+    assert events[0]["id"] == "manual-evt-1"
+
+    update_resp = logged_in_client.patch("/admin/api/calendar-events/manual-evt-1", json={
+        "summary": "Staff meeting (moved)", "description": "Weekly sync",
+        "start": "2026-09-01T14:00:00", "end": "2026-09-01T15:00:00", "timezone": "UTC",
+    })
+    assert update_resp.status_code == 200, update_resp.text
+    assert len(updated_calls) == 1
+
+    delete_resp = logged_in_client.delete("/admin/api/calendar-events/manual-evt-1")
+    assert delete_resp.status_code == 200, delete_resp.text
+    assert len(deleted_calls) == 1
+
+
+def test_manual_event_endpoints_require_connected_calendar(logged_in_client):
+    resp = logged_in_client.post("/admin/api/calendar-events", json={
+        "summary": "Test", "start": "2026-09-01T10:00:00", "end": "2026-09-01T11:00:00", "timezone": "UTC",
+    })
+    assert resp.status_code == 400
+
+
+# ── Two-way drift detection ───────────────────────────────────────────
+
+def test_sync_now_flags_externally_deleted_event(logged_in_client, client, monkeypatch):
+    _enable_sync()
+    _create_active_credential()
+    date = _nth_future_workday(167)
+
+    monkeypatch.setattr("app.google_calendar_client.get_busy_times", lambda *a, **k: [])
+    monkeypatch.setattr("app.google_calendar_client.create_event", lambda *a, **kw: "gcal-evt-drift-1")
+
+    created = client.post("/api/booking/appointments", json={"date": date, "slot": "09:00", **VALID_APPT}).json()
+
+    monkeypatch.setattr("app.google_calendar_client.list_all_events", lambda *a, **kw: ([
+        {"id": "gcal-evt-drift-1", "status": "cancelled"},
+    ], "next-token-1"))
+
+    resp = logged_in_client.post("/admin/api/calendar-sync/sync-now")
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["ok"] is True
+    assert body["flagged"] == 1
+
+    lookup = client.post("/api/booking/appointments/lookup", json={
+        "id": created["id"], "email": VALID_APPT["email"],
+    }).json()
+    assert lookup["appointment"]["calendar_drift"]
+
+
+def test_sync_now_flags_externally_changed_time(logged_in_client, client, monkeypatch):
+    _enable_sync()
+    _create_active_credential()
+    date = _nth_future_workday(168)
+
+    monkeypatch.setattr("app.google_calendar_client.get_busy_times", lambda *a, **k: [])
+    monkeypatch.setattr("app.google_calendar_client.create_event", lambda *a, **kw: "gcal-evt-drift-2")
+
+    created = client.post("/api/booking/appointments", json={"date": date, "slot": "09:00", **VALID_APPT}).json()
+
+    monkeypatch.setattr("app.google_calendar_client.list_all_events", lambda *a, **kw: ([
+        {"id": "gcal-evt-drift-2", "status": "confirmed",
+         "start": {"dateTime": f"{date}T14:00:00+00:00"}, "end": {"dateTime": f"{date}T14:30:00+00:00"}},
+    ], "next-token-2"))
+
+    resp = logged_in_client.post("/admin/api/calendar-sync/sync-now")
+    assert resp.json()["flagged"] == 1
+
+    status = logged_in_client.get("/admin/api/calendar-sync/status").json()
+    # >= rather than == : an earlier test in this module (deliberately)
+    # leaves its own flagged appointment in place, since the drift
+    # column has no reason to be cleared by an unrelated test's
+    # teardown — this test only needs to know its own flag landed.
+    assert status["flagged_count"] >= 1
+
+    lookup = client.post("/api/booking/appointments/lookup", json={
+        "id": created["id"], "email": VALID_APPT["email"],
+    }).json()
+    assert lookup["appointment"]["calendar_drift"]
+
+
+def test_sync_now_not_connected(logged_in_client):
+    resp = logged_in_client.post("/admin/api/calendar-sync/sync-now")
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["ok"] is False
+    assert body["error"] == "not_connected"
+
+

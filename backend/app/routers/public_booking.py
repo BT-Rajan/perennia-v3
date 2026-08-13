@@ -138,15 +138,15 @@ def reschedule_appointment(request: Request, body: RescheduleRequest, db: Sessio
     if result["ok"]:
         notification_service.notify_booking_rescheduled(db, result["appointment"])
         webhook_service.dispatch_event(db, "booking.rescheduled", result["appointment"])
-        # The old event's time is now wrong rather than useful — drop it
-        # and create a fresh one at the new time, rather than trying to
-        # PATCH an existing Google event (simpler, and this is an
-        # explicitly optional sub-feature per the plan).
-        calendar_sync_service.delete_event_for_appointment(db, body.id)
         if result["appointment"]["status"] != "pending":
-            event_id = calendar_sync_service.create_event_for_appointment(db, body.id)
+            # PATCHes the existing Google event to the new time in place
+            # (falls back to creating one if there wasn't one already) —
+            # keeps the same event id and anything attached to it on
+            # Google's side, instead of the old delete-then-recreate.
+            event_id = calendar_sync_service.update_event_for_appointment(db, body.id)
             result["appointment"]["external_event_id"] = event_id
         else:
+            calendar_sync_service.delete_event_for_appointment(db, body.id)
             result["appointment"]["external_event_id"] = None
         db.commit()
     return result

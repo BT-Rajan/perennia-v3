@@ -32,6 +32,14 @@ class GoogleCalendarError(Exception):
     generation, best-effort-and-swallow for event creation)."""
 
 
+class SyncTokenExpired(GoogleCalendarError):
+    """Google returns HTTP 410 when a stored sync token is no longer
+    valid (expired, or the calendar's sync history was reset). Per
+    Google's Events.list contract, the caller must discard the token
+    and perform a fresh time-bounded listing instead of retrying with
+    the same token."""
+
+
 def build_auth_url(*, client_id: str, redirect_uri: str, state: str) -> str:
     from urllib.parse import urlencode
     params = {
@@ -146,6 +154,89 @@ def create_event(access_token: str, *, calendar_id: str, summary: str, descripti
         raise GoogleCalendarError(f"Event creation returned {e.response.status_code}") from e
     except httpx.HTTPError as e:
         raise GoogleCalendarError(f"Event creation request failed: {e}") from e
+
+
+def update_event(access_token: str, *, calendar_id: str, event_id: str, summary: str, description: str,
+                  start_iso: str, end_iso: str, timezone: str) -> str:
+    """PATCHes an existing event in place and returns its (unchanged)
+    id. Used for reschedules and admin edits so the event keeps its
+    Google-assigned identity and anything attached to it there
+    (attendees, color, other manual edits) instead of the old
+    delete-then-recreate approach, which threw all of that away on
+    every reschedule."""
+    body = {
+        "summary": summary, "description": description,
+        "start": {"dateTime": start_iso, "timeZone": timezone},
+        "end": {"dateTime": end_iso, "timeZone": timezone},
+    }
+    try:
+        resp = httpx.patch(
+            EVENT_URL_TEMPLATE.format(calendar_id=calendar_id, event_id=event_id),
+            headers=_auth_headers(access_token), json=body, timeout=REQUEST_TIMEOUT_SECONDS,
+        )
+        resp.raise_for_status()
+        return resp.json()["id"]
+    except httpx.HTTPStatusError as e:
+        raise GoogleCalendarError(f"Event update returned {e.response.status_code}") from e
+    except httpx.HTTPError as e:
+        raise GoogleCalendarError(f"Event update request failed: {e}") from e
+
+
+def list_events_page(access_token: str, *, calendar_id: str, time_min: str | None = None,
+                      time_max: str | None = None, sync_token: str | None = None,
+                      page_token: str | None = None) -> dict:
+    """One page of Events.list. Exactly one of (time_min/time_max) or
+    sync_token drives the request — Google rejects a sync_token request
+    that also carries time_min/time_max/q. showDeleted=true is required
+    for sync_token requests to surface cancellations, and harmless to
+    always send otherwise. Raises SyncTokenExpired on a 410 rather than
+    the generic GoogleCalendarError, so callers can tell 'the token is
+    stale, do a full resync' apart from 'something else went wrong'."""
+    params: dict[str, str | int] = {"singleEvents": "true", "showDeleted": "true", "maxResults": 250}
+    if page_token:
+        params["pageToken"] = page_token
+    if sync_token:
+        params["syncToken"] = sync_token
+    else:
+        if time_min:
+            params["timeMin"] = time_min
+        if time_max:
+            params["timeMax"] = time_max
+        params["orderBy"] = "startTime"
+    try:
+        resp = httpx.get(
+            EVENTS_URL_TEMPLATE.format(calendar_id=calendar_id),
+            headers=_auth_headers(access_token), params=params, timeout=REQUEST_TIMEOUT_SECONDS,
+        )
+        if resp.status_code == 410:
+            raise SyncTokenExpired("Sync token expired or invalid; a full resync is required")
+        resp.raise_for_status()
+        return resp.json()
+    except httpx.HTTPStatusError as e:
+        raise GoogleCalendarError(f"Event list request returned {e.response.status_code}") from e
+    except httpx.HTTPError as e:
+        raise GoogleCalendarError(f"Event list request failed: {e}") from e
+
+
+def list_all_events(access_token: str, *, calendar_id: str, time_min: str | None = None,
+                     time_max: str | None = None, sync_token: str | None = None) -> tuple[list[dict], str | None]:
+    """Pages through every page of one Events.list call. Returns
+    (all items across pages, the final nextSyncToken if Google sent
+    one — only present once the last page is reached)."""
+    items: list[dict] = []
+    page_token: str | None = None
+    next_sync_token: str | None = None
+    while True:
+        page = list_events_page(
+            access_token, calendar_id=calendar_id, time_min=time_min, time_max=time_max,
+            sync_token=sync_token, page_token=page_token,
+        )
+        items.extend(page.get("items", []))
+        next_sync_token = page.get("nextSyncToken", next_sync_token)
+        page_token = page.get("nextPageToken")
+        if not page_token:
+            break
+    return items, next_sync_token
 
 
 def delete_event(access_token: str, *, calendar_id: str, event_id: str) -> None:

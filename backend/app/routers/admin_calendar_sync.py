@@ -3,6 +3,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.db import get_db
@@ -19,6 +20,15 @@ class StatusOut(BaseModel):
     provider: str | None = None
     calendar_id: str | None = None
     connected_at: str | None = None
+    last_synced_at: str | None = None
+    flagged_count: int = 0
+
+
+class SyncNowOut(BaseModel):
+    ok: bool
+    error: str | None = None
+    checked: int = 0
+    flagged: int = 0
 
 
 class SelectCalendarIn(BaseModel):
@@ -47,13 +57,32 @@ def _redirect_uri(db: Session) -> str:
 @router.get("/status", response_model=StatusOut)
 def sync_status(admin: AdminUser = Depends(get_current_admin), db: Session = Depends(get_db)):
     from app import calendar_sync_service
+    from app.models import Appointment
     credential = calendar_sync_service.get_active_credential(db)
     if credential is None:
         return StatusOut(connected=False)
+    flagged_count = db.scalar(
+        select(func.count()).select_from(Appointment).where(Appointment.calendar_drift.is_not(None))
+    ) or 0
     return StatusOut(
         connected=True, provider=credential.provider, calendar_id=credential.calendar_id,
         connected_at=credential.connected_at.isoformat(),
+        last_synced_at=credential.last_synced_at.isoformat() if credential.last_synced_at else None,
+        flagged_count=flagged_count,
     )
+
+
+@router.post("/sync-now", response_model=SyncNowOut)
+def sync_now(admin: AdminUser = Depends(get_current_admin), db: Session = Depends(get_db)):
+    """On-demand two-way drift check — pulls whatever changed on the
+    connected Google Calendar since the last check and reconciles it
+    against linked appointments (see calendar_sync_service.detect_drift).
+    Also run automatically on a timer if calendar_sync.drift_poll_minutes
+    is set — see app/scheduler.py."""
+    from app import calendar_sync_service
+    result = calendar_sync_service.detect_drift(db)
+    db.commit()
+    return SyncNowOut(**result)
 
 
 @router.get("/connect")

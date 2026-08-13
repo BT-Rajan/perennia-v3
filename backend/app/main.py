@@ -15,6 +15,7 @@ from app.routers import (
     admin_auth,
     admin_availability,
     admin_booking,
+    admin_calendar_events,
     admin_calendar_sync,
     admin_content,
     admin_knowledge,
@@ -80,6 +81,7 @@ def create_app() -> FastAPI:
     app.include_router(admin_uploads.router)
     app.include_router(admin_booking.router)
     app.include_router(admin_calendar_sync.router)
+    app.include_router(admin_calendar_events.router)
     app.include_router(admin_services.router)
     app.include_router(admin_availability.router)
     app.include_router(admin_webhooks.router)
@@ -92,6 +94,25 @@ def create_app() -> FastAPI:
     app.include_router(public_chat.router)
 
     app.mount("/uploads", StaticFiles(directory=str(settings.UPLOADS_DIR)), name="uploads")
+
+    @app.on_event("startup")
+    def _start_background_jobs() -> None:
+        # Skipped entirely under pytest — the suite spins up a fresh
+        # temp-file SQLite DB per run and doesn't want a background
+        # thread polling it (or Google) alongside the tests themselves.
+        import sys
+        if "pytest" in sys.modules:
+            return
+        from app import scheduler
+        scheduler.start()
+
+    @app.on_event("shutdown")
+    def _stop_background_jobs() -> None:
+        import sys
+        if "pytest" in sys.modules:
+            return
+        from app import scheduler
+        scheduler.stop()
 
     @app.get("/api/health")
     def health():

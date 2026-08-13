@@ -84,6 +84,9 @@ def update_settings_for_category(
         raise HTTPException(status.HTTP_400_BAD_REQUEST, str(e))
 
     db.commit()
+    if category == "calendar_sync" and "calendar_sync.drift_poll_minutes" in updated:
+        from app import scheduler
+        scheduler.reschedule(body["calendar_sync.drift_poll_minutes"])
     return {"updated": updated}
 
 

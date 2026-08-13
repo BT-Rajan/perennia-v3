@@ -8,6 +8,7 @@ import ServicesPage from "./pages/ServicesPage.jsx";
 import LeadsPage from "./pages/LeadsPage.jsx";
 import SettingsPage from "./pages/SettingsPage.jsx";
 import KnowledgePage from "./pages/KnowledgePage.jsx";
+import CalendarPage from "./pages/CalendarPage.jsx";
 
 function RequireAuth({ children }) {
   const { user, loading } = useAuth();
@@ -40,6 +41,7 @@ export default function App() {
             <Route index element={<OverviewPage />} />
             <Route path="appointments" element={<AppointmentsPage />} />
             <Route path="appointments/:id" element={<AppointmentsPage />} />
+            <Route path="calendar" element={<CalendarPage />} />
             <Route path="services" element={<ServicesPage />} />
             <Route path="services/:id" element={<ServicesPage />} />
             {/* Webhooks moved under Settings — keep old links/bookmarks working */}

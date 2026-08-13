@@ -202,6 +202,14 @@ class Appointment(Base):
     # made while sync was off or event-creation itself failed
     # (best-effort — see calendar_sync_service.py).
     external_event_id: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    # Set by calendar_sync_service.detect_drift when the linked Google
+    # Calendar event no longer matches this row (edited or deleted
+    # directly on Google's side rather than through this app) — a short
+    # human-readable description of the mismatch, or null when nothing's
+    # flagged. Cleared automatically once the mismatch resolves (another
+    # sync sees them match again) or an admin acts on it (reschedule/
+    # edit-in-place pushes our side back to Google).
+    calendar_drift: Mapped[str | None] = mapped_column(String(500), nullable=True)
     created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
     updated_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, onupdate=_utcnow)
 
@@ -408,6 +416,14 @@ class CalendarCredential(Base):
     token_expires_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     calendar_id: Mapped[str | None] = mapped_column(String(512), nullable=True)
     connected_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+    # Google's incremental-sync cursor (Events.list `nextSyncToken`) —
+    # null until the first successful detect_drift run, at which point
+    # every later run asks Google for "only what changed since this"
+    # instead of re-listing the whole calendar. A 410 response means
+    # Google considers it stale; calendar_sync_service clears it back to
+    # null and falls back to a fresh time-bounded listing.
+    sync_token: Mapped[str | None] = mapped_column(Text, nullable=True)
+    last_synced_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
 

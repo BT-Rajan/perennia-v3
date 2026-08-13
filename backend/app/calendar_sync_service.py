@@ -222,6 +222,55 @@ def create_event_for_appointment(db: Session, appt_id: str) -> str | None:
         return None
 
 
+def update_event_for_appointment(db: Session, appt_id: str) -> str | None:
+    """Best-effort. If this appointment already has a linked Google
+    event, PATCHes it in place (new date/time/description) instead of
+    the old delete-then-recreate — preserves the event's Google id and
+    anything attached to it there. If there's no linked event yet (sync
+    turned on after this appointment was first confirmed, or the
+    original create silently failed), falls back to creating one. If
+    the linked event was deleted on Google's side (a 404 from the
+    PATCH), falls back to recreating it rather than leaving the
+    appointment silently unsynced. Never raises — same philosophy as
+    create_event_for_appointment."""
+    if not get_setting(db, "features.calendar_sync_enabled"):
+        return None
+    credential = get_active_credential(db)
+    if credential is None or not credential.calendar_id:
+        return None
+    from app.models import Appointment
+    appt = db.get(Appointment, appt_id)
+    if appt is None:
+        return None
+    if not appt.external_event_id:
+        return create_event_for_appointment(db, appt_id)
+    try:
+        access_token = _ensure_fresh_access_token(db, credential)
+        timezone = get_setting(db, "booking.timezone")
+        from zoneinfo import ZoneInfo
+        start_local = dt.datetime.fromisoformat(f"{appt.date}T{appt.time}:00").replace(tzinfo=ZoneInfo(timezone))
+        duration = _appointment_duration_minutes(db, appt)
+        end_local = start_local + dt.timedelta(minutes=duration)
+        google.update_event(
+            access_token, calendar_id=credential.calendar_id, event_id=appt.external_event_id,
+            summary=f"{appt.service or 'Appointment'} — {appt.name}",
+            description=appt.notes or "", start_iso=start_local.isoformat(), end_iso=end_local.isoformat(),
+            timezone=timezone,
+        )
+        appt.calendar_drift = None  # this push supersedes any previously-flagged mismatch
+        db.flush()
+        return appt.external_event_id
+    except Exception:
+        import logging
+        logging.getLogger("perennia.calendar_sync").exception(
+            "Google Calendar event update failed for appointment %s — attempting to recreate it", appt_id
+        )
+        try:
+            return create_event_for_appointment(db, appt_id)
+        except Exception:
+            return None
+
+
 def delete_event_for_appointment(db: Session, appt_id: str) -> None:
     """Best-effort cleanup on cancel/reschedule — never raises. Clears
     external_event_id on success so a later call is a no-op rather
@@ -253,3 +302,174 @@ def _appointment_duration_minutes(db: Session, appt) -> int:
         if svc is not None:
             return svc.duration_minutes
     return get_setting(db, "booking.slot_minutes")
+
+
+# ── Manual event management (admin's general "Calendar" screen) ─────
+# Everything above this point is triggered by an Appointment row and
+# never exposes raw Google event shapes to a caller. These functions
+# are the opposite: an admin managing the connected calendar directly,
+# for events that may have nothing to do with a booking at all. They
+# operate on whatever calendar is currently connected/selected —
+# exactly the "full calendar controls" a personal Google account needs
+# for anyone to create/edit/delete arbitrary events from this app.
+
+def _require_active_calendar(db: Session) -> CalendarCredential:
+    credential = get_active_credential(db)
+    if credential is None or not credential.calendar_id:
+        raise CalendarSyncNotConfigured("No calendar is connected — connect one in Settings first")
+    return credential
+
+
+def _format_event(event: dict) -> dict:
+    start = event.get("start", {})
+    end = event.get("end", {})
+    return {
+        "id": event.get("id"),
+        "summary": event.get("summary") or "(no title)",
+        "description": event.get("description") or "",
+        "start": start.get("dateTime") or start.get("date"),
+        "end": end.get("dateTime") or end.get("date"),
+        "all_day": "date" in start and "dateTime" not in start,
+        "html_link": event.get("htmlLink"),
+    }
+
+
+def list_manual_events(db: Session, *, time_min: dt.datetime, time_max: dt.datetime) -> list[dict]:
+    """Every (non-cancelled) event on the connected calendar within the
+    window, regardless of whether this app created it — an admin needs
+    to see the whole calendar to manage it, not just the appointments
+    this app happens to know about."""
+    credential = _require_active_calendar(db)
+    access_token = _ensure_fresh_access_token(db, credential)
+    items, _ = google.list_all_events(
+        access_token, calendar_id=credential.calendar_id,
+        time_min=time_min.isoformat(), time_max=time_max.isoformat(),
+    )
+    return [_format_event(e) for e in items if e.get("status") != "cancelled"]
+
+
+def create_manual_event(db: Session, *, summary: str, description: str, start_iso: str, end_iso: str,
+                         timezone: str, actor_id: str | None, actor_username: str | None) -> dict:
+    credential = _require_active_calendar(db)
+    access_token = _ensure_fresh_access_token(db, credential)
+    event_id = google.create_event(
+        access_token, calendar_id=credential.calendar_id, summary=summary,
+        description=description, start_iso=start_iso, end_iso=end_iso, timezone=timezone,
+    )
+    db.add(AuditLog(actor_id=actor_id, actor_username=actor_username,
+                     action="calendar_sync.create_event", target=event_id))
+    return {"id": event_id}
+
+
+def update_manual_event(db: Session, event_id: str, *, summary: str, description: str, start_iso: str,
+                         end_iso: str, timezone: str, actor_id: str | None, actor_username: str | None) -> None:
+    credential = _require_active_calendar(db)
+    access_token = _ensure_fresh_access_token(db, credential)
+    google.update_event(
+        access_token, calendar_id=credential.calendar_id, event_id=event_id,
+        summary=summary, description=description, start_iso=start_iso, end_iso=end_iso, timezone=timezone,
+    )
+    db.add(AuditLog(actor_id=actor_id, actor_username=actor_username,
+                     action="calendar_sync.update_event", target=event_id))
+    _clear_drift_for_event(db, event_id)
+
+
+def delete_manual_event(db: Session, event_id: str, *, actor_id: str | None, actor_username: str | None) -> None:
+    credential = _require_active_calendar(db)
+    access_token = _ensure_fresh_access_token(db, credential)
+    google.delete_event(access_token, calendar_id=credential.calendar_id, event_id=event_id)
+    db.add(AuditLog(actor_id=actor_id, actor_username=actor_username,
+                     action="calendar_sync.delete_event", target=event_id))
+    appt = _appointment_for_event(db, event_id)
+    if appt is not None:
+        appt.calendar_drift = "Linked calendar event was deleted from the admin Calendar screen."
+
+
+def _appointment_for_event(db: Session, event_id: str):
+    from app.models import Appointment
+    return db.scalar(select(Appointment).where(Appointment.external_event_id == event_id))
+
+
+def _clear_drift_for_event(db: Session, event_id: str) -> None:
+    appt = _appointment_for_event(db, event_id)
+    if appt is not None:
+        appt.calendar_drift = None
+
+
+# ── Two-way drift detection ───────────────────────────────────────────
+
+def detect_drift(db: Session) -> dict:
+    """Reconciles appointments against what's actually on the connected
+    Google Calendar right now — catches an event someone edited or
+    deleted directly in Google rather than through this app, which the
+    one-directional create/update/delete calls above would otherwise
+    never notice. Uses Google's incremental sync (a stored syncToken)
+    so a routine check is one cheap request instead of re-listing the
+    whole calendar; falls back to a full time-bounded listing the first
+    time, or whenever Google reports the stored token stale (410).
+
+    Never raises — reports failure in the returned dict instead, so an
+    admin-triggered 'Sync now' always gets a clean response and a
+    scheduled background run never crashes its caller."""
+    credential = get_active_credential(db)
+    if credential is None or not credential.calendar_id:
+        return {"ok": False, "error": "not_connected", "checked": 0, "flagged": 0}
+
+    from app.models import Appointment
+    try:
+        access_token = _ensure_fresh_access_token(db, credential)
+        timezone = get_setting(db, "booking.timezone")
+        from zoneinfo import ZoneInfo
+        tz = ZoneInfo(timezone)
+
+        try:
+            if not credential.sync_token:
+                raise google.SyncTokenExpired("no sync token yet — first run")
+            items, next_token = google.list_all_events(
+                access_token, calendar_id=credential.calendar_id, sync_token=credential.sync_token,
+            )
+        except google.SyncTokenExpired:
+            credential.sync_token = None
+            window_start = dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=1)
+            window_end = dt.datetime.now(dt.timezone.utc) + dt.timedelta(days=365)
+            items, next_token = google.list_all_events(
+                access_token, calendar_id=credential.calendar_id,
+                time_min=window_start.isoformat(), time_max=window_end.isoformat(),
+            )
+
+        flagged = 0
+        for event in items:
+            event_id = event.get("id")
+            if not event_id:
+                continue
+            appt = db.scalar(select(Appointment).where(Appointment.external_event_id == event_id))
+            if appt is None:
+                continue  # not something this app created/linked - nothing of ours to reconcile
+
+            if event.get("status") == "cancelled":
+                appt.calendar_drift = "Deleted on Google Calendar — appointment record no longer matches."
+                flagged += 1
+                continue
+
+            start = event.get("start", {}).get("dateTime")
+            if not start:
+                continue  # unexpected all-day shape for a booking event; skip rather than misreport
+            event_local = dt.datetime.fromisoformat(start).astimezone(tz)
+            expected_local = dt.datetime.fromisoformat(f"{appt.date}T{appt.time}:00").replace(tzinfo=tz)
+            if event_local != expected_local:
+                appt.calendar_drift = (
+                    f"Time changed on Google Calendar to {event_local.strftime('%Y-%m-%d %H:%M')} "
+                    f"— appointment record still shows {appt.date} {appt.time}."
+                )
+                flagged += 1
+            elif appt.calendar_drift:
+                appt.calendar_drift = None  # back in sync
+
+        credential.sync_token = next_token
+        credential.last_synced_at = dt.datetime.now(dt.timezone.utc)
+        db.flush()
+        return {"ok": True, "checked": len(items), "flagged": flagged}
+    except Exception:
+        import logging
+        logging.getLogger("perennia.calendar_sync").exception("Calendar drift detection failed")
+        return {"ok": False, "error": "sync_failed", "checked": 0, "flagged": 0}

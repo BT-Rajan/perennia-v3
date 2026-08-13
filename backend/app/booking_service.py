@@ -366,6 +366,31 @@ def reschedule_appointment(db: Session, appt_id: str, email: str, new_date_str: 
     return {"ok": True, "appointment": _serialize(db, appt)}
 
 
+def admin_reschedule_appointment(db: Session, appt_id: str, new_date_str: str, new_time_str: str) -> dict:
+    """Admin override of reschedule_appointment — no email match, no
+    notice-window restriction (same reasoning as admin_cancel_appointment:
+    an admin moving a booking is often exactly a late-notice change a
+    visitor can no longer self-serve), but still respects the slot grid
+    so it can't create a double-booking."""
+    appt = db.get(Appointment, appt_id)
+    if appt is None:
+        return {"ok": False, "error": "not_found"}
+    if appt.status == "cancelled":
+        return {"ok": False, "error": "already_cancelled"}
+    try:
+        slots = available_slots(db, new_date_str, service_id=appt.service_id, exclude_id=appt.id)
+    except ValueError:
+        return {"ok": False, "error": "invalid_date"}
+    except InvalidServiceError:
+        return {"ok": False, "error": "invalid_service"}
+    if new_time_str not in slots:
+        return {"ok": False, "error": "slot_unavailable"}
+
+    appt.date = new_date_str
+    appt.time = new_time_str
+    return {"ok": True, "appointment": _serialize(db, appt)}
+
+
 def _serialize(db: Session, appt: Appointment) -> dict:
     service_name = None
     if appt.service_id:
@@ -384,6 +409,7 @@ def _serialize(db: Session, appt: Appointment) -> dict:
         "notes": appt.notes, "status": appt.status,
         "confirmed_at": appt.confirmed_at.isoformat() if appt.confirmed_at else None,
         "external_event_id": appt.external_event_id,
+        "calendar_drift": appt.calendar_drift,
         "answers": answers,
     }
 

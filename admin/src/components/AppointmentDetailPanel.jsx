@@ -7,6 +7,9 @@ export default function AppointmentDetailPanel({ appointment, onClose, onUpdated
   const { handleSessionExpired } = useAuth();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [rescheduling, setRescheduling] = useState(false);
+  const [newDate, setNewDate] = useState(appointment.date);
+  const [newTime, setNewTime] = useState(appointment.time);
 
   function handleApiError(e) {
     if (e.status === 401) handleSessionExpired();
@@ -55,6 +58,20 @@ export default function AppointmentDetailPanel({ appointment, onClose, onUpdated
     }
   }
 
+  async function handleReschedule() {
+    setBusy(true);
+    setError("");
+    try {
+      const updated = await adminApi.rescheduleAppointment(appointment.id, newDate, newTime);
+      onUpdated(updated);
+      setRescheduling(false);
+    } catch (e) {
+      handleApiError(e);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <aside className="card appt-panel">
       <div className="appt-panel-head">
@@ -70,6 +87,28 @@ export default function AppointmentDetailPanel({ appointment, onClose, onUpdated
       {appointment.phone && <div className="appt-panel-row"><span>Phone</span>{appointment.phone}</div>}
       <div className="appt-panel-row"><span>When</span>{appointment.date} · {appointment.time}</div>
       <div className="appt-panel-row"><span>Service</span>{appointment.service_name || appointment.service || "—"}</div>
+
+      {appointment.calendar_drift && (
+        <div className="appt-panel-drift">
+          ⚠ Google Calendar mismatch: {appointment.calendar_drift} Rescheduling or editing here will push this
+          appointment's time back to Google and clear this warning.
+        </div>
+      )}
+
+      {rescheduling && appointment.status !== "cancelled" && (
+        <div className="appt-panel-reschedule">
+          <label className="appt-panel-label">New date</label>
+          <input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)} />
+          <label className="appt-panel-label">New time</label>
+          <input type="time" value={newTime} onChange={(e) => setNewTime(e.target.value)} />
+          <div className="appt-panel-reschedule-actions">
+            <button className="row-action primary" disabled={busy} onClick={handleReschedule}>
+              {busy ? "Saving…" : "Save new time"}
+            </button>
+            <button className="row-action" disabled={busy} onClick={() => setRescheduling(false)}>Cancel</button>
+          </div>
+        </div>
+      )}
 
       {appointment.answers?.length > 0 && (
         <>
@@ -88,6 +127,11 @@ export default function AppointmentDetailPanel({ appointment, onClose, onUpdated
       {error && <div className="appt-panel-error">{error}</div>}
 
       <div className="appt-panel-actions">
+        {(appointment.status === "confirmed" || appointment.status === "pending") && !rescheduling && (
+          <button className="row-action" disabled={busy} onClick={() => setRescheduling(true)}>
+            Reschedule
+          </button>
+        )}
         {appointment.status === "confirmed" && (
           <button className="row-action danger" disabled={busy} onClick={handleCancel}>
             {busy ? "Cancelling…" : "Cancel appointment"}

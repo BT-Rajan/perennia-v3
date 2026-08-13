@@ -278,11 +278,11 @@ def _tool_reschedule_appointment(db: Session, args: dict[str, Any]) -> dict[str,
     if result["ok"]:
         notification_service.notify_booking_rescheduled(db, result["appointment"])
         webhook_service.dispatch_event(db, "booking.rescheduled", result["appointment"])
-        calendar_sync_service.delete_event_for_appointment(db, appt_id)
         if result["appointment"]["status"] != "pending":
-            event_id = calendar_sync_service.create_event_for_appointment(db, appt_id)
+            event_id = calendar_sync_service.update_event_for_appointment(db, appt_id)
             result["appointment"]["external_event_id"] = event_id
         else:
+            calendar_sync_service.delete_event_for_appointment(db, appt_id)
             result["appointment"]["external_event_id"] = None
         db.commit()
     return result

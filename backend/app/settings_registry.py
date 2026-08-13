@@ -324,6 +324,12 @@ _DEFS: list[SettingDef] = [
                          "https://yourdomain.com/admin/settings/calendar_sync — the page picks up "
                          "Google's ?code=&state= and completes the connection without a full page reload.",
                validator=_url_or_empty),
+    SettingDef("calendar_sync.drift_poll_minutes", "calendar_sync", "Auto-check for external changes every (minutes)",
+               SettingType.INT, 15, validator=_int_range(0, 1440),
+               help_text="How often to check the connected Google Calendar for events that were edited or "
+                         "deleted directly in Google (not through this app) and flag the mismatched "
+                         "appointment for review. 0 disables the automatic check — use 'Sync now' in the "
+                         "Calendar settings instead."),
 
     # notifications — outbound email/WhatsApp for booking confirmations
     # and internal staff alerts. Every send is best-effort: a
