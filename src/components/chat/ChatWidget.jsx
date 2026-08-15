@@ -33,7 +33,7 @@ function getSpeechRecognitionCtor() {
  * with an optional mic (browsers that support SpeechRecognition) for
  * voice in and spoken replies out.
  */
-export default function ChatWidget({ open, onClose, onBookingClick }) {
+export default function ChatWidget({ open, onClose, onBookingClick, initialMessage, onConsumeInitialMessage }) {
   const { copy, lang, nav, branding, features } = useLang();
   const t = copy.chat;
 
@@ -47,13 +47,25 @@ export default function ChatWidget({ open, onClose, onBookingClick }) {
   const scrollRef = useRef(null);
   const leadCapturedRef = useRef(false);
   const recognitionRef = useRef(null);
+  const initialMessageSentRef = useRef(false);
 
   const speechSupported = !!getSpeechRecognitionCtor();
   const ttsSupported = typeof window !== "undefined" && "speechSynthesis" in window;
 
   useEffect(() => {
-    setMessages([{ from: "ai", text: t.welcomeMsg }]);
+    const welcome = { from: "ai", text: t.welcomeMsg };
+    setMessages([welcome]);
     leadCapturedRef.current = false;
+
+    // If the person arrived here by typing into the hero's quick-start
+    // box and hitting Enter, that message rides along as
+    // `initialMessage` — send it right after the welcome message so
+    // the conversation continues rather than restarting.
+    if (initialMessage && !initialMessageSentRef.current) {
+      initialMessageSentRef.current = true;
+      sendMessage(initialMessage, [welcome]);
+      onConsumeInitialMessage?.();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lang]);
 

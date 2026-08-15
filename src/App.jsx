@@ -21,16 +21,25 @@ function AppShell() {
   // Chat floats as a popover (see ChatWidget) instead of a routed
   // page, mirroring k-g-i.com's "Talk to Sulaiman" widget — it stays
   // mounted over whatever page is behind it rather than replacing it.
-  // The homepage has no chat entry point of its own anymore — this
-  // sticky-triggered popover (voice + text, see ChatWidget) is the
-  // one chat surface on the whole site.
+  // Both the hero's quick-start box and the sticky button open this
+  // same widget (voice + text, see ChatWidget) — the one chat surface
+  // on the whole site.
   const [chatOpen, setChatOpen] = useState(false);
+  // Message typed into the hero's quick-start chat box, carried across
+  // into ChatWidget so hitting Enter there feels like continuing the
+  // same conversation rather than starting over.
+  const [pendingMessage, setPendingMessage] = useState("");
   // The Appointments sticky button opens booking from any page, not
   // just from inside a chat conversation — this is that panel's state.
   const [bookingOpen, setBookingOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
   const handleStickyChat = () => setChatOpen((o) => !o);
+
+  const handleHeroEnter = (initialMessage) => {
+    if (initialMessage) setPendingMessage(initialMessage);
+    setChatOpen(true);
+  };
 
   function handleBookingResult(text) {
     setBookingOpen(false);
@@ -39,7 +48,7 @@ function AppShell() {
 
   return (
     <>
-      {page === "home" && <Hero onNavigate={setPage} />}
+      {page === "home" && <Hero onEnter={handleHeroEnter} onNavigate={setPage} />}
       {page === "contact" && <ContactPage onBack={() => setPage("home")} onNavigate={setPage} />}
       {!SPECIAL_PAGE_IDS.has(page) && (
         <ContentPage pageId={page} onBack={() => setPage("home")} onNavigate={setPage} />
@@ -56,6 +65,8 @@ function AppShell() {
       <ChatWidget
         open={chatOpen}
         onClose={() => setChatOpen(false)}
+        initialMessage={pendingMessage}
+        onConsumeInitialMessage={() => setPendingMessage("")}
         onBookingClick={() => setBookingOpen(true)}
       />
 
