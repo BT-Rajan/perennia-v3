@@ -222,6 +222,18 @@ _DEFS: list[SettingDef] = [
     SettingDef("theme.hero_auto_advance_seconds", "theme", "Home auto-advance (seconds)", SettingType.INT, 7,
                help_text="How long the home screen waits before auto-continuing into chat.",
                validator=_int_range(2, 60)),
+    # Which homepage layout arrangement to render — purely a client-side
+    # choice of *structure* (how the same headline/tagline/quick-chat/nav
+    # pieces are composed on the page), never colors/fonts (those stay
+    # theme.primary_color etc. above) and never which features exist.
+    # "classic" is both the default and the site's original/only layout
+    # before this setting existed, so an unset or unrecognized value here
+    # can never regress an existing deployment — the frontend falls back
+    # to it (see src/components/hero/Hero.jsx).
+    SettingDef("theme.layout_template", "theme", "Homepage layout", SettingType.ENUM, "classic",
+               choices=("classic", "split", "centered-card", "editorial"),
+               help_text="How the homepage headline, quick-chat box, and page-navigation cards are arranged. "
+                          "Colors and fonts are unaffected — set those above."),
 
     # features (toggles for capabilities landing in later passes,
     # declared now so the admin can already see what's coming and
