@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 import PageHeader from "../components/PageHeader.jsx";
 import SettingField from "../components/SettingField.jsx";
 import ThemePresetPicker from "../components/ThemePresetPicker.jsx";
+import LayoutTemplatePicker from "../components/LayoutTemplatePicker.jsx";
 import LogoZoomControl from "../components/LogoZoomControl.jsx";
 import CalendarSyncConnector from "../components/CalendarSyncConnector.jsx";
 import WebhooksPage from "./WebhooksPage.jsx";
@@ -199,12 +200,23 @@ export default function SettingsPage() {
                     />
                   )}
 
+                  {categoryParam === "theme" && (
+                    <LayoutTemplatePicker
+                      value={values["theme.layout_template"]}
+                      onChange={(v) => handleFieldChange("theme.layout_template", v)}
+                    />
+                  )}
+
                   {schema.map((field) => {
                     // Superseded by the LogoZoomControl composite below
                     // (rendered right after branding.logo_url) — a bare
                     // number input for a zoom factor isn't useful without
                     // a live preview next to it.
                     if (field.key === "branding.logo_scale") return null;
+                    // Superseded by the LayoutTemplatePicker gallery above
+                    // — a bare dropdown of 4 opaque ids isn't useful
+                    // without the mini visual previews.
+                    if (field.key === "theme.layout_template") return null;
                     return (
                       <div key={field.key}>
                         <SettingField

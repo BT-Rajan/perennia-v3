@@ -168,6 +168,10 @@ const FALLBACK_THEME = {
   contentMaxWidthPx: 1180,
   cornerRadiusPx: 16,
   heroAutoAdvanceSeconds: 7,
+  // Falls back to "classic" — the site's original/only homepage layout
+  // before this setting existed — so an unset or unrecognized value
+  // here can never regress an existing deployment. See Hero.jsx.
+  layoutTemplate: "classic",
 };
 
 export function buildFallbackSite() {
@@ -225,6 +229,8 @@ function apiTheme(publicConfig) {
     contentMaxWidthPx: publicConfig["theme.content_max_width_px"],
     cornerRadiusPx: publicConfig["theme.corner_radius_px"],
     heroAutoAdvanceSeconds: publicConfig["theme.hero_auto_advance_seconds"],
+    // See FALLBACK_THEME above on why "classic" is the safe fallback.
+    layoutTemplate: publicConfig["theme.layout_template"] || "classic",
   };
 }
 
