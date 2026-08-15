@@ -81,6 +81,22 @@
   outline-color: var(--brand-accent);
 }
 
+/* Online indicator on the AI Assistant button — mirrors k-g-i.com's
+   agent-online-dot. Rendered only while the widget is closed (see
+   StickyChat.jsx, which conditionally includes .onlineDot alongside
+   .pulse). */
+.onlineDot {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-success);
+  border: 2px solid var(--brand-bg);
+  z-index: 1;
+}
+
 /* Icon styling */
 .icon {
   flex-shrink: 0;

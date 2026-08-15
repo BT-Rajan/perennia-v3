@@ -56,10 +56,17 @@ export default function ChatWidget({ open, onClose, initialMessage, onConsumeIni
     setMessages((m) => [...m, { from: "ai", text: reply }]);
   }
 
-  // Starter screen (quick questions + book-a-call) only shows before
-  // the visitor has sent anything — same moment KGI shows theirs.
+  // Starter screen only shows before the visitor has sent anything —
+  // same moment k-g-i.com shows theirs. "Book a call" rides in the
+  // same chip row as the quick questions (not a separate highlighted
+  // row) — that's how their suggestions list actually works.
   const showStarter = messages.length <= 1 && !typing;
-  const starterQuestions = nav.slice(0, 3);
+  const starterChips = features.bookingEnabled ? [...nav.slice(0, 3), { id: "book", label: t.bookBtn }] : nav.slice(0, 4);
+
+  function handleChipClick(item) {
+    if (item.id === "book") onBookingClick?.();
+    else sendMessage(item.label);
+  }
 
   if (!open) return null;
 
@@ -86,16 +93,11 @@ export default function ChatWidget({ open, onClose, initialMessage, onConsumeIni
 
         {showStarter && (
           <div className="chat-widget-starter">
-            {starterQuestions.map((item) => (
-              <button key={item.id} className="chat-widget-chip" onClick={() => sendMessage(item.label)}>
+            {starterChips.map((item) => (
+              <button key={item.id} className="chat-widget-chip" onClick={() => handleChipClick(item)}>
                 {item.label}
               </button>
             ))}
-            {features.bookingEnabled && (
-              <button className="chat-widget-book-row" onClick={onBookingClick}>
-                {t.bookBtn} <span aria-hidden="true">➤</span>
-              </button>
-            )}
           </div>
         )}
       </div>
@@ -109,7 +111,7 @@ export default function ChatWidget({ open, onClose, initialMessage, onConsumeIni
         disabled={typing}
       />
 
-      <footer className="chat-widget-footer">{t.poweredBy} {branding.siteName}</footer>
+      <footer className="chat-widget-footer">{t.poweredBy} <span>{branding.siteName}</span></footer>
     </GlassPanel>
   );
 }

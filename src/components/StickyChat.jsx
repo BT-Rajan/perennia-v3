@@ -79,6 +79,7 @@ export default function StickyChat({ onChatClick, onBookingClick, showBooking = 
           }
         />
         {!chatOpen && <div className={styles.pulse} />}
+        {!chatOpen && <span className={styles.onlineDot} aria-hidden="true" />}
       </div>
     </div>
   );

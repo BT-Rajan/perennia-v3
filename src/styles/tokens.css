@@ -15,18 +15,23 @@
    ────────────────────────────────────────────────────────── */
 :root {
   /* ---- Base tokens (admin-configurable) --------------------------- */
-  --brand-bg: #0c0a16;        /* theme.background_color */
-  --brand-primary: #ff7a45;   /* theme.primary_color */
-  --brand-accent: #a855f7;    /* theme.accent_color */
-  --brand-text: #f4f0fa;      /* theme.text_color */
+  /* Gold-on-near-black editorial palette, matched to k-g-i.com's design
+     language (single gold accent family rather than a separate hue,
+     serif display + geometric sans body) — set here as the fallback
+     so it flows through every component that already reads these vars
+     (buttons, chips, panels, chat), not just the chat widget. */
+  --brand-bg: #07060a;        /* theme.background_color */
+  --brand-primary: #c9a84c;   /* theme.primary_color — gold */
+  --brand-accent: #e8c96a;    /* theme.accent_color — gold2, lighter gold instead of a second hue */
+  --brand-text: #f5f0e8;      /* theme.text_color */
 
-  --font-display: "Space Grotesk", system-ui, -apple-system, sans-serif;  /* theme.font_display */
-  --font-body: "Inter", system-ui, -apple-system, sans-serif;           /* theme.font_body */
+  --font-display: "Cormorant Garamond", Georgia, serif;                 /* theme.font_display */
+  --font-body: "Syne", system-ui, -apple-system, sans-serif;            /* theme.font_body */
   --font-ar: "Noto Kufi Arabic", "Arial Unicode MS", sans-serif;        /* theme.font_ar */
 
   --header-h: 64px;       /* theme.header_height_px */
   --content-max: 1180px;  /* theme.content_max_width_px */
-  --radius-md: 16px;      /* theme.corner_radius_px */
+  --radius-md: 10px;      /* theme.corner_radius_px — sharper, more editorial than the old 16px */
 
   /* ---- Derived: dark surface scale (each step lightens the base) -- */
   --navy-1: var(--brand-bg);
