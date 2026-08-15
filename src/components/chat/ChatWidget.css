@@ -1,0 +1,166 @@
+/* ──────────────────────────────────────────────────────────
+   Floating chat popover — bottom-right, layered above
+   StickyChat's toggle pill. Matches k-g-i.com's widget shape:
+   persona header w/ online status, scrollable transcript,
+   starter chips + book row before the first reply, footer credit.
+   ────────────────────────────────────────────────────────── */
+.chat-widget {
+  position: fixed;
+  z-index: 1000;
+  right: 24px;
+  bottom: 104px;
+  width: min(380px, calc(100vw - 32px));
+  height: min(600px, calc(100dvh - 140px));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: chat-widget-in var(--dur-med) var(--ease);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45), 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+[dir="rtl"] .chat-widget { right: auto; left: 24px; }
+
+@keyframes chat-widget-in {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.chat-widget-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--glass-border);
+  flex-shrink: 0;
+}
+
+.chat-widget-persona {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.chat-widget-avatar {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--on-gold-text);
+  background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent));
+}
+
+.chat-widget-persona-text { min-width: 0; }
+
+.chat-widget-name {
+  font-weight: 600;
+  font-size: var(--fs-body);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-widget-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-sm);
+  color: var(--muted-strong);
+}
+.chat-widget-status .status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-success);
+  box-shadow: 0 0 6px var(--color-success);
+  flex-shrink: 0;
+}
+
+.chat-widget-close {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  color: var(--white-soft);
+  font-size: 14px;
+  transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.chat-widget-close:hover { background: var(--glass-strong); transform: scale(1.06); }
+
+.chat-widget-conversation {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.chat-widget-starter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding-top: var(--space-3);
+}
+
+.chat-widget-chip {
+  text-align: start;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  color: var(--white-soft);
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.chat-widget-chip:hover { background: var(--gold-dim); border-color: var(--gold-border); color: var(--gold); }
+
+.chat-widget-book-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--brand-primary);
+  color: var(--on-gold-text);
+  transition: filter var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.chat-widget-book-row:hover { filter: brightness(1.08); transform: translateY(-1px); }
+
+.chat-widget-footer {
+  flex-shrink: 0;
+  text-align: center;
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--fs-sm);
+  color: var(--muted);
+  border-top: 1px solid color-mix(in srgb, var(--gold) 10%, transparent);
+}
+
+@media (max-width: 480px) {
+  .chat-widget {
+    right: 16px;
+    left: 16px;
+    bottom: 88px;
+    width: auto;
+    height: min(70dvh, calc(100dvh - 120px));
+  }
+  [dir="rtl"] .chat-widget { left: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-widget { animation: none; }
+}

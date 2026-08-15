@@ -4,7 +4,7 @@ import "./Toast.css";
 
 // Booking result messages (confirmation/cancellation/reschedule text)
 // were previously only ever shown inline as an "ai" chat bubble inside
-// ChatPage. The Appointments sticky button opens the same BookingPanel
+// ChatWidget. The Appointments sticky button opens the same BookingPanel
 // from outside the chat conversation (any page), so there's no message
 // list to drop that text into — this toast is the equivalent surface
 // for that context, styled the same as the rest of the theme.

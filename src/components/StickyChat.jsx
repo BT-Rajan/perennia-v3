@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLang } from "../context/LangContext.jsx";
 import styles from "./StickyChat.module.css";
 
 function StickyButton({ label, icon, onClick, variant }) {
@@ -13,8 +14,8 @@ function StickyButton({ label, icon, onClick, variant }) {
       title={label}
     >
       <svg
-        width="24"
-        height="24"
+        width="20"
+        height="20"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -33,11 +34,18 @@ function StickyButton({ label, icon, onClick, variant }) {
 /**
  * Sticky action buttons that float at bottom-right, stacked vertically
  * and stay visible across all pages: Appointments above AI Assistant.
- * @param {function} onChatClick - Callback when the AI Assistant button is clicked
+ * The AI Assistant button always shows its label (not hover-only) and
+ * swaps to a close icon while the ChatWidget popover is open — the
+ * same persistent "Talk to Sulaiman <-> X" pattern as k-g-i.com's widget
+ * toggle, rather than the previous full-page chat navigation.
+ * @param {function} onChatClick - Toggles the ChatWidget popover open/closed
  * @param {function} onBookingClick - Callback when the Appointments button is clicked
  * @param {boolean} showBooking - Whether the Appointments button renders at all
+ * @param {boolean} chatOpen - Whether the ChatWidget popover is currently open
  */
-export default function StickyChat({ onChatClick, onBookingClick, showBooking = true }) {
+export default function StickyChat({ onChatClick, onBookingClick, showBooking = true, chatOpen = false }) {
+  const { copy } = useLang();
+
   return (
     <div className={styles.stickyContainer}>
       {showBooking && (
@@ -57,14 +65,20 @@ export default function StickyChat({ onChatClick, onBookingClick, showBooking = 
       )}
       <div className={styles.chatButtonWrap}>
         <StickyButton
-          label="AI Assistant"
+          label={chatOpen ? copy.common.close : copy.chat.header}
           onClick={() => onChatClick?.()}
-          icon={<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />}
+          icon={
+            chatOpen ? (
+              <>
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </>
+            ) : (
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            )
+          }
         />
-        {/* Pulse animation (visible when not interacting) — kept on the
-            primary AI Assistant button only, same as before this had a
-            second button added alongside it. */}
-        <div className={styles.pulse} />
+        {!chatOpen && <div className={styles.pulse} />}
       </div>
     </div>
   );

@@ -84,7 +84,9 @@ export const COPY = {
       taglineLine2: "Shaping Tomorrow.",
       sub: "AI-POWERED TECHNOLOGY & INNOVATION",
       header: "Perennia Assistant",
-      bookBtn: "Talk to Us",
+      onlineStatus: "Online · AI Assistant",
+      poweredBy: "Powered by",
+      bookBtn: "Book a call",
       faqTitle: "Quick Questions",
       inputPlaceholder: "Type your message…",
       welcomeMsg:
@@ -162,7 +164,9 @@ export const COPY = {
       taglineLine2: "لصناعة الغد.",
       sub: "تقنية وابتكار مدعومان بالذكاء الاصطناعي",
       header: "مساعد بيرينيا",
-      bookBtn: "تحدث إلينا",
+      onlineStatus: "متصل الآن · مساعد ذكي",
+      poweredBy: "بدعم من",
+      bookBtn: "احجز مكالمة",
       faqTitle: "أسئلة سريعة",
       inputPlaceholder: "اكتب رسالتك…",
       welcomeMsg:
