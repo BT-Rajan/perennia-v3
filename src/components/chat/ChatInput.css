@@ -40,3 +40,19 @@
   border-color: color-mix(in srgb, var(--gold) 30%, transparent);
   box-shadow: 0 0 12px color-mix(in srgb, var(--gold) 15%, transparent);
 }
+
+/* Mic button — sits between the textarea and send. Same IconButton
+   base as send, styled to read as "on" while actively listening. */
+.chat-input-mic-active {
+  background: var(--gold);
+  color: var(--on-gold-text);
+  border-color: var(--gold);
+  animation: chat-input-mic-pulse 1.3s ease-in-out infinite;
+}
+@keyframes chat-input-mic-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--gold) 45%, transparent); }
+  50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--gold) 0%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chat-input-mic-active { animation: none; }
+}

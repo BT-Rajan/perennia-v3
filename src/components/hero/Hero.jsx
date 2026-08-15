@@ -1,8 +1,7 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { useLang } from "../../context/LangContext.jsx";
 import { isSafeHref } from "../../data/siteContent.js";
 import TopBar from "../layout/TopBar.jsx";
-import ChatInput from "../chat/ChatInput.jsx";
 import "./Hero.css";
 
 /**
@@ -105,27 +104,18 @@ function FitOneLine({ text, className }) {
 }
 
 /**
- * Landing page. The person can jump into the chat assistant by typing
- * straight into the quick-start chat box (the rippling, always-single-
- * line headline — see FitOneLine above — sits where the old pulsing
- * "voice orb" used to be, and is the page's signature visual now), or
- * via the always-visible sticky AI Assistant button.
+ * Landing page. Entry into the chat assistant is via the always-visible
+ * sticky AI Assistant button (see StickyChat/ChatWidget) — the rippling,
+ * always-single-line headline (see FitOneLine above) is the page's
+ * signature visual, sitting where the old pulsing "voice orb" used to be.
  *
  * The cards below double as the mobile entry point into the
  * standalone content pages (whichever pages are currently configured
  * to show in the nav — see the `nav` list from useLang()), since the
  * header nav menu only shows at desktop widths.
  */
-export default function Hero({ onEnter, onNavigate }) {
+export default function Hero({ onNavigate }) {
   const { copy, sections, nav, branding, heroButtons, lang } = useLang();
-  const [quickDraft, setQuickDraft] = useState("");
-
-  function handleQuickSend() {
-    const text = quickDraft.trim();
-    if (!text) return;
-    setQuickDraft("");
-    onEnter(text);
-  }
 
   return (
     <div className="hero-page">
@@ -140,16 +130,6 @@ export default function Hero({ onEnter, onNavigate }) {
         ) : (
           <div className="hero-tagline">{copy.home.tagline}</div>
         )}
-
-        <div className="hero-quick-chat">
-          <ChatInput
-            value={quickDraft}
-            onChange={setQuickDraft}
-            onSend={handleQuickSend}
-            placeholder={copy.chat.inputPlaceholder}
-            sendLabel={copy.common.send}
-          />
-        </div>
       </div>
 
       <div className="hero-sections">
