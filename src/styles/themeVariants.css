@@ -182,3 +182,34 @@
   text-transform: none;
   letter-spacing: normal;
 }
+
+/* ══ Pass 3: Background & texture — [data-background-style] +
+   [data-background-intensity] ═══════════════════════════════════════
+   Two independent axes: WHICH pattern renders behind all page content
+   (body::before, defined in global.css — "grid" is the base rule
+   there and needs no override here), and HOW STRONG it is
+   (--bg-texture-opacity, also read by that same rule). "solid" as a
+   pattern hides the overlay outright regardless of intensity; "off"
+   as an intensity hides whichever pattern is selected — the two
+   settings compose rather than duplicate each other. */
+
+[data-background-intensity="soft"] { --bg-texture-opacity: 0.045; }
+[data-background-intensity="bold"] { --bg-texture-opacity: 0.08; }
+[data-background-intensity="off"] { --bg-texture-opacity: 0; }
+
+[data-background-style="solid"] body::before {
+  display: none;
+}
+
+[data-background-style="dot-grid"] body::before {
+  background-image: radial-gradient(rgb(255 255 255 / var(--bg-texture-opacity)) 1.5px, transparent 1.5px);
+  background-size: 22px 22px;
+}
+
+[data-background-style="radial-glow"] body::before {
+  background-image:
+    radial-gradient(ellipse 70% 50% at 50% 0%, color-mix(in srgb, var(--gold) calc(var(--bg-texture-opacity) * 900%), transparent) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 45% at 85% 90%, color-mix(in srgb, var(--blue-light) calc(var(--bg-texture-opacity) * 700%), transparent) 0%, transparent 70%);
+  background-size: 100% 100%;
+  mask-image: none;
+}

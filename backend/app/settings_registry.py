@@ -278,6 +278,18 @@ _DEFS: list[SettingDef] = [
                choices=("as-is", "uppercase-tracked", "sentence-case"),
                help_text="Casing and letter-spacing for section/card titles (e.g. the homepage nav "
                           "cards). 'as-is' keeps today's normal-case headings."),
+    # ── Pass 3 of the whole-page style system (background & texture).
+    # "grid" / "subtle" reproduce today's actual background exactly —
+    # a solid fill plus a faint grid-mesh overlay — so they're the
+    # safe fallback for any unset or unrecognized value.
+    SettingDef("theme.background_style", "theme", "Background pattern", SettingType.ENUM, "grid",
+               choices=("grid", "dot-grid", "radial-glow", "solid"),
+               help_text="Texture behind all page content. 'grid' is today's faint line-mesh overlay; "
+                          "'solid' removes the overlay entirely."),
+    SettingDef("theme.background_intensity", "theme", "Background intensity", SettingType.ENUM, "subtle",
+               choices=("subtle", "soft", "bold", "off"),
+               help_text="How strong the background pattern above is. 'off' hides it regardless of "
+                          "which pattern is selected."),
 
     # features (toggles for capabilities landing in later passes,
     # declared now so the admin can already see what's coming and

@@ -178,6 +178,8 @@ const FALLBACK_THEME = {
   buttonStyle: "default",
   typeScale: "standard",
   headingCase: "as-is",
+  backgroundStyle: "grid",
+  backgroundIntensity: "subtle",
 };
 
 export function buildFallbackSite() {
@@ -243,6 +245,8 @@ function apiTheme(publicConfig) {
     buttonStyle: publicConfig["theme.button_style"] || "default",
     typeScale: publicConfig["theme.type_scale"] || "standard",
     headingCase: publicConfig["theme.heading_case"] || "as-is",
+    backgroundStyle: publicConfig["theme.background_style"] || "grid",
+    backgroundIntensity: publicConfig["theme.background_intensity"] || "subtle",
   };
 }
 

@@ -11,6 +11,8 @@ import SurfaceStylePicker from "../components/SurfaceStylePicker.jsx";
 import ButtonStylePicker from "../components/ButtonStylePicker.jsx";
 import TypeScalePicker from "../components/TypeScalePicker.jsx";
 import HeadingCasePicker from "../components/HeadingCasePicker.jsx";
+import BackgroundStylePicker from "../components/BackgroundStylePicker.jsx";
+import BackgroundIntensityPicker from "../components/BackgroundIntensityPicker.jsx";
 import LogoZoomControl from "../components/LogoZoomControl.jsx";
 import CalendarSyncConnector from "../components/CalendarSyncConnector.jsx";
 import WebhooksPage from "./WebhooksPage.jsx";
@@ -247,6 +249,20 @@ export default function SettingsPage() {
                     />
                   )}
 
+                  {categoryParam === "theme" && (
+                    <BackgroundStylePicker
+                      value={values["theme.background_style"]}
+                      onChange={(v) => handleFieldChange("theme.background_style", v)}
+                    />
+                  )}
+
+                  {categoryParam === "theme" && (
+                    <BackgroundIntensityPicker
+                      value={values["theme.background_intensity"]}
+                      onChange={(v) => handleFieldChange("theme.background_intensity", v)}
+                    />
+                  )}
+
                   {schema.map((field) => {
                     // Superseded by the LogoZoomControl composite below
                     // (rendered right after branding.logo_url) — a bare
@@ -262,6 +278,8 @@ export default function SettingsPage() {
                     if (field.key === "theme.button_style") return null;
                     if (field.key === "theme.type_scale") return null;
                     if (field.key === "theme.heading_case") return null;
+                    if (field.key === "theme.background_style") return null;
+                    if (field.key === "theme.background_intensity") return null;
                     return (
                       <div key={field.key}>
                         <SettingField
