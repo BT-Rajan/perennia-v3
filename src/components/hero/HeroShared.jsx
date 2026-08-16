@@ -1,5 +1,22 @@
 import { useLayoutEffect, useRef } from "react";
 import { isSafeHref } from "../../data/siteContent.js";
+import ChatInput from "../chat/ChatInput.jsx";
+
+/**
+ * Resolves admin-provisioned hero buttons (copy.home_hero_buttons) into
+ * a flat, render-ready list — i18n label lookup + href safety check
+ * done once, shared by every place that renders this same config
+ * (HeroButtons above, CenteredCardLayout's pill row).
+ */
+export function resolveHeroButtons(buttons, lang) {
+  return (buttons || [])
+    .map((btn, i) => {
+      const label = btn.label?.[lang] ?? Object.values(btn.label || {})[0] ?? "";
+      if (!label || !isSafeHref(btn.url)) return null;
+      return { key: i, label, url: btn.url, external: /^https?:\/\//.test(btn.url) };
+    })
+    .filter(Boolean);
+}
 
 /**
  * Admin-provisioned row of slim buttons, shown instead of the plain
@@ -10,21 +27,49 @@ import { isSafeHref } from "../../data/siteContent.js";
 export function HeroButtons({ buttons, lang }) {
   return (
     <div className="hero-buttons" role="navigation">
-      {buttons.map((btn, i) => {
-        const label = btn.label?.[lang] ?? Object.values(btn.label || {})[0] ?? "";
-        if (!label || !isSafeHref(btn.url)) return null;
-        const external = /^https?:\/\//.test(btn.url);
-        return (
-          <a
-            key={i}
-            className="hero-button"
-            href={btn.url}
-            {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-          >
-            {label}
-          </a>
-        );
-      })}
+      {resolveHeroButtons(buttons, lang).map(({ key, label, url, external }) => (
+        <a
+          key={key}
+          className="hero-button"
+          href={url}
+          {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+        >
+          {label}
+        </a>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * Small circular avatar — an uploaded image (chat.avatar_url, admin-
+ * configurable, Settings > Chat / AI assistant) if set, otherwise a
+ * plain initial letter. Used by both HeroChatComposer here and
+ * ChatWidget's header, so the homepage entry point and the sticky
+ * popover always show the same face rather than looking like two
+ * different assistants.
+ */
+export function ChatAvatar({ avatarUrl, initial, className }) {
+  return (
+    <span className={`chat-avatar ${className || ""}`.trim()} aria-hidden="true">
+      {avatarUrl ? <img src={avatarUrl} alt="" /> : (initial || "A")}
+    </span>
+  );
+}
+
+/**
+ * The homepage's quick-start entry into the AI Assistant — an avatar
+ * next to a single-line text composer. Deliberately kept text-only
+ * (no mic here, unlike the sticky ChatWidget popover, which also
+ * supports voice) and this compact: it's meant to read as a fast way
+ * in to the *same* assistant, not as a second, competing chat surface
+ * with its own message history and status states.
+ */
+export function HeroChatComposer({ avatarUrl, avatarInitial, value, onChange, onSend, placeholder, sendLabel, className }) {
+  return (
+    <div className={`hero-quick-chat ${className || ""}`.trim()}>
+      <ChatAvatar avatarUrl={avatarUrl} initial={avatarInitial} className="hero-quick-chat-avatar" />
+      <ChatInput value={value} onChange={onChange} onSend={onSend} placeholder={placeholder} sendLabel={sendLabel} />
     </div>
   );
 }
@@ -46,7 +91,7 @@ export function HeroButtons({ buttons, lang }) {
  * sweep across the gradient fill (see .fit-one-line-inner in
  * Hero.css), which animates safely without touching layout at all.
  */
-export function FitOneLine({ text, className }) {
+export function FitOneLine({ text, className, styleId }) {
   const outerRef = useRef(null);
   const innerRef = useRef(null);
 
@@ -92,7 +137,7 @@ export function FitOneLine({ text, className }) {
   }, [text]);
 
   return (
-    <div ref={outerRef} className={`fit-one-line ${className || ""}`.trim()}>
+    <div ref={outerRef} className={`fit-one-line ${className || ""}`.trim()} data-headline-style={styleId || "ripple-gradient"}>
       <span ref={innerRef} className="fit-one-line-inner">
         {text}
       </span>

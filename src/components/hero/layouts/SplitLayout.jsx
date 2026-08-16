@@ -1,5 +1,4 @@
-import { FitOneLine, HeroButtons } from "../HeroShared.jsx";
-import ChatInput from "../../chat/ChatInput.jsx";
+import { FitOneLine, HeroButtons, HeroChatComposer } from "../HeroShared.jsx";
 
 /**
  * "split" — two-column: headline, tagline, and the quick-chat box
@@ -7,12 +6,12 @@ import ChatInput from "../../chat/ChatInput.jsx";
  * on the other. Stacks to a single column (main content first, then
  * nav) below the tablet breakpoint — see .hero-split-* in Hero.css.
  */
-export default function SplitLayout({ copy, sections, nav, heroButtons, lang, onNavigate, quickDraft, setQuickDraft, onQuickSend }) {
+export default function SplitLayout({ copy, sections, nav, heroButtons, lang, onNavigate, quickDraft, setQuickDraft, onQuickSend, headlineStyle, branding }) {
   return (
     <div className="hero-split-wrap">
       <div className="hero-split-main">
         <h1 className="hero-welcome hero-welcome-left">
-          <FitOneLine text={copy.home.welcome} />
+          <FitOneLine text={copy.home.welcome} styleId={headlineStyle} />
         </h1>
         {heroButtons?.length > 0 ? (
           <HeroButtons buttons={heroButtons} lang={lang} />
@@ -20,15 +19,15 @@ export default function SplitLayout({ copy, sections, nav, heroButtons, lang, on
           <div className="hero-tagline">{copy.home.tagline}</div>
         )}
 
-        <div className="hero-quick-chat">
-          <ChatInput
-            value={quickDraft}
-            onChange={setQuickDraft}
-            onSend={onQuickSend}
-            placeholder={copy.chat.inputPlaceholder}
-            sendLabel={copy.common.send}
-          />
-        </div>
+        <HeroChatComposer
+          avatarUrl={branding?.chatAvatarUrl}
+          avatarInitial={branding?.siteName?.[0]}
+          value={quickDraft}
+          onChange={setQuickDraft}
+          onSend={onQuickSend}
+          placeholder={copy.chat.inputPlaceholder}
+          sendLabel={copy.common.send}
+        />
       </div>
 
       <div className="hero-split-nav">

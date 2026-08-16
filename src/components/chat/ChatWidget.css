@@ -13,8 +13,8 @@
 .chat-widget {
   position: fixed;
   z-index: 1000;
-  right: 32px;
-  bottom: 130px;
+  right: calc(32px + env(safe-area-inset-right));
+  bottom: calc(130px + env(safe-area-inset-bottom));
   width: min(380px, calc(100vw - 32px));
   height: min(600px, calc(100dvh - 160px));
   display: flex;
@@ -60,12 +60,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   font-family: var(--font-display);
   font-weight: 600;
   font-size: 16px;
   color: var(--on-gold-text);
   background: var(--gold);
   border: 1.5px solid var(--gold);
+}
+.chat-widget-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* Online dot overlapping the avatar, matches .agent-online-dot */
@@ -222,13 +228,13 @@
 
 @media (max-width: 480px) {
   .chat-widget {
-    right: 16px;
-    left: 16px;
-    bottom: 100px;
+    right: calc(16px + env(safe-area-inset-right));
+    left: calc(16px + env(safe-area-inset-left));
+    bottom: calc(100px + env(safe-area-inset-bottom));
     width: auto;
     height: min(70dvh, calc(100dvh - 130px));
   }
-  [dir="rtl"] .chat-widget { left: 16px; }
+  [dir="rtl"] .chat-widget { left: calc(16px + env(safe-area-inset-left)); }
 }
 
 @media (prefers-reduced-motion: reduce) {

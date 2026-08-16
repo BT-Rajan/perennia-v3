@@ -234,6 +234,16 @@ _DEFS: list[SettingDef] = [
                choices=("classic", "split", "centered-card", "editorial"),
                help_text="How the homepage headline, quick-chat box, and page-navigation cards are arranged. "
                           "Colors and fonts are unaffected — set those above."),
+    # Purely the headline's text *treatment* (fill/animation) — never
+    # its content (that's copy.home.welcome) and never layout (that's
+    # theme.layout_template above). "ripple-gradient" is both the
+    # default and the site's original/only headline style before this
+    # setting existed, so it's the safe fallback for any unset or
+    # unrecognized value (see src/components/hero/HeroShared.jsx).
+    SettingDef("theme.headline_style", "theme", "Headline style", SettingType.ENUM, "ripple-gradient",
+               choices=("ripple-gradient", "solid-gold", "solid-white", "two-tone", "outline"),
+               help_text="Visual treatment of the homepage headline text. Uses the theme colors above — "
+                          "changing the theme preset changes how each of these looks too."),
 
     # features (toggles for capabilities landing in later passes,
     # declared now so the admin can already see what's coming and
@@ -293,6 +303,14 @@ _DEFS: list[SettingDef] = [
                validator=_int_range(16, 4096)),
     SettingDef("chat.temperature", "chat", "Temperature", SettingType.FLOAT, 0.7,
                validator=_float_range(0.0, 1.0)),
+    # Shown next to the assistant in both the sticky widget (ChatWidget)
+    # and the homepage quick-chat box (Hero) — the same image in both
+    # places, so the two entry points read as one assistant rather than
+    # two different ones. Blank falls back to a plain initial-letter
+    # avatar (see src/components/chat/ChatWidget.jsx).
+    SettingDef("chat.avatar_url", "chat", "Assistant avatar", SettingType.IMAGE, "",
+               help_text="Shown next to the assistant in the AI Assistant widget and the homepage "
+                          "quick-chat box. Leave blank to use a plain initial-letter avatar instead."),
     SettingDef("chat.system_prompt", "chat", "System prompt", SettingType.TEXT, {
         "en": "You are Perennia's AI assistant. Be warm, concise, and professional. Early in the "
               "conversation, ask the visitor's name so you can personalize the chat and so the team can "

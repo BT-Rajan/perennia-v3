@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLang } from "../../context/LangContext.jsx";
 import { api } from "../../api/client.js";
 import GlassPanel from "../ui/GlassPanel.jsx";
+import { ChatAvatar } from "../hero/HeroShared.jsx";
 import ChatMessage from "./ChatMessage.jsx";
 import TypingIndicator from "./TypingIndicator.jsx";
 import ChatInput from "./ChatInput.jsx";
@@ -169,7 +170,7 @@ export default function ChatWidget({ open, onClose, onBookingClick, initialMessa
     <GlassPanel className="chat-widget" as="section" role="dialog" aria-modal="true" aria-label={t.header}>
       <div className="chat-widget-header">
         <div className="chat-widget-persona">
-          <span className="chat-widget-avatar" aria-hidden="true">{branding.siteName?.[0] ?? "A"}</span>
+          <ChatAvatar avatarUrl={branding.chatAvatarUrl} initial={branding.siteName?.[0]} className="chat-widget-avatar" />
           <div className="chat-widget-persona-text">
             <p className="chat-widget-name">{t.header}</p>
             <p className="chat-widget-status">

@@ -5,8 +5,12 @@
 
 .stickyContainer {
   position: fixed;
-  bottom: 32px;
-  right: 32px;
+  /* calc(...) with env(safe-area-inset-*) keeps these clear of the
+     iOS home-indicator / Android gesture-nav bar on devices that have
+     one; env() resolves to 0 everywhere else (desktop, older devices),
+     so this is a no-op there — same 32px as before. */
+  bottom: calc(32px + env(safe-area-inset-bottom));
+  right: calc(32px + env(safe-area-inset-right));
   z-index: 999;
   display: flex;
   flex-direction: column;
@@ -157,8 +161,8 @@
 /* Mobile: smaller, fixed position adjustment */
 @media (max-width: 480px) {
   .stickyContainer {
-    bottom: 24px;
-    right: 24px;
+    bottom: calc(24px + env(safe-area-inset-bottom));
+    right: calc(24px + env(safe-area-inset-right));
   }
 
   .chatButton {
@@ -183,8 +187,8 @@
 /* Tablet adjustments */
 @media (max-width: 768px) {
   .stickyContainer {
-    bottom: 28px;
-    right: 28px;
+    bottom: calc(28px + env(safe-area-inset-bottom));
+    right: calc(28px + env(safe-area-inset-right));
   }
 
   .chatButton:hover,
