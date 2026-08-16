@@ -213,3 +213,56 @@
   background-size: 100% 100%;
   mask-image: none;
 }
+
+/* ══ Pass 4: Spacing & density — [data-density] + [data-section-rhythm]
+   ═══════════════════════════════════════════════════════════════════
+   Two independent axes, same relationship as background style/
+   intensity: [data-density] redefines the whole --space-1..--space-8
+   scale plus --line-height-scale (every component that reads those
+   tokens — cards, buttons, gaps, prose text — moves together);
+   [data-section-rhythm] separately controls just the breathing room
+   between major page blocks (--section-gap/--section-padding-block),
+   letting an admin pair e.g. compact card spacing with generous
+   section gaps rather than being forced to change both at once.
+   "comfortable" density and "standard" rhythm need no rules — they're
+   what tokens.css already defines. */
+
+[data-density="compact"] {
+  --space-1: 3px;
+  --space-2: 6px;
+  --space-3: 9px;
+  --space-4: 12px;
+  --space-5: 18px;
+  --space-6: 24px;
+  --space-7: 36px;
+  --space-8: 48px;
+  --line-height-scale: 0.92;
+}
+
+[data-density="spacious"] {
+  --space-1: 6px;
+  --space-2: 10px;
+  --space-3: 16px;
+  --space-4: 22px;
+  --space-5: 32px;
+  --space-6: 44px;
+  --space-7: 64px;
+  --space-8: 88px;
+  --line-height-scale: 1.12;
+}
+
+/* These override to a specific tier regardless of the density scale
+   above, since --section-gap/--section-padding-block's own default
+   (tokens.css) already tracks density proportionally via var(--space-
+   7)/var(--space-6) — "standard" rhythm at any density just means
+   "whatever this density's --space-6/7 currently are". Only "tight"/
+   "loose" need explicit values here, to actually diverge from that
+   proportional default. */
+[data-section-rhythm="tight"] {
+  --section-padding-block: var(--space-4);
+  --section-gap: var(--space-5);
+}
+[data-section-rhythm="loose"] {
+  --section-padding-block: var(--space-7);
+  --section-gap: var(--space-8);
+}

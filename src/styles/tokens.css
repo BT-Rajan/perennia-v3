@@ -96,7 +96,10 @@
   --fs-sm: clamp(0.78rem, 0.2vw + 0.72rem, 0.85rem);
   --fs-h2: 1.3rem;
 
-  /* Spacing scale */
+  /* Spacing scale — theme.density, admin-configurable (Settings >
+     Theme). Redefined wholesale per density level in
+     themeVariants.css; every component that reads --space-N picks up
+     the new scale automatically, no per-component changes needed. */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -105,6 +108,23 @@
   --space-6: 32px;
   --space-7: 48px;
   --space-8: 64px;
+
+  /* Prose line-height multiplier — bundled into theme.density above
+     (tighter density pairs with tighter line-height, looser with
+     looser) rather than a separate setting; each prose element keeps
+     its own base ratio (e.g. 1.6, 1.5) and multiplies it by this
+     scale, so the default (1) reproduces those exact values. */
+  --line-height-scale: 1;
+
+  /* Rhythm between major stacked page sections/blocks (e.g. the gap
+     before the homepage's nav-card grid, or its own outer top/bottom
+     padding) — theme.section_rhythm, admin-configurable, independent
+     of theme.density above. Defaults to whatever --space-6/--space-7
+     currently resolve to, so "standard" rhythm scales proportionally
+     with density automatically; picking "tight" or "loose" overrides
+     to a specific tier regardless of density (see themeVariants.css). */
+  --section-padding-block: var(--space-6);
+  --section-gap: var(--space-7);
 
   /* Radii (derived from the single configurable --radius-md) + motion */
   --radius-sm: calc(var(--radius-md) * 0.625);

@@ -290,6 +290,19 @@ _DEFS: list[SettingDef] = [
                choices=("subtle", "soft", "bold", "off"),
                help_text="How strong the background pattern above is. 'off' hides it regardless of "
                           "which pattern is selected."),
+    # ── Pass 4 of the whole-page style system (spacing & density).
+    # "comfortable" / "standard" reproduce today's actual spacing and
+    # section rhythm exactly, so they're the safe fallback for any
+    # unset or unrecognized value.
+    SettingDef("theme.density", "theme", "Spacing density", SettingType.ENUM, "comfortable",
+               choices=("compact", "comfortable", "spacious"),
+               help_text="Padding, gaps, and prose line-height site-wide — every card, button, and "
+                          "text block scales together. 'comfortable' is today's spacing."),
+    SettingDef("theme.section_rhythm", "theme", "Section rhythm", SettingType.ENUM, "standard",
+               choices=("tight", "standard", "loose"),
+               help_text="Breathing room specifically between major page sections (e.g. the gap before "
+                          "the homepage's nav-card grid) — independent of the density setting above, "
+                          "so you can pair tight card spacing with generous section gaps, or vice versa."),
 
     # features (toggles for capabilities landing in later passes,
     # declared now so the admin can already see what's coming and

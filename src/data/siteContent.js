@@ -180,6 +180,8 @@ const FALLBACK_THEME = {
   headingCase: "as-is",
   backgroundStyle: "grid",
   backgroundIntensity: "subtle",
+  density: "comfortable",
+  sectionRhythm: "standard",
 };
 
 export function buildFallbackSite() {
@@ -247,6 +249,8 @@ function apiTheme(publicConfig) {
     headingCase: publicConfig["theme.heading_case"] || "as-is",
     backgroundStyle: publicConfig["theme.background_style"] || "grid",
     backgroundIntensity: publicConfig["theme.background_intensity"] || "subtle",
+    density: publicConfig["theme.density"] || "comfortable",
+    sectionRhythm: publicConfig["theme.section_rhythm"] || "standard",
   };
 }
 
