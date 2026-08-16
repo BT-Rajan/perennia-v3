@@ -65,4 +65,6 @@ export function applyTheme(theme, branding) {
   // these looks unchanged.
   document.documentElement.dataset.surfaceStyle = theme.surfaceStyle || "glass";
   document.documentElement.dataset.buttonStyle = theme.buttonStyle || "default";
+  document.documentElement.dataset.typeScale = theme.typeScale || "standard";
+  document.documentElement.dataset.headingCase = theme.headingCase || "as-is";
 }

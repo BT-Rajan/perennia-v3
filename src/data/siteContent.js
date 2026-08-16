@@ -176,6 +176,8 @@ const FALLBACK_THEME = {
   headlineStyle: "ripple-gradient",
   surfaceStyle: "glass",
   buttonStyle: "default",
+  typeScale: "standard",
+  headingCase: "as-is",
 };
 
 export function buildFallbackSite() {
@@ -239,6 +241,8 @@ function apiTheme(publicConfig) {
     headlineStyle: publicConfig["theme.headline_style"] || "ripple-gradient",
     surfaceStyle: publicConfig["theme.surface_style"] || "glass",
     buttonStyle: publicConfig["theme.button_style"] || "default",
+    typeScale: publicConfig["theme.type_scale"] || "standard",
+    headingCase: publicConfig["theme.heading_case"] || "as-is",
   };
 }
 

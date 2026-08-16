@@ -266,6 +266,18 @@ _DEFS: list[SettingDef] = [
                           "link buttons, the centered-card pills, and the sticky Appointments/AI Assistant "
                           "buttons. 'default' keeps each button's current individual look; every other "
                           "choice makes them all match one unified style."),
+    # ── Pass 2 of the whole-page style system (typography). "standard"
+    # / "as-is" reproduce today's actual font sizes and heading
+    # casing exactly, so they're the safe fallback for any unset or
+    # unrecognized value. See src/styles/themeVariants.css.
+    SettingDef("theme.type_scale", "theme", "Text size scale", SettingType.ENUM, "standard",
+               choices=("standard", "compact", "comfortable", "large"),
+               help_text="Global size for body text, small text, and section-card headings site-wide. "
+                          "Doesn't affect the homepage headline, which sizes itself to fit the page."),
+    SettingDef("theme.heading_case", "theme", "Section heading style", SettingType.ENUM, "as-is",
+               choices=("as-is", "uppercase-tracked", "sentence-case"),
+               help_text="Casing and letter-spacing for section/card titles (e.g. the homepage nav "
+                          "cards). 'as-is' keeps today's normal-case headings."),
 
     # features (toggles for capabilities landing in later passes,
     # declared now so the admin can already see what's coming and

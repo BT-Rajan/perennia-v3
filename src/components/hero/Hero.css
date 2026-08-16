@@ -329,7 +329,7 @@
 .hero-section h2 {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 1.3rem;
+  font-size: var(--fs-h2);
   background: linear-gradient(135deg, var(--gold) 0%, var(--gold-shade-2) 50%, var(--blue-light) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
