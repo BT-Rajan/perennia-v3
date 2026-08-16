@@ -174,6 +174,8 @@ const FALLBACK_THEME = {
   // regress an existing deployment. See Hero.jsx / HeroShared.jsx.
   layoutTemplate: "classic",
   headlineStyle: "ripple-gradient",
+  surfaceStyle: "glass",
+  buttonStyle: "default",
 };
 
 export function buildFallbackSite() {
@@ -235,6 +237,8 @@ function apiTheme(publicConfig) {
     // See FALLBACK_THEME above on why these fallbacks are safe.
     layoutTemplate: publicConfig["theme.layout_template"] || "classic",
     headlineStyle: publicConfig["theme.headline_style"] || "ripple-gradient",
+    surfaceStyle: publicConfig["theme.surface_style"] || "glass",
+    buttonStyle: publicConfig["theme.button_style"] || "default",
   };
 }
 

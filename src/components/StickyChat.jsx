@@ -6,7 +6,7 @@ function StickyButton({ label, icon, onClick, variant }) {
   const [isHovered, setIsHovered] = useState(false);
   return (
     <button
-      className={`${styles.chatButton} ${variant ? styles[variant] : ""} ${isHovered ? styles.hovered : ""}`}
+      className={`sticky-cta-btn ${styles.chatButton} ${variant ? styles[variant] : ""} ${isHovered ? styles.hovered : ""}`}
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}

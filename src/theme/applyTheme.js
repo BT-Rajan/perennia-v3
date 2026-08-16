@@ -56,4 +56,13 @@ export function applyTheme(theme, branding) {
 
   const themeColorMeta = document.getElementById("theme-color-meta");
   if (themeColorMeta && theme.backgroundColor) themeColorMeta.content = theme.backgroundColor;
+
+  // Whole-page style system (see src/styles/themeVariants.css) — one
+  // attribute per pass, each independently togglable. Falls back to
+  // the value that reproduces today's actual appearance (see the
+  // comment on theme.surface_style/theme.button_style in
+  // backend/app/settings_registry.py), so a site that never touches
+  // these looks unchanged.
+  document.documentElement.dataset.surfaceStyle = theme.surfaceStyle || "glass";
+  document.documentElement.dataset.buttonStyle = theme.buttonStyle || "default";
 }
