@@ -57,6 +57,8 @@ export default function Hero({ onEnter, onNavigate }) {
         quickDraft={quickDraft}
         setQuickDraft={setQuickDraft}
         onQuickSend={handleQuickSend}
+        headlineStyle={theme?.headlineStyle}
+        branding={branding}
       />
 
       <footer className="hero-footer">© {new Date().getFullYear()} {branding.siteName}</footer>

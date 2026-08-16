@@ -19,6 +19,7 @@ function resolveBranding(branding, lang, defaultLanguage) {
     logoScale: branding.logoScale || 1,
     faviconUrl: branding.faviconUrl,
     metaDescription: pick(branding.metaDescriptionByLang),
+    chatAvatarUrl: branding.chatAvatarUrl || "",
   };
 }
 

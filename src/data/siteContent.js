@@ -168,10 +168,12 @@ const FALLBACK_THEME = {
   contentMaxWidthPx: 1180,
   cornerRadiusPx: 16,
   heroAutoAdvanceSeconds: 7,
-  // Falls back to "classic" — the site's original/only homepage layout
-  // before this setting existed — so an unset or unrecognized value
-  // here can never regress an existing deployment. See Hero.jsx.
+  // Falls back to "classic"/"ripple-gradient" — the site's original/
+  // only homepage layout and headline treatment before these settings
+  // existed — so an unset or unrecognized value here can never
+  // regress an existing deployment. See Hero.jsx / HeroShared.jsx.
   layoutTemplate: "classic",
+  headlineStyle: "ripple-gradient",
 };
 
 export function buildFallbackSite() {
@@ -189,6 +191,7 @@ export function buildFallbackSite() {
       logoScale: 1,
       faviconUrl: "/favicon.svg",
       metaDescriptionByLang: { en: "Perennia — AI-powered technology & innovation.", ar: "" },
+      chatAvatarUrl: "",
     },
     ...buildFromLocalFallback(supportedLanguages),
   };
@@ -229,8 +232,9 @@ function apiTheme(publicConfig) {
     contentMaxWidthPx: publicConfig["theme.content_max_width_px"],
     cornerRadiusPx: publicConfig["theme.corner_radius_px"],
     heroAutoAdvanceSeconds: publicConfig["theme.hero_auto_advance_seconds"],
-    // See FALLBACK_THEME above on why "classic" is the safe fallback.
+    // See FALLBACK_THEME above on why these fallbacks are safe.
     layoutTemplate: publicConfig["theme.layout_template"] || "classic",
+    headlineStyle: publicConfig["theme.headline_style"] || "ripple-gradient",
   };
 }
 
@@ -270,6 +274,7 @@ export async function loadSiteContent() {
       logoScale: publicConfig?.["branding.logo_scale"] ?? 1,
       faviconUrl: publicConfig?.["branding.favicon_url"] ?? "/favicon.svg",
       metaDescriptionByLang: publicConfig?.["branding.meta_description"] ?? { en: "", ar: "" },
+      chatAvatarUrl: publicConfig?.["chat.avatar_url"] ?? "",
     },
     ...site,
   };

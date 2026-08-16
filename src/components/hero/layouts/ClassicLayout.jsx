@@ -1,5 +1,4 @@
-import { FitOneLine, HeroButtons } from "../HeroShared.jsx";
-import ChatInput from "../../chat/ChatInput.jsx";
+import { FitOneLine, HeroButtons, HeroChatComposer } from "../HeroShared.jsx";
 
 /**
  * "classic" — the site's original, and default, homepage body:
@@ -8,12 +7,12 @@ import ChatInput from "../../chat/ChatInput.jsx";
  * template setting did, so picking "classic" (or leaving the setting
  * unset) can never look different from what's already live.
  */
-export default function ClassicLayout({ copy, sections, nav, heroButtons, lang, onNavigate, quickDraft, setQuickDraft, onQuickSend }) {
+export default function ClassicLayout({ copy, sections, nav, heroButtons, lang, onNavigate, quickDraft, setQuickDraft, onQuickSend, headlineStyle, branding }) {
   return (
     <>
       <div className="hero-center">
         <h1 className="hero-welcome">
-          <FitOneLine text={copy.home.welcome} />
+          <FitOneLine text={copy.home.welcome} styleId={headlineStyle} />
         </h1>
         {heroButtons?.length > 0 ? (
           <HeroButtons buttons={heroButtons} lang={lang} />
@@ -21,15 +20,15 @@ export default function ClassicLayout({ copy, sections, nav, heroButtons, lang, 
           <div className="hero-tagline">{copy.home.tagline}</div>
         )}
 
-        <div className="hero-quick-chat">
-          <ChatInput
-            value={quickDraft}
-            onChange={setQuickDraft}
-            onSend={onQuickSend}
-            placeholder={copy.chat.inputPlaceholder}
-            sendLabel={copy.common.send}
-          />
-        </div>
+        <HeroChatComposer
+          avatarUrl={branding?.chatAvatarUrl}
+          avatarInitial={branding?.siteName?.[0]}
+          value={quickDraft}
+          onChange={setQuickDraft}
+          onSend={onQuickSend}
+          placeholder={copy.chat.inputPlaceholder}
+          sendLabel={copy.common.send}
+        />
       </div>
 
       <div className="hero-sections">
