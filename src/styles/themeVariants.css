@@ -133,3 +133,52 @@
 @media (prefers-reduced-motion: reduce) {
   [data-surface-style="elevated"] .hero-section:hover { transform: none; }
 }
+
+/* ══ Pass 2: Typography — [data-type-scale] + [data-heading-case] ═══
+   Covers body/small/sub text and section-card headings site-wide via
+   the same tokens Hero.css/ChatWidget.css/etc. already read
+   (--fs-body, --fs-sm, --fs-sub, --fs-h2 — see tokens.css). Redefining
+   the custom properties here, scoped to the attribute, means every
+   consumer of those tokens picks up the new size automatically with
+   no changes needed at each call site. Deliberately does NOT touch
+   --fs-hero/--fs-tagline — the homepage headline sizes itself to fit
+   the page (see FitOneLine in HeroShared.jsx) and has its own style
+   picker (theme.headline_style); a second, independent size control
+   over the same text would just fight that logic. */
+
+[data-type-scale="compact"] {
+  --fs-sub: clamp(0.65rem, 0.4vw + 0.52rem, 0.78rem);
+  --fs-body: clamp(0.82rem, 0.25vw + 0.74rem, 0.92rem);
+  --fs-sm: clamp(0.72rem, 0.15vw + 0.68rem, 0.78rem);
+  --fs-h2: 1.15rem;
+}
+
+[data-type-scale="comfortable"] {
+  --fs-sub: clamp(0.75rem, 0.55vw + 0.58rem, 0.92rem);
+  --fs-body: clamp(1rem, 0.35vw + 0.88rem, 1.12rem);
+  --fs-sm: clamp(0.85rem, 0.25vw + 0.78rem, 0.94rem);
+  --fs-h2: 1.4rem;
+}
+
+[data-type-scale="large"] {
+  --fs-sub: clamp(0.8rem, 0.6vw + 0.62rem, 1rem);
+  --fs-body: clamp(1.1rem, 0.4vw + 0.96rem, 1.25rem);
+  --fs-sm: clamp(0.92rem, 0.3vw + 0.84rem, 1.02rem);
+  --fs-h2: 1.55rem;
+}
+
+/* "as-is" (default) needs no rules — .hero-section h2 is already
+   normal-case today. Uppercase-tracked headings read as oversized at
+   the same point-size as their normal-case equivalent (all-caps
+   glyphs are visually "louder"), so this pairs the transform with a
+   modest size reduction — a common pairing in editorial/corporate
+   type systems, not an independent, unrelated size change. */
+[data-heading-case="uppercase-tracked"] .hero-section h2 {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: calc(var(--fs-h2) * 0.8);
+}
+[data-heading-case="sentence-case"] .hero-section h2 {
+  text-transform: none;
+  letter-spacing: normal;
+}

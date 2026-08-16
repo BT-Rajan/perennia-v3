@@ -9,6 +9,8 @@ import LayoutTemplatePicker from "../components/LayoutTemplatePicker.jsx";
 import HeadlineStylePicker from "../components/HeadlineStylePicker.jsx";
 import SurfaceStylePicker from "../components/SurfaceStylePicker.jsx";
 import ButtonStylePicker from "../components/ButtonStylePicker.jsx";
+import TypeScalePicker from "../components/TypeScalePicker.jsx";
+import HeadingCasePicker from "../components/HeadingCasePicker.jsx";
 import LogoZoomControl from "../components/LogoZoomControl.jsx";
 import CalendarSyncConnector from "../components/CalendarSyncConnector.jsx";
 import WebhooksPage from "./WebhooksPage.jsx";
@@ -231,6 +233,20 @@ export default function SettingsPage() {
                     />
                   )}
 
+                  {categoryParam === "theme" && (
+                    <TypeScalePicker
+                      value={values["theme.type_scale"]}
+                      onChange={(v) => handleFieldChange("theme.type_scale", v)}
+                    />
+                  )}
+
+                  {categoryParam === "theme" && (
+                    <HeadingCasePicker
+                      value={values["theme.heading_case"]}
+                      onChange={(v) => handleFieldChange("theme.heading_case", v)}
+                    />
+                  )}
+
                   {schema.map((field) => {
                     // Superseded by the LogoZoomControl composite below
                     // (rendered right after branding.logo_url) — a bare
@@ -244,6 +260,8 @@ export default function SettingsPage() {
                     if (field.key === "theme.headline_style") return null;
                     if (field.key === "theme.surface_style") return null;
                     if (field.key === "theme.button_style") return null;
+                    if (field.key === "theme.type_scale") return null;
+                    if (field.key === "theme.heading_case") return null;
                     return (
                       <div key={field.key}>
                         <SettingField
