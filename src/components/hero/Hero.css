@@ -156,15 +156,6 @@
     0 16px 40px color-mix(in srgb, var(--gold) 26%, transparent),
     0 0 26px color-mix(in srgb, var(--gold) 16%, transparent);
 }
-/* Avatar (see chat.avatar_url, admin-configurable) — same face shown
-   in ChatWidget's header, so the homepage entry point and the sticky
-   popover read as one assistant, not two. This box is otherwise a
-   plain text composer (no mic, no status dot, no message history) —
-   deliberately simpler than ChatWidget, since it only exists to hand
-   a first message off to that fuller surface. */
-.hero-quick-chat-avatar {
-  flex-shrink: 0;
-}
 .hero-quick-chat .chat-input-area {
   flex: 1;
   min-width: 0;
@@ -194,9 +185,9 @@
   filter: brightness(1.12);
 }
 
-/* ── Chat avatar — shared shape/size for both the hero quick-chat box
-   and ChatWidget's header (see .chat-widget-avatar override below,
-   and src/components/hero/HeroShared.jsx ChatAvatar). Image if
+/* ── Chat avatar — used by ChatWidget's header (see .chat-widget-avatar
+   override below, and src/components/hero/HeroShared.jsx ChatAvatar).
+   No longer shown on the homepage quick-chat box. Image if
    chat.avatar_url is set, otherwise a plain initial letter. */
 .chat-avatar {
   width: 34px;

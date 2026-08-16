@@ -58,17 +58,17 @@ export function ChatAvatar({ avatarUrl, initial, className }) {
 }
 
 /**
- * The homepage's quick-start entry into the AI Assistant — an avatar
- * next to a single-line text composer. Deliberately kept text-only
- * (no mic here, unlike the sticky ChatWidget popover, which also
- * supports voice) and this compact: it's meant to read as a fast way
- * in to the *same* assistant, not as a second, competing chat surface
- * with its own message history and status states.
+ * The homepage's quick-start entry into the AI Assistant — a plain
+ * single-line text composer (no avatar here; ChatWidget's own header
+ * still shows one once the conversation opens). Deliberately kept
+ * text-only (no mic here, unlike the sticky ChatWidget popover, which
+ * also supports voice) and this compact: it's meant to read as a fast
+ * way in to the *same* assistant, not as a second, competing chat
+ * surface with its own message history and status states.
  */
-export function HeroChatComposer({ avatarUrl, avatarInitial, value, onChange, onSend, placeholder, sendLabel, className }) {
+export function HeroChatComposer({ value, onChange, onSend, placeholder, sendLabel, className }) {
   return (
     <div className={`hero-quick-chat ${className || ""}`.trim()}>
-      <ChatAvatar avatarUrl={avatarUrl} initial={avatarInitial} className="hero-quick-chat-avatar" />
       <ChatInput value={value} onChange={onChange} onSend={onSend} placeholder={placeholder} sendLabel={sendLabel} />
     </div>
   );

@@ -7,22 +7,16 @@ import { FitOneLine, HeroButtons, HeroChatComposer } from "../HeroShared.jsx";
  * template setting did, so picking "classic" (or leaving the setting
  * unset) can never look different from what's already live.
  */
-export default function ClassicLayout({ copy, sections, nav, heroButtons, lang, onNavigate, quickDraft, setQuickDraft, onQuickSend, headlineStyle, branding }) {
+export default function ClassicLayout({ copy, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, homeTopics, onTopicClick }) {
   return (
     <>
       <div className="hero-center">
         <h1 className="hero-welcome">
-          <FitOneLine text={copy.home.welcome} styleId={headlineStyle} />
+          <FitOneLine text={copy.home.tagline} styleId="solid-white" />
         </h1>
-        {heroButtons?.length > 0 ? (
-          <HeroButtons buttons={heroButtons} lang={lang} />
-        ) : (
-          <div className="hero-tagline">{copy.home.tagline}</div>
-        )}
+        {heroButtons?.length > 0 && <HeroButtons buttons={heroButtons} lang={lang} />}
 
         <HeroChatComposer
-          avatarUrl={branding?.chatAvatarUrl}
-          avatarInitial={branding?.siteName?.[0]}
           value={quickDraft}
           onChange={setQuickDraft}
           onSend={onQuickSend}
@@ -32,10 +26,10 @@ export default function ClassicLayout({ copy, sections, nav, heroButtons, lang, 
       </div>
 
       <div className="hero-sections">
-        {nav.map(({ id }) => (
-          <button key={id} className="hero-section" onClick={() => onNavigate(id)}>
-            <h2>{sections[id]?.title}</h2>
-            <p>{sections[id]?.body}</p>
+        {homeTopics.map(({ id, label, body }) => (
+          <button key={id} className="hero-section" onClick={() => onTopicClick(id)}>
+            <h2>{label}</h2>
+            <p>{body}</p>
             <span className="hero-section-arrow" aria-hidden="true">→</span>
           </button>
         ))}

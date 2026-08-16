@@ -27,6 +27,66 @@ export const NAV = {
   ],
 };
 
+// Homepage "topic" buttons (hero-sections / hero-card-pills). Unlike
+// NAV/SECTIONS above these don't navigate to a page — clicking one
+// hands its `question` straight to the AI Assistant chat (see
+// Hero.jsx handleTopicClick), so the button IS the entry point into
+// a relevant conversation rather than a page link.
+export const HOME_TOPICS = {
+  en: [
+    {
+      id: "software-development",
+      label: "Software Development",
+      body: "Custom web, mobile, and enterprise software built around how your team actually works.",
+      question: "I'd like to learn more about your software development services.",
+    },
+    {
+      id: "artificial-intelligence",
+      label: "Artificial Intelligence",
+      body: "AI assistants, automation, and intelligent workflows tailored to your business.",
+      question: "I'd like to learn more about your artificial intelligence services.",
+    },
+    {
+      id: "digital-transformation",
+      label: "Digital Transformation",
+      body: "Modernizing processes and systems to help your organization move faster.",
+      question: "I'd like to learn more about your digital transformation services.",
+    },
+    {
+      id: "consulting",
+      label: "Consulting",
+      body: "Strategic and technical guidance to help you plan and execute with confidence.",
+      question: "I'd like to learn more about your consulting services.",
+    },
+  ],
+  ar: [
+    {
+      id: "software-development",
+      label: "تطوير البرمجيات",
+      body: "برمجيات وتطبيقات ويب وجوال وحلول مؤسسية مصممة وفق طريقة عمل فريقك.",
+      question: "أرغب في معرفة المزيد عن خدمات تطوير البرمجيات لديكم.",
+    },
+    {
+      id: "artificial-intelligence",
+      label: "الذكاء الاصطناعي",
+      body: "مساعدون بالذكاء الاصطناعي وأتمتة وسير عمل ذكي مصمم خصيصًا لعملك.",
+      question: "أرغب في معرفة المزيد عن خدمات الذكاء الاصطناعي لديكم.",
+    },
+    {
+      id: "digital-transformation",
+      label: "التحول الرقمي",
+      body: "تحديث الأنظمة والعمليات لمساعدة مؤسستك على العمل بشكل أسرع.",
+      question: "أرغب في معرفة المزيد عن خدمات التحول الرقمي لديكم.",
+    },
+    {
+      id: "consulting",
+      label: "الاستشارات",
+      body: "إرشاد استراتيجي وتقني يساعدك على التخطيط والتنفيذ بثقة.",
+      question: "أرغب في معرفة المزيد عن الخدمات الاستشارية لديكم.",
+    },
+  ],
+};
+
 export const SECTIONS = {
   en: {
     about: {

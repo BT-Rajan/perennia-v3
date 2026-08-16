@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLang } from "../../context/LangContext.jsx";
+import { HOME_TOPICS } from "../../data/content.js";
 import TopBar from "../layout/TopBar.jsx";
 import ClassicLayout from "./layouts/ClassicLayout.jsx";
 import SplitLayout from "./layouts/SplitLayout.jsx";
@@ -41,6 +42,16 @@ export default function Hero({ onEnter, onNavigate }) {
     onEnter(text);
   }
 
+  // The 4 homepage topic buttons (Software Development / Artificial
+  // Intelligence / Digital Transformation / Consulting) aren't page
+  // links — clicking one hands its preset question straight to the
+  // AI Assistant, the same handoff the quick-chat box uses above.
+  const homeTopics = HOME_TOPICS[lang] || HOME_TOPICS.en;
+  function handleTopicClick(topicId) {
+    const topic = homeTopics.find((t) => t.id === topicId);
+    if (topic) onEnter(topic.question);
+  }
+
   const Layout = LAYOUTS[theme?.layoutTemplate] || ClassicLayout;
 
   return (
@@ -59,6 +70,8 @@ export default function Hero({ onEnter, onNavigate }) {
         onQuickSend={handleQuickSend}
         headlineStyle={theme?.headlineStyle}
         branding={branding}
+        homeTopics={homeTopics}
+        onTopicClick={handleTopicClick}
       />
 
       <footer className="hero-footer">© {new Date().getFullYear()} {branding.siteName}</footer>
