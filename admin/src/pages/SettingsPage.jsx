@@ -7,6 +7,8 @@ import SettingField from "../components/SettingField.jsx";
 import ThemePresetPicker from "../components/ThemePresetPicker.jsx";
 import LayoutTemplatePicker from "../components/LayoutTemplatePicker.jsx";
 import HeadlineStylePicker from "../components/HeadlineStylePicker.jsx";
+import SurfaceStylePicker from "../components/SurfaceStylePicker.jsx";
+import ButtonStylePicker from "../components/ButtonStylePicker.jsx";
 import LogoZoomControl from "../components/LogoZoomControl.jsx";
 import CalendarSyncConnector from "../components/CalendarSyncConnector.jsx";
 import WebhooksPage from "./WebhooksPage.jsx";
@@ -215,18 +217,33 @@ export default function SettingsPage() {
                     />
                   )}
 
+                  {categoryParam === "theme" && (
+                    <SurfaceStylePicker
+                      value={values["theme.surface_style"]}
+                      onChange={(v) => handleFieldChange("theme.surface_style", v)}
+                    />
+                  )}
+
+                  {categoryParam === "theme" && (
+                    <ButtonStylePicker
+                      value={values["theme.button_style"]}
+                      onChange={(v) => handleFieldChange("theme.button_style", v)}
+                    />
+                  )}
+
                   {schema.map((field) => {
                     // Superseded by the LogoZoomControl composite below
                     // (rendered right after branding.logo_url) — a bare
                     // number input for a zoom factor isn't useful without
                     // a live preview next to it.
                     if (field.key === "branding.logo_scale") return null;
-                    // Superseded by the LayoutTemplatePicker/
-                    // HeadlineStylePicker galleries above — bare
-                    // dropdowns of opaque ids aren't useful without
-                    // the mini visual previews.
+                    // Superseded by the picker galleries above — bare
+                    // dropdowns of opaque ids aren't useful without the
+                    // mini visual previews.
                     if (field.key === "theme.layout_template") return null;
                     if (field.key === "theme.headline_style") return null;
+                    if (field.key === "theme.surface_style") return null;
+                    if (field.key === "theme.button_style") return null;
                     return (
                       <div key={field.key}>
                         <SettingField

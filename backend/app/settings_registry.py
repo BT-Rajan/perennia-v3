@@ -244,6 +244,28 @@ _DEFS: list[SettingDef] = [
                choices=("ripple-gradient", "solid-gold", "solid-white", "two-tone", "outline"),
                help_text="Visual treatment of the homepage headline text. Uses the theme colors above — "
                           "changing the theme preset changes how each of these looks too."),
+    # ── Pass 1 of the whole-page style system (surfaces + buttons).
+    # Both are unified, cross-component toggles — one setting changes
+    # every covered element at once, not per-component overrides. See
+    # src/styles/themeVariants.css for exactly what each value does.
+    #
+    # "glass" / "default" reproduce today's actual appearance byte-for-
+    # byte (glass is a real style choice that happens to already be
+    # what's live; "default" for buttons means "each button keeps its
+    # own current look" since today's buttons are NOT visually
+    # uniform — the CTA pills are outlined/glass, the sticky buttons
+    # are solid-filled). Either is always the safe fallback for an
+    # unset or unrecognized value, so no existing deployment regresses.
+    SettingDef("theme.surface_style", "theme", "Card & panel surface", SettingType.ENUM, "glass",
+               choices=("glass", "solid", "outline", "elevated"),
+               help_text="Fill treatment for cards and panels site-wide: the chat widget, booking panel, "
+                          "and homepage nav/content cards. 'glass' is today's blurred, translucent look."),
+    SettingDef("theme.button_style", "theme", "Buttons & pills", SettingType.ENUM, "default",
+               choices=("default", "solid", "outline", "ghost", "gradient"),
+               help_text="Fill treatment for call-to-action buttons and pills site-wide: homepage quick-"
+                          "link buttons, the centered-card pills, and the sticky Appointments/AI Assistant "
+                          "buttons. 'default' keeps each button's current individual look; every other "
+                          "choice makes them all match one unified style."),
 
     # features (toggles for capabilities landing in later passes,
     # declared now so the admin can already see what's coming and
