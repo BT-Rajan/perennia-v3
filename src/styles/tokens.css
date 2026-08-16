@@ -81,6 +81,12 @@
   --muted: color-mix(in srgb, white 50%, transparent);
   --muted-strong: color-mix(in srgb, white 70%, transparent);
 
+  /* Body background texture opacity — theme.background_intensity,
+     admin-configurable (Settings > Theme). Read by body::before in
+     global.css; overridden per-intensity in themeVariants.css. This
+     value is the "subtle" default, matching today's exact look. */
+  --bg-texture-opacity: 0.022;
+
   /* Fluid type scale — clamp() keeps this "native" across phone/tablet/desktop
      instead of relying on breakpoint-by-breakpoint font-size overrides. */
   --fs-hero: clamp(2rem, 5vw + 1rem, 4rem);
