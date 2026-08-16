@@ -69,4 +69,6 @@ export function applyTheme(theme, branding) {
   document.documentElement.dataset.headingCase = theme.headingCase || "as-is";
   document.documentElement.dataset.backgroundStyle = theme.backgroundStyle || "grid";
   document.documentElement.dataset.backgroundIntensity = theme.backgroundIntensity || "subtle";
+  document.documentElement.dataset.density = theme.density || "comfortable";
+  document.documentElement.dataset.sectionRhythm = theme.sectionRhythm || "standard";
 }

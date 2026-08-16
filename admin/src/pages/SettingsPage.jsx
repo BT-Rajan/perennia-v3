@@ -13,6 +13,8 @@ import TypeScalePicker from "../components/TypeScalePicker.jsx";
 import HeadingCasePicker from "../components/HeadingCasePicker.jsx";
 import BackgroundStylePicker from "../components/BackgroundStylePicker.jsx";
 import BackgroundIntensityPicker from "../components/BackgroundIntensityPicker.jsx";
+import DensityPicker from "../components/DensityPicker.jsx";
+import SectionRhythmPicker from "../components/SectionRhythmPicker.jsx";
 import LogoZoomControl from "../components/LogoZoomControl.jsx";
 import CalendarSyncConnector from "../components/CalendarSyncConnector.jsx";
 import WebhooksPage from "./WebhooksPage.jsx";
@@ -263,6 +265,20 @@ export default function SettingsPage() {
                     />
                   )}
 
+                  {categoryParam === "theme" && (
+                    <DensityPicker
+                      value={values["theme.density"]}
+                      onChange={(v) => handleFieldChange("theme.density", v)}
+                    />
+                  )}
+
+                  {categoryParam === "theme" && (
+                    <SectionRhythmPicker
+                      value={values["theme.section_rhythm"]}
+                      onChange={(v) => handleFieldChange("theme.section_rhythm", v)}
+                    />
+                  )}
+
                   {schema.map((field) => {
                     // Superseded by the LogoZoomControl composite below
                     // (rendered right after branding.logo_url) — a bare
@@ -280,6 +296,8 @@ export default function SettingsPage() {
                     if (field.key === "theme.heading_case") return null;
                     if (field.key === "theme.background_style") return null;
                     if (field.key === "theme.background_intensity") return null;
+                    if (field.key === "theme.density") return null;
+                    if (field.key === "theme.section_rhythm") return null;
                     return (
                       <div key={field.key}>
                         <SettingField
