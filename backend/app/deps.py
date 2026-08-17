@@ -57,11 +57,3 @@ def require_csrf(
         return
     if not csrf_tokens_match(sess.csrf_token, x_csrf_token):
         raise HTTPException(status.HTTP_403_FORBIDDEN, "CSRF token missing or invalid")
-
-
-def require_role(*roles: str):
-    def _check(user: AdminUser = Depends(get_current_admin)) -> AdminUser:
-        if user.role not in roles:
-            raise HTTPException(status.HTTP_403_FORBIDDEN, "Insufficient permissions")
-        return user
-    return _check

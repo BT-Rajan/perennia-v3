@@ -14,7 +14,6 @@ these instead of rolling its own crypto:
 from __future__ import annotations
 
 import hmac
-import secrets
 
 from cryptography.fernet import Fernet, InvalidToken
 from itsdangerous import BadSignature, URLSafeTimedSerializer
@@ -79,10 +78,8 @@ def unsign_oauth_state(state: str, max_age: int = 600) -> str | None:
 
 
 # ── CSRF ────────────────────────────────────────────────────────────────
-
-def new_csrf_token() -> str:
-    return secrets.token_urlsafe(32)
-
+# Token generation itself is AdminSession.csrf_token's column default
+# (see app/models.py) — this module only verifies.
 
 def csrf_tokens_match(a: str | None, b: str | None) -> bool:
     if not a or not b:

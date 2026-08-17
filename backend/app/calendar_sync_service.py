@@ -45,12 +45,6 @@ def get_active_credential(db: Session) -> CalendarCredential | None:
     return db.scalar(select(CalendarCredential).where(CalendarCredential.is_active.is_(True)))
 
 
-def get_pending_credential(db: Session, credential_id: str) -> CalendarCredential | None:
-    """A credential mid-connect: tokens stored, calendar_id not yet
-    chosen. Used by POST /select."""
-    return db.get(CalendarCredential, credential_id)
-
-
 def build_connect_url(db: Session, *, redirect_uri: str, admin_id: str) -> str:
     from app.security import sign_oauth_state
     client_id, _ = _oauth_client(db)
