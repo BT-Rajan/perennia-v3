@@ -24,6 +24,7 @@ from sqlalchemy.orm import Session
 
 from app.config import settings
 from app.models import AuditLog, Webhook, WebhookDelivery
+from app.net_safety import UnsafeUrlError, assert_public_http_url
 from app.security import decrypt_secret, encrypt_secret
 
 EVENT_CHOICES = {
@@ -44,10 +45,24 @@ def _validate_url(url: str) -> None:
     if not url:
         raise ValueError("url is required")
     if url.startswith("https://"):
-        return
-    if url.startswith("http://") and not settings.is_production:
-        return  # local testing only
-    raise ValueError("url must start with https:// (http:// is only allowed outside production)")
+        pass
+    elif url.startswith("http://") and not settings.is_production:
+        pass  # local testing only
+    else:
+        raise ValueError("url must start with https:// (http:// is only allowed outside production)")
+
+    # SSRF guard: reject a URL whose host resolves to a private,
+    # loopback, link-local, reserved, or multicast address (internal
+    # services, cloud metadata endpoints, etc). Checked here at
+    # create/update time, and again on every delivery attempt in
+    # _deliver_one below — this endpoint is admin-only, but that's not
+    # a reason to skip it (see app/net_safety.py), and a webhook fires
+    # automatically and repeatedly for the life of the account, so a
+    # one-time check at registration isn't enough on its own.
+    try:
+        assert_public_http_url(url)
+    except UnsafeUrlError as e:
+        raise ValueError(str(e)) from e
 
 
 def _validate_events(events: list) -> None:
@@ -148,18 +163,39 @@ def _deliver_one(db: Session, webhook: Webhook, event: str, payload: dict) -> We
     """Sends one delivery and logs it, regardless of outcome. Never
     raises — a broken receiver on the business's end must not break
     the booking action that triggered this."""
+    started = time.monotonic()
+    response_status: int | None = None
+
+    # Re-validate on every delivery, not just at create/update time: a
+    # webhook fires automatically for as long as it's active, and a
+    # hostname that resolved to a public address when the admin
+    # registered it can be re-pointed at an internal address later
+    # (DNS change on the receiving end, not a redirect from it — this
+    # doesn't rely on the response at all). Blocked here the same way
+    # any other delivery failure is: logged, not raised.
+    try:
+        assert_public_http_url(webhook.url)
+    except UnsafeUrlError:
+        duration_ms = int((time.monotonic() - started) * 1000)
+        delivery = WebhookDelivery(
+            webhook_id=webhook.id, event=event, payload=payload,
+            response_status=None, duration_ms=duration_ms,
+        )
+        db.add(delivery)
+        db.flush()
+        return delivery
+
     raw_body = json.dumps(payload, separators=(",", ":")).encode()
     secret = decrypt_secret(webhook.secret)
     signature = _sign(secret, raw_body)
 
-    started = time.monotonic()
-    response_status: int | None = None
     try:
         resp = httpx.post(
             webhook.url,
             content=raw_body,
             headers={"Content-Type": "application/json", "X-Perennia-Signature": signature},
             timeout=REQUEST_TIMEOUT_SECONDS,
+            follow_redirects=False,  # a redirect could otherwise be used to reach a blocked address post-check
         )
         response_status = resp.status_code
     except httpx.HTTPError:

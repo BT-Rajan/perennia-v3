@@ -12,15 +12,14 @@ misparsed.
 from __future__ import annotations
 
 import io
-import ipaddress
-import socket
 import zipfile
-from urllib.parse import urlparse
 
 import httpx
 from bs4 import BeautifulSoup
 from docx import Document
 from pypdf import PdfReader
+
+from app.net_safety import UnsafeUrlError, assert_public_http_url
 
 ALLOWED_TEXT_EXTENSIONS = {".txt", ".md"}
 ALLOWED_HTML_EXTENSIONS = {".html", ".htm"}
@@ -137,35 +136,16 @@ def extract_from_upload(raw: bytes, filename: str, *, max_chars: int) -> tuple[s
 
 # ── URL fetching, with SSRF guards ──────────────────────────────────
 #
-# This endpoint is admin-only, but "trusted admin" isn't a reason to
-# skip basic SSRF hygiene — an admin account could be compromised, or
-# a well-meaning admin could paste a URL they don't realize points
-# somewhere internal. These checks are reasonable defense-in-depth,
-# not a complete guarantee: they don't defend against DNS rebinding
-# (resolving safely here, then differently at request time), which
-# would need a proxy or an allowlist to fully close.
-
-_BLOCKED_HOSTNAMES = {"localhost"}
+# The actual check lives in app/net_safety.py, shared with
+# webhook_service.py's outbound delivery path — see that module's
+# docstring for what it does and doesn't defend against.
 
 
 def _validate_public_url(url: str) -> None:
-    parsed = urlparse(url)
-    if parsed.scheme not in ("http", "https"):
-        raise ExtractionError("Only http:// and https:// URLs are supported.")
-    if not parsed.hostname:
-        raise ExtractionError("That doesn't look like a valid URL.")
-    if parsed.hostname.lower() in _BLOCKED_HOSTNAMES:
-        raise ExtractionError("That address isn't allowed.")
-
     try:
-        infos = socket.getaddrinfo(parsed.hostname, None)
-    except socket.gaierror as e:
-        raise ExtractionError(f"Could not resolve host: {e}") from e
-
-    for family, _, _, _, sockaddr in infos:
-        ip = ipaddress.ip_address(sockaddr[0])
-        if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved or ip.is_multicast:
-            raise ExtractionError("That address resolves to a non-public location and isn't allowed.")
+        assert_public_http_url(url)
+    except UnsafeUrlError as e:
+        raise ExtractionError(str(e)) from e
 
 
 def extract_from_url(url: str, *, max_chars: int) -> tuple[str, bool, str, str]:
