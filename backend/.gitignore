@@ -2,6 +2,8 @@
 venv/
 data/*.db
 data/*.db-journal
+data/uploads/*
+!data/uploads/.gitkeep
 logs/*.log
 __pycache__/
 *.pyc

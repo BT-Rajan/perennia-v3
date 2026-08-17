@@ -133,11 +133,4 @@
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
   --dur-fast: 0.18s;
   --dur-med: 0.32s;
-
-  /* Breakpoints (referenced in comments; media queries can't read vars,
-     kept here as the documented contract for the app) */
-  --bp-mobile: 480px;
-  --bp-tablet: 768px;
-  --bp-desktop: 1024px;
-  --bp-wide: 1400px;
 }

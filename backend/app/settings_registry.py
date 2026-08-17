@@ -21,7 +21,6 @@ path*, only new *entries*.
 """
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Callable
@@ -616,10 +615,6 @@ CATEGORIES: list[str] = sorted({d.category for d in _DEFS})
 
 def defs_for_category(category: str) -> list[SettingDef]:
     return [d for d in _DEFS if d.category == category]
-
-
-def encode_default(d: SettingDef) -> str:
-    return json.dumps(d.default)
 
 
 def get_def(key: str) -> SettingDef:
