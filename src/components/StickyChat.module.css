@@ -184,8 +184,12 @@
   }
 }
 
-/* Tablet adjustments */
-@media (max-width: 768px) {
+/* Tablet adjustments. max-width: 767px (not 768px) to match the
+   mobile cutoff used everywhere else in this app (TopBar.css,
+   Logo.css, BookingPanel.css, ContentPage.css) — a stray 768px here
+   previously meant this file disagreed with the rest of the app by
+   exactly 1px, right at the width of an iPad in portrait. */
+@media (max-width: 767px) {
   .stickyContainer {
     bottom: calc(28px + env(safe-area-inset-bottom));
     right: calc(28px + env(safe-area-inset-right));
@@ -194,6 +198,18 @@
   .chatButton:hover,
   .chatButton.hovered {
     transform: translateY(-2px) scale(1.05);
+  }
+
+  /* Home page only (see StickyChat.jsx's isHome prop): Hero already
+     renders its own in-flow quick-chat box on this page, close enough
+     to this fixed button on a small screen to visually collide with
+     it. Hidden here rather than not rendered at all in JS, so it
+     still mounts (and un-hides) cleanly if the viewport grows past
+     this breakpoint without a remount. Only the AI Assistant button —
+     the Appointments button isn't duplicated anywhere on the page, so
+     it keeps showing here same as everywhere else. */
+  .homeMobileHidden {
+    display: none;
   }
 }
 

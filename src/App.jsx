@@ -54,12 +54,19 @@ function AppShell() {
         <ContentPage pageId={page} onBack={() => setPage("home")} onNavigate={setPage} />
       )}
 
-      {/* Sticky action buttons — visible on all pages */}
+      {/* Sticky action buttons — visible on all pages. The AI Assistant
+          button is additionally suppressed on mobile on the home page
+          specifically (isHome), since Hero already renders its own
+          in-flow quick-chat box there — on a small screen the two sat
+          close enough to collide. Desktop keeps both; every other page
+          keeps the sticky button as-is (it's the only chat entry point
+          there). */}
       <StickyChat
         onChatClick={handleStickyChat}
         onBookingClick={() => setBookingOpen(true)}
         showBooking={features.bookingEnabled}
         chatOpen={chatOpen}
+        isHome={page === "home"}
       />
 
       <ChatWidget
