@@ -54,6 +54,7 @@
   width: 100%;
   margin-bottom: var(--space-2);
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
 }
 .hero-headline-layer {
   grid-area: 1 / 1;
