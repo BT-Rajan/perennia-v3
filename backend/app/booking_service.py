@@ -27,10 +27,11 @@ import re
 import secrets
 from zoneinfo import ZoneInfo
 
-from sqlalchemy import select
+from sqlalchemy import select, text
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.models import Appointment, AppointmentQuestionAnswer, Service
+from app.models import Appointment, AppointmentQuestionAnswer, BookingLock, Service
 from app.settings_service import get_setting
 
 EMAIL_RE = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
@@ -234,6 +235,59 @@ def available_slots(
     return out
 
 
+_lock_seeded = False  # process-local memo — see _acquire_booking_lock
+
+
+def _acquire_booking_lock(db: Session) -> None:
+    """Serializes booking/reschedule requests against each other so that
+    "check available_slots, then insert/move an appointment" behaves as
+    one atomic step even under concurrent requests. Must be the very
+    first thing the caller does with `db` — before any other read or
+    write in that request — and the caller's transaction must not
+    commit until after its own insert/update, since committing is what
+    releases the lock.
+
+    Implemented as a real write (UPDATE, not SELECT ... FOR UPDATE)
+    against a single sentinel row (BookingLock id=1), because SQLite —
+    used in dev and in this test suite — has no row-level locking and
+    silently no-ops a bare FOR UPDATE, which would leave the race this
+    exists to close wide open outside of MySQL/Postgres. An UPDATE
+    takes a real, held-until-commit write lock identically on SQLite,
+    MySQL, and Postgres, which is what actually forces a second
+    concurrent caller to wait here until the first one commits or
+    rolls back.
+
+    The sentinel row is seeded lazily (first call in the process's
+    lifetime, memoized in _lock_seeded so later calls skip straight to
+    the UPDATE) rather than only in app.db.sync_schema, since a test DB
+    built directly with Base.metadata.create_all never runs sync_schema
+    at all. That seeding deliberately happens on connections of its own,
+    fully opened and closed *before* `db` is touched at all — not just
+    committed independently. On SQLite, even a read against `db` starts
+    an implicit transaction that's held open (and holds a file-level
+    lock) until the caller's eventual commit; starting that first and
+    only then opening a second connection to seed the row would make
+    the seed insert wait on a lock `db` itself is holding, and `db`
+    isn't going anywhere until this function returns — a self-deadlock.
+    Doing all the seed work first, on connections that are fully closed
+    (rolled back or committed) before `db.execute` ever runs, avoids it.
+    """
+    global _lock_seeded
+    now = dt.datetime.now(dt.timezone.utc).isoformat()
+    if not _lock_seeded:
+        bind = db.get_bind()
+        with bind.connect() as conn:
+            row = conn.execute(text("SELECT 1 FROM booking_lock WHERE id = 1")).first()
+        if row is None:
+            try:
+                with bind.connect() as conn, conn.begin():
+                    conn.execute(text("INSERT INTO booking_lock (id, touched_at) VALUES (1, NULL)"))
+            except IntegrityError:
+                pass  # a concurrent caller won the seed race; the row exists now either way
+        _lock_seeded = True
+    db.execute(text("UPDATE booking_lock SET touched_at = :now WHERE id = 1"), {"now": now})
+
+
 def _generate_code(db: Session) -> str:
     for _ in range(10):
         code = "PRN-" + "".join(secrets.choice(_CODE_ALPHABET) for _ in range(8))
@@ -251,6 +305,11 @@ def create_appointment(
         return {"ok": False, "error": "invalid_name"}
     if not EMAIL_RE.match(email):
         return {"ok": False, "error": "invalid_email"}
+    # Must happen before available_slots() below — see
+    # _acquire_booking_lock's docstring. Held until the router's
+    # subsequent db.commit() persists (or a raised exception rolls
+    # back) the appointment this call is about to create.
+    _acquire_booking_lock(db)
     try:
         slots = available_slots(db, date_str, service_id=service_id)
     except ValueError:
@@ -340,6 +399,14 @@ def cancel_appointment(db: Session, appt_id: str, email: str) -> dict:
 
 
 def reschedule_appointment(db: Session, appt_id: str, email: str, new_date_str: str, new_time_str: str) -> dict:
+    # Must happen before the availability re-check below — see
+    # _acquire_booking_lock's docstring. Taken up front (even though
+    # this call may still bail out on not_found/notice-window) rather
+    # than only once we know we'll write, since the whole point is to
+    # prevent another request's create/reschedule from slipping in
+    # between this function's read of available_slots() and its own
+    # write further down.
+    _acquire_booking_lock(db)
     appt = _find_by_id_and_email(db, appt_id, email)
     if appt is None:
         return {"ok": False, "error": "not_found"}
@@ -372,6 +439,9 @@ def admin_reschedule_appointment(db: Session, appt_id: str, new_date_str: str, n
     an admin moving a booking is often exactly a late-notice change a
     visitor can no longer self-serve), but still respects the slot grid
     so it can't create a double-booking."""
+    # See _acquire_booking_lock's docstring — same reasoning as
+    # reschedule_appointment above.
+    _acquire_booking_lock(db)
     appt = db.get(Appointment, appt_id)
     if appt is None:
         return {"ok": False, "error": "not_found"}
