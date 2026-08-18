@@ -23,6 +23,10 @@ const PX_VAR_MAP = {
   cornerRadiusPx: "--radius-md",
 };
 
+const MS_VAR_MAP = {
+  headlineDissolveMs: "--headline-dissolve-ms",
+};
+
 /**
  * @param {object} theme - camelCase theme fields (see siteContent.js)
  * @param {{siteName: string, faviconUrl: string, metaDescription: string}} branding - already resolved to the current language
@@ -35,6 +39,9 @@ export function applyTheme(theme, branding) {
   }
   for (const [key, cssVar] of Object.entries(PX_VAR_MAP)) {
     if (theme[key] != null) root.setProperty(cssVar, `${theme[key]}px`);
+  }
+  for (const [key, cssVar] of Object.entries(MS_VAR_MAP)) {
+    if (theme[key] != null) root.setProperty(cssVar, `${theme[key]}ms`);
   }
 
   if (theme.googleFontsUrl) {

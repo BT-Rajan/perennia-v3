@@ -6,7 +6,7 @@ import { HeroButtons, HeroChatComposer, HeroExamplePrompts, HeroHeadline, HeroSu
  * horizontal-scrolling strip of compact cards instead of a grid —
  * a more magazine/editorial feel than the centered classic layout.
  */
-export default function EditorialLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, copy, homeTopics, onTopicClick }) {
+export default function EditorialLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, copy, homeTopics, onTopicClick, headlineTypingSpeedCps }) {
   return (
     <>
       <div className="hero-editorial-main">
@@ -15,6 +15,7 @@ export default function EditorialLayout({ home, heroButtons, lang, quickDraft, s
           taglineLine1={home.taglineLine1}
           taglineLine2={home.taglineLine2}
           className="hero-welcome-left hero-welcome-editorial"
+          typingSpeedCps={headlineTypingSpeedCps}
         />
         <HeroSupportingText text={home.supportingText} className="hero-supporting-left" />
         {heroButtons?.length > 0 && <HeroButtons buttons={heroButtons} lang={lang} />}

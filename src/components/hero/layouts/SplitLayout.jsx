@@ -6,7 +6,7 @@ import { HeroButtons, HeroChatComposer, HeroExamplePrompts, HeroHeadline, HeroSu
  * on the other. Stacks to a single column (main content first, then
  * nav) below the tablet breakpoint — see .hero-split-* in Hero.css.
  */
-export default function SplitLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, copy, homeTopics, onTopicClick }) {
+export default function SplitLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, copy, homeTopics, onTopicClick, headlineTypingSpeedCps }) {
   return (
     <div className="hero-split-wrap">
       <div className="hero-split-main">
@@ -15,6 +15,7 @@ export default function SplitLayout({ home, heroButtons, lang, quickDraft, setQu
           taglineLine1={home.taglineLine1}
           taglineLine2={home.taglineLine2}
           className="hero-welcome-left"
+          typingSpeedCps={headlineTypingSpeedCps}
         />
         <HeroSupportingText text={home.supportingText} className="hero-supporting-left" />
         {heroButtons?.length > 0 && <HeroButtons buttons={heroButtons} lang={lang} />}

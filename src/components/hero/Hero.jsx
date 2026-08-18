@@ -98,6 +98,7 @@ export default function Hero({ onEnter, onNavigate }) {
         onQuickSend={handleQuickSend}
         onExamplePick={handleExamplePick}
         headlineStyle={theme?.headlineStyle}
+        headlineTypingSpeedCps={theme?.headlineTypingSpeedCps}
         branding={branding}
         homeTopics={homeTopics}
         onTopicClick={handleTopicClick}
