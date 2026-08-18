@@ -46,6 +46,7 @@ export default function ChatInput({
         rows={1}
         value={value}
         placeholder={placeholder}
+        aria-label={placeholder}
         onChange={handleInput}
         onKeyDown={handleKeyDown}
         disabled={disabled}
