@@ -145,7 +145,7 @@ export function FitOneLine({ text, className, styleId }) {
   );
 }
 
-const TYPE_SPEED_MS = 32; // per character — brisk, not a demo-slow crawl
+const TYPE_SPEED_MS = 22; // per character — brisk, not a demo-slow crawl
 const HOLD_AFTER_TYPE_MS = 1100; // beat before handing off to the permanent tagline
 
 /**
