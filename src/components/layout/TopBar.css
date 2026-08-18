@@ -17,7 +17,11 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 var(--space-5);
-  background: linear-gradient(180deg, rgba(10, 14, 39, 0.95) 0%, rgba(10, 14, 39, 0.85) 100%);
+  /* Was a literal navy-blue rgba() left over from the site's old
+     palette, mismatched against the current near-black/gold tokens —
+     derived from --brand-bg instead so the header re-themes with
+     everything else. */
+  background: linear-gradient(180deg, color-mix(in srgb, var(--brand-bg) 95%, transparent) 0%, color-mix(in srgb, var(--brand-bg) 85%, transparent) 100%);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid color-mix(in srgb, var(--gold) 15%, transparent);
@@ -77,5 +81,4 @@
   }
   
   .top-bar-start, .top-bar-end { gap: var(--space-2); }
-  .top-bar-center { display: none; }
 }

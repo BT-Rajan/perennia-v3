@@ -41,6 +41,6 @@
 
 /* Mobile (<768px) */
 @media (max-width: 767px) {
-  .logo-img { height: calc(32px * var(--logo-scale, 1)); width: auto; max-height: 36px; max-width: 100px; }
-  .logo-word { font-size: 1rem; }
+  .logo-img { height: calc(36px * var(--logo-scale, 1)); width: auto; max-height: 40px; max-width: 110px; }
+  .logo-word { font-size: 1.05rem; }
 }

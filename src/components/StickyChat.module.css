@@ -75,11 +75,26 @@
   outline-offset: 3px;
 }
 
-/* Appointments button — same treatment, on-theme accent color so it
-   reads as a distinct action from AI Assistant rather than a duplicate. */
+/* Appointments button — secondary to the AI Assistant per the brief:
+   noticeably smaller and icon-led (label only via title/aria on
+   hover-equivalent, not painted on-screen) so it reads as a quiet
+   secondary action rather than a second, equally-weighted CTA. */
 .booking {
-  background: var(--brand-accent);
-  border-color: color-mix(in srgb, var(--brand-accent) 70%, white);
+  background: color-mix(in srgb, var(--brand-accent) 14%, transparent);
+  border-color: color-mix(in srgb, var(--brand-accent) 45%, transparent);
+  color: var(--brand-accent);
+  padding: 12px;
+  min-width: 46px;
+  min-height: 46px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+.booking .label {
+  display: none;
+}
+.booking:hover,
+.booking.hovered {
+  transform: translateY(-3px) scale(1.06);
+  background: color-mix(in srgb, var(--brand-accent) 22%, transparent);
 }
 .booking:focus-visible {
   outline-color: var(--brand-accent);
@@ -171,6 +186,15 @@
     min-height: 52px;
     gap: 8px;
     font-size: 13px;
+  }
+
+  /* Stays smaller than the assistant button even after the shared
+     .chatButton mobile rule above (same specificity, later in the
+     cascade) would otherwise re-widen it back to 52px. */
+  .booking {
+    padding: 10px;
+    min-width: 42px;
+    min-height: 42px;
   }
 
   .icon {

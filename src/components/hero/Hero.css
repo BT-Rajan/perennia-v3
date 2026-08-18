@@ -488,7 +488,13 @@
 }
 
 @media (max-width: 480px) {
-  .hero-page { padding: var(--space-5) var(--space-3); }
+  /* Previously reset padding-top to a flat var(--space-5) (24px),
+     dropping the var(--header-h) clearance the base rule above adds —
+     on mobile's 56px fixed header (see TopBar.css) that let the top
+     of the hero render partly behind the header. Keeps the same
+     clearance, just tighter side/bottom spacing than desktop. */
+  .hero-page { padding: calc(var(--header-h) + var(--space-3)) var(--space-3) 0; }
+  .hero-center { min-height: 0; padding-block: var(--space-4); gap: var(--space-3); }
   .hero-sections { grid-template-columns: 1fr; }
 }
 
