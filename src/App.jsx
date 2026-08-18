@@ -48,11 +48,24 @@ function AppShell() {
 
   return (
     <>
-      {page === "home" && <Hero onEnter={handleHeroEnter} onNavigate={setPage} />}
-      {page === "contact" && <ContactPage onBack={() => setPage("home")} onNavigate={setPage} />}
-      {!SPECIAL_PAGE_IDS.has(page) && (
-        <ContentPage pageId={page} onBack={() => setPage("home")} onNavigate={setPage} />
-      )}
+      {/* Desktop has no in-flow "page vs widget" scroll separation like
+          mobile does, so the fixed-position ChatWidget popover (bottom-
+          right, up to 380x600) can sit directly over the home page's
+          own centered hero content at ordinary laptop widths — two
+          chat inputs, and often headline text, visibly overlapping.
+          Dimming + disabling the page behind it while open (rather
+          than only suppressing StickyChat, which is mobile-home-
+          specific — see below) removes the collision on any page, any
+          width, without having to chase every viewport where the
+          fixed popover's box happens to land on top of in-flow
+          content. */}
+      <div className={`app-page-content ${chatOpen ? "app-page-content-dimmed" : ""}`.trim()}>
+        {page === "home" && <Hero onEnter={handleHeroEnter} onNavigate={setPage} />}
+        {page === "contact" && <ContactPage onBack={() => setPage("home")} onNavigate={setPage} />}
+        {!SPECIAL_PAGE_IDS.has(page) && (
+          <ContentPage pageId={page} onBack={() => setPage("home")} onNavigate={setPage} />
+        )}
+      </div>
 
       {/* Sticky action buttons — visible on all pages. The AI Assistant
           button is additionally suppressed on mobile on the home page

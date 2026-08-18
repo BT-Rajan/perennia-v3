@@ -7,6 +7,23 @@
   position: relative;
   animation: fade-in 0.6s var(--ease);
 }
+/* Direct children (TopBar, the active layout's own top-level blocks —
+   hero-center/hero-sections, hero-split-wrap, hero-card-wrap, hero-
+   editorial-main/strip — and the footer) must never flex-shrink.
+   min-height: 100dvh above is meant as a floor ("be at least one
+   viewport tall so a short page still centers nicely"), but paired
+   with default flex-shrink: 1 on every child, once actual content
+   (headline + supporting text + composer + example prompts + topic
+   cards, all stacked) got taller than one viewport — routine on
+   mobile — the flex algorithm compressed children below their own
+   content size instead of letting the page grow/scroll, which is what
+   collapsed the quick-chat composer to a couple of px and made the
+   example prompts and topic cards paint on top of each other. Content
+   overflowing into a normal scrollbar is correct; silently squashed,
+   overlapping content is not. */
+.hero-page > * {
+  flex-shrink: 0;
+}
 
 /* Matches the 100px desktop header override in TopBar.css — see the
    comment there on why this can't just go through --header-h. */
@@ -247,6 +264,7 @@
 .hero-quick-chat {
   width: 100%;
   max-width: 560px;
+  min-height: 58px;
   margin-top: var(--space-2);
   display: flex;
   align-items: center;
@@ -254,16 +272,22 @@
   padding-inline-start: var(--space-3);
   border-radius: var(--radius-lg);
   border: 1px solid color-mix(in srgb, var(--gold) 35%, transparent);
+  /* Solid-enough on its own (not relying only on backdrop-filter to
+     read against whatever sits behind it) — layering this box's own
+     blur inside another already-blurred glass surface (e.g. the
+     centered-card layout's .hero-card) is a known source of nested-
+     backdrop-filter compositing bugs in some browsers/GPUs, where the
+     inner layer can end up rendering fully transparent — i.e. this
+     box silently disappearing while its siblings render fine. One
+     blur layer (the page background, not this box) is enough. */
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--gold) 10%, transparent) 0%,
-    color-mix(in srgb, var(--gold) 3%, transparent) 100%
+    color-mix(in srgb, var(--gold) 14%, var(--brand-bg) 86%) 0%,
+    color-mix(in srgb, var(--gold) 6%, var(--brand-bg) 94%) 100%
   );
   box-shadow:
     0 12px 32px color-mix(in srgb, var(--gold) 18%, transparent),
     0 0 20px color-mix(in srgb, var(--gold) 10%, transparent);
-  backdrop-filter: blur(16px) saturate(150%);
-  -webkit-backdrop-filter: blur(16px) saturate(150%);
   overflow: hidden;
   transition: border-color var(--dur-med) var(--ease), box-shadow var(--dur-med) var(--ease);
 }
@@ -278,6 +302,13 @@
   min-width: 0;
   border-top: none;
   background: none;
+  /* Base ChatInput.css bottom-aligns the send button so it stays
+     pinned to the last line as the textarea grows — right for
+     ChatWidget's fuller input, but here (a compact single-line
+     composer) that pushed the round button toward the box's bottom
+     edge, right where the pill's rounding is tightest, clipping it.
+     Centering keeps it on the box's own rounding axis instead. */
+  align-items: center;
   /* This bar's own corner radius (theme.corner_radius_px, admin-
      configurable — see LayoutTemplatePicker/theme settings) can be
      large enough to make it read as a full pill/stadium shape. With
@@ -285,9 +316,10 @@
      enough to that corner that its own rounded edge gets sliced by
      the container's overflow: hidden — the curve eats into the
      button instead of just the background behind it. Scaling the
-     end-padding with the actual radius keeps the button clear of the
-     curve at any configured radius, small or large. */
-  padding-inline-end: calc(var(--space-3) + var(--radius-lg) * 0.5);
+     end-padding with the actual radius, plus a fixed buffer since the
+     button's own size doesn't scale with the radius, keeps the button
+     clear of the curve at any configured radius, small or large. */
+  padding-inline-end: calc(var(--space-3) + var(--radius-lg) * 0.6 + 10px);
 }
 /* Send button picks up the same gold gradient the removed CTA button
    used, so it's visually the thing to press now. (No mic here — this

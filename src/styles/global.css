@@ -61,3 +61,17 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+/* ── Page content behind the ChatWidget popover (see App.jsx) — dimmed
+   and non-interactive while the widget is open, so the fixed-position
+   popover never has to visually compete with (or literally sit on top
+   of) the same page's own in-flow controls, e.g. the homepage's quick-
+   chat box and topic buttons. */
+.app-page-content {
+  transition: opacity var(--dur-med) var(--ease), filter var(--dur-med) var(--ease);
+}
+.app-page-content-dimmed {
+  opacity: 0.35;
+  filter: blur(1px);
+  pointer-events: none;
+}
