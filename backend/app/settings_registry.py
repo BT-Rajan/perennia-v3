@@ -243,6 +243,24 @@ _DEFS: list[SettingDef] = [
                choices=("ripple-gradient", "solid-gold", "solid-white", "two-tone", "outline"),
                help_text="Visual treatment of the homepage headline text. Uses the theme colors above — "
                           "changing the theme preset changes how each of these looks too."),
+    # Homepage headline pacing — how fast copy.home.hero_statement types
+    # out, and how slowly it dissolves into the permanent tagline once
+    # done. Split into two settings (rather than one "speed" enum)
+    # because they're genuinely independent: an admin might want a slow,
+    # dramatic type-out with a snappy handoff, or vice versa. 5 cps is a
+    # deliberately unhurried default (the site's original hardcoded rate
+    # was ~45 cps); admins with a short statement may want it faster.
+    SettingDef("theme.headline_typing_speed_cps", "theme", "Headline typing speed (characters/second)",
+               SettingType.INT, 5,
+               help_text="How fast the homepage headline types itself out. Lower = slower, more dramatic. "
+                          "Only affects copy.home.hero_statement — the permanent tagline beneath it is never "
+                          "animated.",
+               validator=_int_range(1, 40)),
+    SettingDef("theme.headline_dissolve_ms", "theme", "Headline dissolve transition (ms)",
+               SettingType.INT, 2500,
+               help_text="How long the crossfade from the typed statement to the permanent tagline "
+                          "(taglineLine1/taglineLine2) takes, in milliseconds.",
+               validator=_int_range(200, 8000)),
     # ── Pass 1 of the whole-page style system (surfaces + buttons).
     # Both are unified, cross-component toggles — one setting changes
     # every covered element at once, not per-component overrides. See
@@ -560,7 +578,11 @@ _DEFS: list[SettingDef] = [
     # lives in content_schema.py / content_service.py instead — see
     # PASS2_NOTES.md for why the split.
     SettingDef("copy.home", "copy", "Home screen text", SettingType.JSON, {"en": {}, "ar": {}}, i18n=True,
-               help_text="welcome, tagline, hint, lang_switch"),
+               help_text="welcome, tagline, hint, lang_switch, hero_statement, tagline_line1, tagline_line2, "
+                          "supporting_text, example_prompts. hero_statement types itself out on the homepage "
+                          "before handing off to tagline_line1/2 (see theme.headline_typing_speed_cps and "
+                          "theme.headline_dissolve_ms above) — include a literal newline in the string to "
+                          "have it type across two lines instead of one."),
     SettingDef("copy.chat", "copy", "Chat screen text", SettingType.JSON, {"en": {}, "ar": {}}, i18n=True,
                help_text="tagline_line1, tagline_line2, sub, header, book_btn, faq_title, input_placeholder, welcome_msg, lang_switch"),
     SettingDef("copy.booking", "copy", "Booking flow text", SettingType.JSON, {"en": {}, "ar": {}}, i18n=True,

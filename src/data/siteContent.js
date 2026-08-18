@@ -174,6 +174,11 @@ const FALLBACK_THEME = {
   // regress an existing deployment. See Hero.jsx / HeroShared.jsx.
   layoutTemplate: "classic",
   headlineStyle: "ripple-gradient",
+  // Homepage headline pacing — see theme.headline_typing_speed_cps /
+  // theme.headline_dissolve_ms in backend/app/settings_registry.py.
+  // 5 cps matches the site's original (pre-setting) hardcoded speed.
+  headlineTypingSpeedCps: 5,
+  headlineDissolveMs: 2500,
   surfaceStyle: "glass",
   buttonStyle: "default",
   typeScale: "standard",
@@ -243,6 +248,8 @@ function apiTheme(publicConfig) {
     // See FALLBACK_THEME above on why these fallbacks are safe.
     layoutTemplate: publicConfig["theme.layout_template"] || "classic",
     headlineStyle: publicConfig["theme.headline_style"] || "ripple-gradient",
+    headlineTypingSpeedCps: publicConfig["theme.headline_typing_speed_cps"] || 5,
+    headlineDissolveMs: publicConfig["theme.headline_dissolve_ms"] || 2500,
     surfaceStyle: publicConfig["theme.surface_style"] || "glass",
     buttonStyle: publicConfig["theme.button_style"] || "default",
     typeScale: publicConfig["theme.type_scale"] || "standard",

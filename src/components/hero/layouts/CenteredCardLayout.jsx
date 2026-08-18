@@ -13,14 +13,14 @@ import { HeroChatComposer, HeroHeadline, resolveHeroButtons } from "../HeroShare
  * homepage topic buttons only if no hero buttons are configured, so
  * the card never ends up with an empty pill row on a fresh install.
  */
-export default function CenteredCardLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, copy, homeTopics, onTopicClick }) {
+export default function CenteredCardLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, copy, homeTopics, onTopicClick, headlineTypingSpeedCps }) {
   const resolvedHeroButtons = resolveHeroButtons(heroButtons, lang);
   const usingHeroButtons = resolvedHeroButtons.length > 0;
 
   return (
     <div className="hero-card-wrap">
       <div className="hero-card">
-        <HeroHeadline statement={home.heroStatement} taglineLine1={home.taglineLine1} taglineLine2={home.taglineLine2} />
+        <HeroHeadline statement={home.heroStatement} taglineLine1={home.taglineLine1} taglineLine2={home.taglineLine2} typingSpeedCps={headlineTypingSpeedCps} />
 
         <HeroChatComposer
           value={quickDraft}

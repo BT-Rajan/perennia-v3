@@ -91,7 +91,7 @@ export function HeroChatComposer({ value, onChange, onSend, placeholder, sendLab
  * sweep across the gradient fill (see .fit-one-line-inner in
  * Hero.css), which animates safely without touching layout at all.
  */
-export function FitOneLine({ text, className, styleId }) {
+export function FitOneLine({ text, className, styleId, caret }) {
   const outerRef = useRef(null);
   const innerRef = useRef(null);
 
@@ -140,12 +140,20 @@ export function FitOneLine({ text, className, styleId }) {
     <div ref={outerRef} className={`fit-one-line ${className || ""}`.trim()} data-headline-style={styleId || "ripple-gradient"}>
       <span ref={innerRef} className="fit-one-line-inner">
         {text}
+        {/* Rendered inside the same scaled/gradient-clipped span as the
+            text (not as a sibling outside it) so it sits inline right
+            after the last typed character at any scale, instead of
+            wrapping onto its own line below a block-level FitOneLine. */}
+        {caret && <span className="hero-caret" />}
       </span>
     </div>
   );
 }
 
-const TYPE_SPEED_MS = 22; // per character — brisk, not a demo-slow crawl
+// Admin-configurable — theme.headline_typing_speed_cps (characters per
+// second; see backend/app/settings_registry.py and applyTheme.js). This
+// is only the fallback for when no theme value has loaded yet.
+const DEFAULT_TYPING_SPEED_CPS = 5;
 const HOLD_AFTER_TYPE_MS = 1100; // beat before handing off to the permanent tagline
 
 /**
@@ -167,7 +175,7 @@ const HOLD_AFTER_TYPE_MS = 1100; // beat before handing off to the permanent tag
  * phase — a screen reader never has to wait for the typing to finish,
  * and prefers-reduced-motion skips straight to the final tagline.
  */
-export function HeroHeadline({ statement, taglineLine1, taglineLine2, className }) {
+export function HeroHeadline({ statement, taglineLine1, taglineLine2, className, typingSpeedCps }) {
   const reduceMotionRef = useRef(
     typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
   );
@@ -176,25 +184,44 @@ export function HeroHeadline({ statement, taglineLine1, taglineLine2, className 
   const [phase, setPhase] = useState(skip ? "tagline" : "typing"); // "typing" -> "tagline"
   const [count, setCount] = useState(0);
 
+  // Admin-configurable (theme.headline_typing_speed_cps) characters-
+  // per-second, converted to a per-character delay. Falls back to
+  // DEFAULT_TYPING_SPEED_CPS if the theme hasn't loaded / is unset.
+  const typeSpeedMs = Math.max(1, Math.round(1000 / (typingSpeedCps || DEFAULT_TYPING_SPEED_CPS)));
+
   useEffect(() => {
     if (skip || phase !== "typing") return;
     if (count < statement.length) {
-      const id = setTimeout(() => setCount((c) => c + 1), TYPE_SPEED_MS);
+      const id = setTimeout(() => setCount((c) => c + 1), typeSpeedMs);
       return () => clearTimeout(id);
     }
     const id = setTimeout(() => setPhase("tagline"), HOLD_AFTER_TYPE_MS);
     return () => clearTimeout(id);
-  }, [phase, count, statement, skip]);
+  }, [phase, count, statement, skip, typeSpeedMs]);
 
   const typingDone = phase !== "typing";
-  const accessibleName = statement ? `${statement} — ${taglineLine1} ${taglineLine2}` : `${taglineLine1} ${taglineLine2}`;
+  // A literal newline in copy.home.hero_statement (admin-editable, see
+  // settings_registry.py) types across two lines instead of one — the
+  // typed-so-far substring is split on "\n" and each line renders as
+  // its own FitOneLine, stacked (FitOneLine is block-level, so this
+  // stacks with no extra markup). No newline present = today's
+  // single-line behavior, unchanged.
+  const flatStatement = statement ? statement.replace(/\n/g, " ") : "";
+  const accessibleName = statement ? `${flatStatement} — ${taglineLine1} ${taglineLine2}` : `${taglineLine1} ${taglineLine2}`;
+  const typedLines = statement ? statement.slice(0, count).split("\n") : [];
 
   return (
     <h1 className={`hero-headline-stage ${className || ""}`.trim()} aria-label={accessibleName}>
       {statement && (
         <span className={`hero-headline-layer ${typingDone ? "is-hidden" : ""}`} aria-hidden="true">
-          <FitOneLine text={statement.slice(0, count)} styleId="solid-white" />
-          {!typingDone && <span className="hero-caret" />}
+          {typedLines.map((line, i) => (
+            <FitOneLine
+              key={i}
+              text={line}
+              styleId="solid-white"
+              caret={!typingDone && i === typedLines.length - 1}
+            />
+          ))}
         </span>
       )}
       <span className={`hero-headline-layer hero-tagline-layer ${typingDone ? "is-visible" : ""}`} aria-hidden="true">

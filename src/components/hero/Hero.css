@@ -59,7 +59,9 @@
 .hero-headline-layer {
   grid-area: 1 / 1;
   opacity: 1;
-  transition: opacity 0.5s var(--ease);
+  /* Admin-configurable — theme.headline_dissolve_ms (see applyTheme.js),
+     falls back to the site's original 2500ms if unset. */
+  transition: opacity var(--headline-dissolve-ms, 2500ms) var(--ease);
 }
 .hero-headline-layer.is-hidden {
   opacity: 0;
@@ -70,7 +72,7 @@
   align-items: center;
   gap: 0.08em;
   opacity: 0;
-  transition: opacity 0.7s var(--ease);
+  transition: opacity var(--headline-dissolve-ms, 2500ms) var(--ease);
   pointer-events: none;
 }
 .hero-tagline-layer.is-visible {
