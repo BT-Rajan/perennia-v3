@@ -136,6 +136,11 @@ export const COPY = {
     home: {
       welcome: "Welcome to Perennia",
       tagline: "Visit our V-Lounge for more",
+      heroStatement: "Practical AI and digital products built for businesses",
+      taglineLine1: "Solving Today.",
+      taglineLine2: "Shaping Tomorrow.",
+      supportingText: "We design, build and operate intelligent digital products for businesses across India and the GCC.",
+      examplePrompts: ["What does Perennia build?", "How can Perennia help my business?", "Explore our products"],
       hint: "Start chatting",
       langSwitch: "AR | عربي",
     },
@@ -148,7 +153,7 @@ export const COPY = {
       poweredBy: "Powered by",
       bookBtn: "Book a call",
       faqTitle: "Quick Questions",
-      inputPlaceholder: "Type your message…",
+      inputPlaceholder: "Ask Perennia AI anything…",
       welcomeMsg:
         "Hello! I'm Perennia's AI assistant. Before we get started, may I know your name? It helps us build a good relationship with you and follow up properly.",
       langSwitch: "AR | عربي",
@@ -223,6 +228,11 @@ export const COPY = {
     home: {
       welcome: "مرحبا بك في بيرينيا",
       tagline: "زوروا V-Lounge الخاص بنا لمزيد من المعلومات",
+      heroStatement: "حلول ذكاء اصطناعي عملية ومنتجات رقمية للأعمال",
+      taglineLine1: "حلول اليوم.",
+      taglineLine2: "لصناعة الغد.",
+      supportingText: "نصمم ونبني ونشغّل منتجات رقمية ذكية للشركات في الهند ودول الخليج.",
+      examplePrompts: ["ما الذي تبنيه بيرينيا؟", "كيف يمكن لبيرينيا مساعدة أعمالي؟", "استكشف منتجاتنا"],
       hint: "ابدأ المحادثة",
       langSwitch: "EN | English",
     },
@@ -235,7 +245,7 @@ export const COPY = {
       poweredBy: "بدعم من",
       bookBtn: "احجز مكالمة",
       faqTitle: "أسئلة سريعة",
-      inputPlaceholder: "اكتب رسالتك…",
+      inputPlaceholder: "اسأل مساعد بيرينيا أي شيء…",
       welcomeMsg:
         "مرحباً! أنا المساعد الذكي لبيرينيا. قبل أن نبدأ، هل لي أن أعرف اسمك؟ هذا يساعدنا على بناء علاقة أفضل معك ومتابعة طلبك بشكل صحيح.",
       langSwitch: "EN | English",

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLang } from "../../context/LangContext.jsx";
-import { HOME_TOPICS } from "../../data/content.js";
+import { COPY, HOME_TOPICS } from "../../data/content.js";
 import TopBar from "../layout/TopBar.jsx";
 import ClassicLayout from "./layouts/ClassicLayout.jsx";
 import SplitLayout from "./layouts/SplitLayout.jsx";
@@ -31,15 +31,42 @@ const LAYOUTS = {
  * tagline/quick-chat/nav-cards render in is chosen by the admin (see
  * Settings > Theme > Homepage layout) — see LAYOUTS above.
  */
+// The new hero-hierarchy fields (heroStatement/taglineLine1/taglineLine2/
+// supportingText/examplePrompts) live inside the same free-form
+// copy.home JSON blob as the rest of the homepage text, so an admin
+// who hasn't touched Settings > On-screen text yet simply won't have
+// them in the live backend response. Falling back per-field (not
+// per-object) to the bundled copy means a partially-configured
+// copy.home still renders the full hierarchy instead of blank gaps.
+function withHomeFallbacks(home, lang) {
+  const fallback = COPY[lang]?.home ?? COPY.en.home;
+  return {
+    ...home,
+    heroStatement: home.heroStatement ?? fallback.heroStatement,
+    taglineLine1: home.taglineLine1 ?? fallback.taglineLine1,
+    taglineLine2: home.taglineLine2 ?? fallback.taglineLine2,
+    supportingText: home.supportingText ?? fallback.supportingText,
+    examplePrompts: home.examplePrompts ?? fallback.examplePrompts,
+  };
+}
+
 export default function Hero({ onEnter, onNavigate }) {
   const { copy, sections, nav, branding, heroButtons, lang, theme } = useLang();
   const [quickDraft, setQuickDraft] = useState("");
+  const home = withHomeFallbacks(copy.home, lang);
 
   function handleQuickSend() {
     const text = quickDraft.trim();
     if (!text) return;
     setQuickDraft("");
     onEnter(text);
+  }
+
+  // Same direct handoff to the AI Assistant as the topic buttons below
+  // — an example prompt is a suggestion, not text the visitor typed,
+  // so it skips the quick-chat draft state entirely.
+  function handleExamplePick(prompt) {
+    onEnter(prompt);
   }
 
   // The 4 homepage topic buttons (Software Development / Artificial
@@ -60,6 +87,7 @@ export default function Hero({ onEnter, onNavigate }) {
 
       <Layout
         copy={copy}
+        home={home}
         sections={sections}
         nav={nav}
         heroButtons={heroButtons}
@@ -68,6 +96,7 @@ export default function Hero({ onEnter, onNavigate }) {
         quickDraft={quickDraft}
         setQuickDraft={setQuickDraft}
         onQuickSend={handleQuickSend}
+        onExamplePick={handleExamplePick}
         headlineStyle={theme?.headlineStyle}
         branding={branding}
         homeTopics={homeTopics}

@@ -16,7 +16,13 @@
 }
 
 .hero-center {
-  min-height: calc(100dvh - var(--space-6) - var(--space-7));
+  /* Was a full-viewport-height centering block (100dvh minus a sliver),
+     which is what pushed everything — including the AI composer — down
+     into a wall of empty space above and below it. Sized to the
+     content itself instead, with generous but bounded breathing room,
+     so identity/statement/tagline/CTA/composer land together in the
+     first viewport instead of floating in the middle of one. */
+  min-height: min(78dvh, 720px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -26,6 +32,7 @@
   max-width: 640px;
   width: 100%;
   position: relative;
+  padding-block: var(--space-6);
 }
 
 /* ── Headline — the page's signature visual now: a single-line,
@@ -36,6 +43,113 @@
 .hero-welcome {
   width: 100%;
   margin-bottom: var(--space-2);
+}
+
+/* ── HeroHeadline (see HeroShared.jsx) — types out the hero statement,
+   then hands off to the permanent two-line tagline. Both layers stack
+   in the same grid cell so the swap never changes this box's height —
+   only opacity crossfades, so nothing below it (supporting text, CTAs,
+   the AI composer) ever shifts. */
+.hero-headline-stage {
+  width: 100%;
+  margin-bottom: var(--space-2);
+  display: grid;
+}
+.hero-headline-layer {
+  grid-area: 1 / 1;
+  opacity: 1;
+  transition: opacity 0.5s var(--ease);
+}
+.hero-headline-layer.is-hidden {
+  opacity: 0;
+}
+.hero-tagline-layer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.08em;
+  opacity: 0;
+  transition: opacity 0.7s var(--ease);
+  pointer-events: none;
+}
+.hero-tagline-layer.is-visible {
+  opacity: 1;
+}
+.hero-welcome-left .hero-tagline-layer { align-items: flex-start; }
+[dir="rtl"] .hero-welcome-left .hero-tagline-layer { align-items: flex-end; }
+.hero-tagline-line1,
+.hero-tagline-line2 {
+  font-family: var(--font-display);
+  font-size: var(--fs-tagline);
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+}
+[dir="rtl"] .hero-tagline-line1,
+[dir="rtl"] .hero-tagline-line2 {
+  font-family: var(--font-ar);
+  font-weight: 500;
+}
+.hero-tagline-line1 { font-weight: 600; color: var(--white-soft); }
+.hero-tagline-line2 { font-weight: 700; color: var(--gold); }
+
+/* Blinking caret shown only while the headline is actively typing —
+   thin and quiet by design (see the brief's "no excessive cursor
+   animation"), not a thick block cursor. */
+.hero-caret {
+  display: inline-block;
+  width: 2px;
+  height: 0.85em;
+  margin-inline-start: 3px;
+  vertical-align: -0.05em;
+  background: var(--gold);
+  animation: hero-caret-blink 1s steps(1, jump-none) infinite;
+}
+@keyframes hero-caret-blink {
+  50% { opacity: 0; }
+}
+
+.hero-supporting {
+  max-width: 56ch;
+  margin: 0;
+  color: var(--muted-strong);
+  font-size: var(--fs-body);
+  line-height: calc(1.6 * var(--line-height-scale));
+}
+.hero-supporting-left { text-align: start; margin-inline: 0; }
+
+.hero-example-prompts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: calc(-1 * var(--space-1));
+}
+.hero-example-prompts-left { justify-content: flex-start; }
+.hero-example-prompt {
+  padding: 5px 14px;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--white-soft) 16%, transparent);
+  color: var(--muted-strong);
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.hero-example-prompt:hover,
+.hero-example-prompt:focus-visible {
+  color: var(--gold);
+  border-color: color-mix(in srgb, var(--gold) 45%, transparent);
+  background: color-mix(in srgb, var(--gold) 8%, transparent);
+}
+.hero-example-prompt:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-headline-layer,
+  .hero-tagline-layer,
+  .hero-caret {
+    transition: none;
+    animation: none;
+  }
 }
 
 .fit-one-line {
@@ -403,7 +517,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-7);
-  min-height: calc(100dvh - var(--header-h) - var(--space-6) - var(--space-7));
+  min-height: min(78dvh, 720px);
   padding: var(--section-padding-block) 0;
 }
 .hero-split-main {
@@ -443,7 +557,7 @@
   width: 100%;
   display: flex;
   justify-content: center;
-  min-height: calc(100dvh - var(--header-h) - var(--space-6) - var(--space-7));
+  min-height: min(78dvh, 720px);
   padding: var(--section-padding-block) 0;
 }
 .hero-card {
@@ -506,6 +620,8 @@
 }
 [dir="rtl"] .hero-editorial-main { align-items: flex-end; }
 .hero-welcome-editorial .fit-one-line-inner { font-size: calc(var(--fs-hero) * 1.15); }
+.hero-welcome-editorial .hero-tagline-line1,
+.hero-welcome-editorial .hero-tagline-line2 { font-size: calc(var(--fs-tagline) * 1.1); }
 
 .hero-editorial-strip {
   width: 100%;

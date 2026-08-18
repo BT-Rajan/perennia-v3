@@ -1,4 +1,4 @@
-import { FitOneLine, HeroButtons, HeroChatComposer } from "../HeroShared.jsx";
+import { HeroButtons, HeroChatComposer, HeroExamplePrompts, HeroHeadline, HeroSupportingText } from "../HeroShared.jsx";
 
 /**
  * "classic" — the site's original, and default, homepage body:
@@ -7,13 +7,12 @@ import { FitOneLine, HeroButtons, HeroChatComposer } from "../HeroShared.jsx";
  * template setting did, so picking "classic" (or leaving the setting
  * unset) can never look different from what's already live.
  */
-export default function ClassicLayout({ copy, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, homeTopics, onTopicClick }) {
+export default function ClassicLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, copy, homeTopics, onTopicClick }) {
   return (
     <>
       <div className="hero-center">
-        <h1 className="hero-welcome">
-          <FitOneLine text={copy.home.tagline} styleId="solid-white" />
-        </h1>
+        <HeroHeadline statement={home.heroStatement} taglineLine1={home.taglineLine1} taglineLine2={home.taglineLine2} />
+        <HeroSupportingText text={home.supportingText} />
         {heroButtons?.length > 0 && <HeroButtons buttons={heroButtons} lang={lang} />}
 
         <HeroChatComposer
@@ -23,6 +22,7 @@ export default function ClassicLayout({ copy, heroButtons, lang, quickDraft, set
           placeholder={copy.chat.inputPlaceholder}
           sendLabel={copy.common.send}
         />
+        <HeroExamplePrompts prompts={home.examplePrompts} onPick={onExamplePick} />
       </div>
 
       <div className="hero-sections">

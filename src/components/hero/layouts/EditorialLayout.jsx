@@ -1,4 +1,4 @@
-import { FitOneLine, HeroButtons, HeroChatComposer } from "../HeroShared.jsx";
+import { HeroButtons, HeroChatComposer, HeroExamplePrompts, HeroHeadline, HeroSupportingText } from "../HeroShared.jsx";
 
 /**
  * "editorial" — a bigger, left-aligned headline and a narrower
@@ -6,13 +6,17 @@ import { FitOneLine, HeroButtons, HeroChatComposer } from "../HeroShared.jsx";
  * horizontal-scrolling strip of compact cards instead of a grid —
  * a more magazine/editorial feel than the centered classic layout.
  */
-export default function EditorialLayout({ copy, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, homeTopics, onTopicClick }) {
+export default function EditorialLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, copy, homeTopics, onTopicClick }) {
   return (
     <>
       <div className="hero-editorial-main">
-        <h1 className="hero-welcome hero-welcome-left hero-welcome-editorial">
-          <FitOneLine text={copy.home.tagline} styleId="solid-white" />
-        </h1>
+        <HeroHeadline
+          statement={home.heroStatement}
+          taglineLine1={home.taglineLine1}
+          taglineLine2={home.taglineLine2}
+          className="hero-welcome-left hero-welcome-editorial"
+        />
+        <HeroSupportingText text={home.supportingText} className="hero-supporting-left" />
         {heroButtons?.length > 0 && <HeroButtons buttons={heroButtons} lang={lang} />}
 
         <HeroChatComposer
@@ -23,6 +27,7 @@ export default function EditorialLayout({ copy, heroButtons, lang, quickDraft, s
           sendLabel={copy.common.send}
           className="hero-quick-chat-narrow"
         />
+        <HeroExamplePrompts prompts={home.examplePrompts} onPick={onExamplePick} className="hero-example-prompts-left" />
       </div>
 
       <div className="hero-editorial-strip">

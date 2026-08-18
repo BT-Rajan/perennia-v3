@@ -1,9 +1,11 @@
-import { FitOneLine, HeroChatComposer, resolveHeroButtons } from "../HeroShared.jsx";
+import { HeroChatComposer, HeroHeadline, resolveHeroButtons } from "../HeroShared.jsx";
 
 /**
  * "centered-card" — headline, tagline, quick-chat, and topic pills all
  * live inside one bordered glass card instead of being spread across
- * the page.
+ * the page. Deliberately kept lean (no supporting paragraph/example
+ * prompts here, unlike the other layouts) — that's the point of this
+ * template: everything in one compact card, not a longer page.
  *
  * The pill row below the quick-chat box comes from the admin's Hero
  * buttons config (Settings > On-screen text > Home hero buttons) —
@@ -11,16 +13,14 @@ import { FitOneLine, HeroChatComposer, resolveHeroButtons } from "../HeroShared.
  * homepage topic buttons only if no hero buttons are configured, so
  * the card never ends up with an empty pill row on a fresh install.
  */
-export default function CenteredCardLayout({ copy, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, homeTopics, onTopicClick }) {
+export default function CenteredCardLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, copy, homeTopics, onTopicClick }) {
   const resolvedHeroButtons = resolveHeroButtons(heroButtons, lang);
   const usingHeroButtons = resolvedHeroButtons.length > 0;
 
   return (
     <div className="hero-card-wrap">
       <div className="hero-card">
-        <h1 className="hero-welcome">
-          <FitOneLine text={copy.home.tagline} styleId="solid-white" />
-        </h1>
+        <HeroHeadline statement={home.heroStatement} taglineLine1={home.taglineLine1} taglineLine2={home.taglineLine2} />
 
         <HeroChatComposer
           value={quickDraft}

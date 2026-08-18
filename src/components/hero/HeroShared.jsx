@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { isSafeHref } from "../../data/siteContent.js";
 import ChatInput from "../chat/ChatInput.jsx";
 
@@ -141,6 +141,96 @@ export function FitOneLine({ text, className, styleId }) {
       <span ref={innerRef} className="fit-one-line-inner">
         {text}
       </span>
+    </div>
+  );
+}
+
+const TYPE_SPEED_MS = 32; // per character — brisk, not a demo-slow crawl
+const HOLD_AFTER_TYPE_MS = 1100; // beat before handing off to the permanent tagline
+
+/**
+ * The homepage's H1: types out the admin-configured `statement`
+ * (copy.home.heroStatement — "what Perennia does"), then hands off to
+ * the permanent two-line brand tagline (copy.home.taglineLine1/2),
+ * which stays on screen for good (no looping/repeating — see the
+ * brief). Both layers are mounted for the entire lifetime of this
+ * component, stacked in the same grid cell (grid-area: 1/1), so the
+ * container's height is reserved from first paint and never changes
+ * as the visible layer swaps — only opacity animates, never layout.
+ *
+ * The typed-so-far substring runs through FitOneLine, reusing its
+ * scale-to-fit measurement (transform: scale, not a layout property)
+ * so an in-progress or very long statement never overflows.
+ *
+ * Accessibility: the essential content (both strings) is exposed via
+ * a single static aria-label on the <h1>, independent of animation
+ * phase — a screen reader never has to wait for the typing to finish,
+ * and prefers-reduced-motion skips straight to the final tagline.
+ */
+export function HeroHeadline({ statement, taglineLine1, taglineLine2, className }) {
+  const reduceMotionRef = useRef(
+    typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+  );
+  const skip = reduceMotionRef.current || !statement;
+
+  const [phase, setPhase] = useState(skip ? "tagline" : "typing"); // "typing" -> "tagline"
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (skip || phase !== "typing") return;
+    if (count < statement.length) {
+      const id = setTimeout(() => setCount((c) => c + 1), TYPE_SPEED_MS);
+      return () => clearTimeout(id);
+    }
+    const id = setTimeout(() => setPhase("tagline"), HOLD_AFTER_TYPE_MS);
+    return () => clearTimeout(id);
+  }, [phase, count, statement, skip]);
+
+  const typingDone = phase !== "typing";
+  const accessibleName = statement ? `${statement} — ${taglineLine1} ${taglineLine2}` : `${taglineLine1} ${taglineLine2}`;
+
+  return (
+    <h1 className={`hero-headline-stage ${className || ""}`.trim()} aria-label={accessibleName}>
+      {statement && (
+        <span className={`hero-headline-layer ${typingDone ? "is-hidden" : ""}`} aria-hidden="true">
+          <FitOneLine text={statement.slice(0, count)} styleId="solid-white" />
+          {!typingDone && <span className="hero-caret" />}
+        </span>
+      )}
+      <span className={`hero-headline-layer hero-tagline-layer ${typingDone ? "is-visible" : ""}`} aria-hidden="true">
+        <span className="hero-tagline-line1">{taglineLine1}</span>
+        <span className="hero-tagline-line2">{taglineLine2}</span>
+      </span>
+    </h1>
+  );
+}
+
+/**
+ * One-line supporting proposition beneath the headline — the
+ * "we design, build and operate…" sentence in the brief's hero
+ * hierarchy. Plain paragraph, no admin styling hooks needed.
+ */
+export function HeroSupportingText({ text, className }) {
+  if (!text) return null;
+  return <p className={`hero-supporting ${className || ""}`.trim()}>{text}</p>;
+}
+
+/**
+ * Subtle example-prompt chips under the quick-chat composer — tapping
+ * one hands the preset question straight to onPick (same handoff the
+ * composer's own Send button and the topic cards use). Kept as plain
+ * text chips, deliberately quieter than the hero buttons/CTAs, so they
+ * read as suggestions rather than another row of calls to action.
+ */
+export function HeroExamplePrompts({ prompts, onPick, className }) {
+  if (!prompts?.length) return null;
+  return (
+    <div className={`hero-example-prompts ${className || ""}`.trim()}>
+      {prompts.map((prompt, i) => (
+        <button key={i} type="button" className="hero-example-prompt" onClick={() => onPick(prompt)}>
+          {prompt}
+        </button>
+      ))}
     </div>
   );
 }
