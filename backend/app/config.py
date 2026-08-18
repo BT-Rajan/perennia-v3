@@ -81,6 +81,12 @@ class InfraSettings(BaseSettings):
 
     RATE_LIMIT_LOGIN: str = "5/minute"
     RATE_LIMIT_APPOINTMENT: str = "6/hour"
+    # Lookup is read-only (id + email -> appointment details) so it gets
+    # a looser cap than the mutating booking actions above, but it was
+    # previously uncapped entirely: a 16-char confirmation code plus a
+    # guessed or already-known email is a plausible enumeration target,
+    # and without any limit here a client could hammer it indefinitely.
+    RATE_LIMIT_LOOKUP: str = "20/hour"
     RATE_LIMIT_KNOWLEDGE_UPLOAD: str = "10/hour"
 
     LOG_DIR: Path = BASE_DIR / "logs"

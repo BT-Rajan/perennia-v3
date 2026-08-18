@@ -112,7 +112,8 @@ def create_appointment(request: Request, body: CreateAppointmentRequest, db: Ses
 
 
 @router.post("/appointments/lookup")
-def lookup_appointment(body: LookupRequest, db: Session = Depends(get_db)):
+@limiter.limit(settings.RATE_LIMIT_LOOKUP)
+def lookup_appointment(request: Request, body: LookupRequest, db: Session = Depends(get_db)):
     return booking_service.lookup_appointment(db, body.id, body.email)
 
 
