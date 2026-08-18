@@ -28,11 +28,11 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  gap: var(--space-4);
+  gap: var(--space-5);
   max-width: 640px;
   width: 100%;
   position: relative;
-  padding-block: var(--space-6);
+  padding-block: var(--space-7);
 }
 
 /* ── Headline — the page's signature visual now: a single-line,

@@ -48,27 +48,37 @@ export default function ChatWidget({ open, onClose, onBookingClick, initialMessa
   const scrollRef = useRef(null);
   const leadCapturedRef = useRef(false);
   const recognitionRef = useRef(null);
-  const initialMessageSentRef = useRef(false);
 
   const speechSupported = !!getSpeechRecognitionCtor();
   const ttsSupported = typeof window !== "undefined" && "speechSynthesis" in window;
 
+  // Resets the welcome message on mount and on every language switch.
+  // Deliberately does NOT depend on `initialMessage`/`open` — that's
+  // handled by the effect below — so a language change never re-sends
+  // whatever quick-start message has already been consumed.
   useEffect(() => {
-    const welcome = { from: "ai", text: t.welcomeMsg };
-    setMessages([welcome]);
+    setMessages([{ from: "ai", text: t.welcomeMsg }]);
     leadCapturedRef.current = false;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lang]);
 
-    // If the person arrived here by typing into the hero's quick-start
-    // box and hitting Enter, that message rides along as
-    // `initialMessage` — send it right after the welcome message so
-    // the conversation continues rather than restarting.
-    if (initialMessage && !initialMessageSentRef.current) {
-      initialMessageSentRef.current = true;
-      sendMessage(initialMessage, [welcome]);
+  // Sends the hero's quick-start message (from the quick-chat box, a
+  // topic card, or an example prompt — see Hero.jsx handleTopicClick /
+  // handleExamplePick) once the widget is actually open and a message
+  // is waiting. This has to be its own effect: the hero handoff only
+  // flips `open` and `initialMessage`, it never touches `lang`, so
+  // folding this into the effect above (which only watched `lang`)
+  // meant clicking a topic card opened the widget but never sent
+  // anything. The parent clears `initialMessage` back to "" right
+  // after consuming it (see App.jsx onConsumeInitialMessage), so the
+  // `initialMessage` check below is enough to prevent double-sends.
+  useEffect(() => {
+    if (open && initialMessage) {
+      sendMessage(initialMessage);
       onConsumeInitialMessage?.();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lang]);
+  }, [open, initialMessage]);
 
   useEffect(() => {
     if (open) scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
