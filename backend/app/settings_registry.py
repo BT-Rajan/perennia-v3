@@ -356,6 +356,26 @@ _DEFS: list[SettingDef] = [
                validator=_int_range(1, 365)),
     SettingDef("booking.min_notice_hours", "booking", "Minimum notice (hours)", SettingType.INT, 6,
                help_text="Required lead time to book, cancel, or reschedule.", validator=_int_range(0, 168)),
+    # A pending appointment holds its slot exactly like a confirmed one
+    # (booking_service.py::_booked_intervals) - deliberately, per
+    # PASS10_NOTES.md - but that was previously unbounded: an admin who
+    # never accepts/declines a request leaves it blocking that slot
+    # forever. These two settings bound that: past
+    # pending_expiry_hours old, a pending appointment stops counting as
+    # blocking (checked live in _booked_intervals) and is auto-declined
+    # by a background sweep (booking_service.expire_stale_pending_appointments,
+    # run every pending_expiry_poll_minutes by app/scheduler.py) so it
+    # doesn't just quietly stop blocking while still sitting there
+    # showing "pending" forever.
+    SettingDef("booking.pending_expiry_hours", "booking", "Auto-decline pending requests after (hours)",
+               SettingType.INT, 48, validator=_int_range(0, 720),
+               help_text="A pending appointment awaiting approval stops holding its slot, and is "
+                         "auto-declined, after this many hours with no admin action. 0 disables this — "
+                         "a pending appointment then holds its slot indefinitely, as it always did before "
+                         "this setting existed."),
+    SettingDef("booking.pending_expiry_poll_minutes", "booking", "Check for expired pending requests every (minutes)",
+               SettingType.INT, 30, validator=_int_range(5, 1440),
+               help_text="How often the background sweep runs. Irrelevant if pending_expiry_hours is 0."),
     SettingDef("booking.calendar_sync_fail_open", "booking", "If Google Calendar is unreachable, show slots anyway",
                SettingType.BOOL, False,
                help_text="Pass 12: when the connected Google Calendar can't be reached (timeout, revoked "

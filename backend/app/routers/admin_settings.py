@@ -87,6 +87,9 @@ def update_settings_for_category(
     if category == "calendar_sync" and "calendar_sync.drift_poll_minutes" in updated:
         from app import scheduler
         scheduler.reschedule(body["calendar_sync.drift_poll_minutes"])
+    if category == "booking" and "booking.pending_expiry_poll_minutes" in updated:
+        from app import scheduler
+        scheduler.reschedule_pending_expiry(body["booking.pending_expiry_poll_minutes"])
     return {"updated": updated}
 
 

@@ -55,6 +55,7 @@ def _booking_config(db: Session) -> dict:
         "workdays": set(get_setting(db, "booking.workdays")),
         "max_days_ahead": get_setting(db, "booking.max_days_ahead"),
         "min_notice_hours": get_setting(db, "booking.min_notice_hours"),
+        "pending_expiry_hours": get_setting(db, "booking.pending_expiry_hours"),
     }
 
 
@@ -62,9 +63,33 @@ def _now(cfg: dict) -> dt.datetime:
     return dt.datetime.now(ZoneInfo(cfg["timezone"]))
 
 
+def _pending_cutoff(cfg: dict) -> dt.datetime | None:
+    """None means disabled (booking.pending_expiry_hours == 0) — a
+    pending appointment holds its slot indefinitely, as it always did
+    before this setting existed. Otherwise, the UTC instant a pending
+    appointment's created_at has to be older than to stop counting as
+    blocking / become eligible for auto-decline. Absolute elapsed time,
+    not business-local wall-clock, so this is intentionally independent
+    of booking.timezone."""
+    hours = cfg["pending_expiry_hours"]
+    if not hours:
+        return None
+    return dt.datetime.now(dt.timezone.utc) - dt.timedelta(hours=hours)
+
+
 def _time_to_minutes(t: str) -> int:
     h, m = t.split(":")
     return int(h) * 60 + int(m)
+
+
+def _as_utc(value: dt.datetime) -> dt.datetime:
+    """Some dialects (SQLite, used in dev/tests) don't round-trip tzinfo
+    on a DateTime(timezone=True) column — reads back naive. Normalize
+    before comparing against a tz-aware cutoff; same reasoning as
+    calendar_sync_service.py's _ensure_fresh_access_token."""
+    if value.tzinfo is None:
+        return value.replace(tzinfo=dt.timezone.utc)
+    return value
 
 
 def _resolve_service(db: Session, service_id: str | None) -> Service | None:
@@ -140,11 +165,21 @@ def _booked_intervals(db: Session, cfg: dict, date_str: str, *, exclude_id: str 
     docs/CALENDAR_MODULE_PLAN.md / PASS10_NOTES.md): the alternative —
     a second visitor booking the same slot while the first request
     awaits organizer approval — is a worse failure mode for a small
-    business than a slot looking briefly unavailable."""
+    business than a slot looking briefly unavailable. But only up to
+    booking.pending_expiry_hours old (_pending_cutoff) — past that, an
+    admin has had a full expiry window to act and didn't, so this stops
+    counting it as blocking even before the background sweep
+    (expire_stale_pending_appointments) gets around to formally
+    declining it. Checked here, live, rather than only relying on that
+    sweep's cadence, so availability is correct immediately rather than
+    only eventually."""
+    cutoff = _pending_cutoff(cfg)
     stmt = select(Appointment).where(Appointment.date == date_str, Appointment.status.in_(("confirmed", "pending")))
     intervals = []
     for appt in db.scalars(stmt):
         if appt.id == exclude_id:
+            continue
+        if appt.status == "pending" and cutoff is not None and _as_utc(appt.created_at) < cutoff:
             continue
         service = db.get(Service, appt.service_id) if appt.service_id else None
         duration, buf_before, buf_after = _duration_and_buffers(cfg, service)
@@ -539,3 +574,36 @@ def admin_reject_appointment(db: Session, appt_id: str, *, reason: str = "") -> 
     prefix = f"[declined] {reason}" if reason else "[declined]"
     appt.notes = f"{prefix}\n{appt.notes}" if appt.notes else prefix
     return {"ok": True, "appointment": _serialize(db, appt)}
+
+
+def expire_stale_pending_appointments(db: Session) -> list[dict]:
+    """Transitions every pending appointment older than
+    booking.pending_expiry_hours to cancelled — an admin-side twin of
+    admin_reject_appointment, just triggered by age instead of an
+    admin click. _booked_intervals already stops treating an
+    appointment this stale as blocking a slot; this is what makes the
+    appointment's own status catch up to that, rather than it sitting
+    forever showing "pending" while quietly no longer holding anything.
+
+    Called from app/scheduler.py on a timer
+    (booking.pending_expiry_poll_minutes), not from any HTTP route —
+    there's no request to hang side effects (notification, webhook,
+    calendar cleanup) off, so this only does the state transition and
+    returns the newly-expired appointments (serialized) for the caller
+    to run those side effects against, the same division of
+    responsibility the routers already use for a normal cancel. A
+    no-op, returning [], when booking.pending_expiry_hours is 0."""
+    cfg = _booking_config(db)
+    cutoff = _pending_cutoff(cfg)
+    if cutoff is None:
+        return []
+    stmt = select(Appointment).where(Appointment.status == "pending")
+    expired = []
+    for appt in db.scalars(stmt):
+        if _as_utc(appt.created_at) >= cutoff:
+            continue
+        appt.status = "cancelled"
+        prefix = "[auto-declined] no response within the request window"
+        appt.notes = f"{prefix}\n{appt.notes}" if appt.notes else prefix
+        expired.append(_serialize(db, appt))
+    return expired
