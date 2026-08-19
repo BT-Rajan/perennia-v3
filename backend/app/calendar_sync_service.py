@@ -52,10 +52,25 @@ def build_connect_url(db: Session, *, redirect_uri: str, admin_id: str) -> str:
 
 
 def complete_oauth_callback(db: Session, *, redirect_uri: str, code: str) -> tuple[CalendarCredential, list[dict]]:
-    """Exchanges the code, stores the tokens (calendar not yet chosen),
-    and returns the account's calendar list so the caller can present a
-    choice. Any previously-connected credential is deactivated first —
-    only one account is ever active at a time."""
+    """Exchanges the code and stores the tokens — calendar not yet
+    chosen, not yet active — and returns the account's calendar list so
+    the caller can present a choice.
+
+    Deliberately does NOT touch any existing active credential here.
+    That used to happen at this point ("deactivate the old one, then
+    the new one becomes active once a calendar is picked"), which
+    opened a real gap: from the moment this runs until the admin
+    finishes picking a calendar in select_calendar below, there was no
+    active credential at all — every calendar-dependent thing
+    (busy-time checks, event create/update/delete, drift detection)
+    silently went dark, even though the previous connection was working
+    fine right up until this request. If the admin got interrupted
+    before finishing (closed the tab, got distracted), that gap was
+    permanent, not brief. select_calendar deactivates the old
+    credential and activates the new one together, in the same
+    transaction, so there's never a moment with zero active
+    credentials — the old connection keeps working right up until the
+    new one is actually confirmed."""
     client_id, client_secret = _oauth_client(db)
     token_data = google.exchange_code(client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri, code=code)
 
@@ -71,9 +86,6 @@ def complete_oauth_callback(db: Session, *, redirect_uri: str, code: str) -> tup
         )
 
     expires_at = dt.datetime.now(dt.timezone.utc) + dt.timedelta(seconds=token_data.get("expires_in", 3600))
-
-    for existing in db.scalars(select(CalendarCredential).where(CalendarCredential.is_active.is_(True))):
-        existing.is_active = False
 
     credential = CalendarCredential(
         provider="google",
@@ -92,9 +104,20 @@ def complete_oauth_callback(db: Session, *, redirect_uri: str, code: str) -> tup
 
 def select_calendar(db: Session, credential_id: str, *, calendar_id: str,
                      actor_id: str | None, actor_username: str | None) -> CalendarCredential:
+    """Activates `credential_id` with the chosen calendar. Any other
+    active credential is deactivated in this same call — not earlier,
+    in complete_oauth_callback — so the old connection stays fully
+    working for as long as the admin takes to get here, and switching
+    connections is atomic: never a moment with zero active credentials,
+    only ever a direct handoff from the old one to the new one. See
+    complete_oauth_callback's docstring for the outage this replaced."""
     credential = db.get(CalendarCredential, credential_id)
     if credential is None:
         raise KeyError(f"No calendar credential {credential_id!r}")
+    for existing in db.scalars(select(CalendarCredential).where(
+        CalendarCredential.is_active.is_(True), CalendarCredential.id != credential.id
+    )):
+        existing.is_active = False
     credential.calendar_id = calendar_id
     credential.is_active = True
     db.add(AuditLog(actor_id=actor_id, actor_username=actor_username,

@@ -136,6 +136,62 @@ def test_full_connect_flow(logged_in_client, monkeypatch):
     assert status_after["calendar_id"] == "primary"
 
 
+def test_reconnect_keeps_old_credential_active_until_new_one_is_selected(logged_in_client, monkeypatch):
+    """Regression test for the outage window this used to have: an
+    admin reconnecting (new Google account, fixing a revoked token)
+    must not lose calendar sync the instant they complete the OAuth
+    callback — the old, working credential should stay active right up
+    until a new calendar is actually chosen, since select_calendar is
+    what makes the switch atomic. Confirmed this fails without the fix
+    (status_after_callback showed connected=False)."""
+    old_credential_id = _create_active_credential(calendar_id="old-calendar@group.calendar.google.com")
+    _enable_sync()
+    _configure_oauth_client(logged_in_client)
+
+    monkeypatch.setattr(
+        "app.google_calendar_client.exchange_code",
+        lambda **kw: {"access_token": "at-new", "refresh_token": "rt-new", "expires_in": 3600},
+    )
+    monkeypatch.setattr(
+        "app.google_calendar_client.list_calendars",
+        lambda access_token: [{"id": "new-calendar@group.calendar.google.com", "summary": "New", "primary": True}],
+    )
+
+    connect = logged_in_client.get("/admin/api/calendar-sync/connect", follow_redirects=False)
+    from urllib.parse import urlparse, parse_qs
+    state = parse_qs(urlparse(connect.headers["location"]).query)["state"][0]
+
+    callback = logged_in_client.get(f"/admin/api/calendar-sync/callback?code=abc123&state={state}")
+    assert callback.status_code == 200, callback.text
+    new_credential_id = callback.json()["credential_id"]
+
+    # The admin hasn't picked a calendar for the new connection yet -
+    # the old one must still be the one in effect.
+    status_mid_flow = logged_in_client.get("/admin/api/calendar-sync/status").json()
+    assert status_mid_flow["connected"] is True
+    assert status_mid_flow["calendar_id"] == "old-calendar@group.calendar.google.com"
+
+    with session_scope() as db:
+        old = db.get(CalendarCredential, old_credential_id)
+        assert old.is_active is True
+
+    select = logged_in_client.post("/admin/api/calendar-sync/select", json={
+        "credential_id": new_credential_id, "calendar_id": "new-calendar@group.calendar.google.com",
+    })
+    assert select.status_code == 200
+
+    # Now, and only now, does the handoff happen — atomically.
+    with session_scope() as db:
+        old = db.get(CalendarCredential, old_credential_id)
+        new = db.get(CalendarCredential, new_credential_id)
+        assert old.is_active is False
+        assert new.is_active is True
+
+    status_after = logged_in_client.get("/admin/api/calendar-sync/status").json()
+    assert status_after["connected"] is True
+    assert status_after["calendar_id"] == "new-calendar@group.calendar.google.com"
+
+
 def test_callback_without_refresh_token_rejected(logged_in_client, monkeypatch):
     _configure_oauth_client(logged_in_client)
     monkeypatch.setattr(
