@@ -216,6 +216,28 @@ class Appointment(Base):
     __table_args__ = (Index("ix_appointment_date_status", "date", "status"),)
 
 
+class BookingLock(Base):
+    """A single sentinel row (id=1, always present) used purely as a
+    serialization point for booking_service._acquire_booking_lock.
+
+    Why this exists: create_appointment/reschedule_appointment read
+    available_slots() and then insert/move an appointment as two
+    separate steps. Without something forcing concurrent requests to
+    run that check-then-write one at a time, two visitors requesting
+    the same slot in the same instant can both pass the availability
+    check before either has committed, and both get booked into it.
+    _acquire_booking_lock closes that gap by taking a real write-lock
+    on this row (via UPDATE) before the check runs, and holding it
+    until the caller's transaction commits or rolls back — so the next
+    request's check can't start until the previous request's write has
+    actually landed. See booking_service.py for the acquire/seed logic."""
+
+    __tablename__ = "booking_lock"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    touched_at: Mapped[str | None] = mapped_column(String(32), nullable=True)
+
+
 class AppointmentQuestionAnswer(Base):
     """One row per answer to a Service's custom intake question,
     captured at booking time. `question_label` is a denormalized copy
