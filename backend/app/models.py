@@ -165,6 +165,20 @@ class Appointment(Base):
     id: Mapped[str] = mapped_column(String(16), primary_key=True)
     date: Mapped[str] = mapped_column(String(10), nullable=False, index=True)  # YYYY-MM-DD
     time: Mapped[str] = mapped_column(String(5), nullable=False)  # HH:MM, 24h
+    # The IANA timezone booking.timezone held *at the moment this
+    # appointment was booked* (or last rescheduled) — snapshotted here
+    # rather than re-read live from settings by everything that later
+    # needs to turn date/time back into an actual instant (notice-window
+    # checks, the Google Calendar event, drift detection). Without this,
+    # an admin changing booking.timezone after appointments exist
+    # silently reinterprets every existing appointment's stored
+    # date/time under the new zone. Nullable for rows created before
+    # this column existed; every read falls back to the live
+    # booking.timezone setting when null (see booking_service.py /
+    # calendar_sync_service.py), which is exactly today's behavior for
+    # that legacy data — this can only protect appointments booked from
+    # here on, not retroactively recover a timezone nothing recorded.
+    timezone: Mapped[str | None] = mapped_column(String(64), nullable=True)
     lang: Mapped[str] = mapped_column(String(8), default="en", nullable=False)  # for notification template language
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     email: Mapped[str] = mapped_column(String(254), nullable=False, index=True)

@@ -194,7 +194,11 @@ def create_event_for_appointment(db: Session, appt_id: str) -> str | None:
         return None
     try:
         access_token = _ensure_fresh_access_token(db, credential)
-        timezone = get_setting(db, "booking.timezone")
+        # Prefer the timezone this appointment was actually booked under
+        # (see Appointment.timezone's docstring) over the live setting,
+        # so a later booking.timezone change can't retroactively shift
+        # where this event lands on Google.
+        timezone = appt.timezone or get_setting(db, "booking.timezone")
         from zoneinfo import ZoneInfo
         start_local = dt.datetime.fromisoformat(f"{appt.date}T{appt.time}:00").replace(tzinfo=ZoneInfo(timezone))
         duration = _appointment_duration_minutes(db, appt)
@@ -240,7 +244,8 @@ def update_event_for_appointment(db: Session, appt_id: str) -> str | None:
         return create_event_for_appointment(db, appt_id)
     try:
         access_token = _ensure_fresh_access_token(db, credential)
-        timezone = get_setting(db, "booking.timezone")
+        # Same reasoning as create_event_for_appointment above.
+        timezone = appt.timezone or get_setting(db, "booking.timezone")
         from zoneinfo import ZoneInfo
         start_local = dt.datetime.fromisoformat(f"{appt.date}T{appt.time}:00").replace(tzinfo=ZoneInfo(timezone))
         duration = _appointment_duration_minutes(db, appt)
@@ -412,9 +417,7 @@ def detect_drift(db: Session) -> dict:
     from app.models import Appointment
     try:
         access_token = _ensure_fresh_access_token(db, credential)
-        timezone = get_setting(db, "booking.timezone")
-        from zoneinfo import ZoneInfo
-        tz = ZoneInfo(timezone)
+        default_timezone = get_setting(db, "booking.timezone")
 
         try:
             if not credential.sync_token:
@@ -448,6 +451,16 @@ def detect_drift(db: Session) -> dict:
             start = event.get("start", {}).get("dateTime")
             if not start:
                 continue  # unexpected all-day shape for a booking event; skip rather than misreport
+            # Prefer the timezone this specific appointment was actually
+            # booked/moved under (see Appointment.timezone's docstring)
+            # over the live setting — computed per-appointment, not once
+            # for the whole batch, since different appointments here may
+            # have been booked under different zones if the setting
+            # changed in between. Without this, changing booking.timezone
+            # would make every existing appointment look drifted (or
+            # mask real drift) the very next time this runs.
+            from zoneinfo import ZoneInfo
+            tz = ZoneInfo(appt.timezone or default_timezone)
             event_local = dt.datetime.fromisoformat(start).astimezone(tz)
             expected_local = dt.datetime.fromisoformat(f"{appt.date}T{appt.time}:00").replace(tzinfo=tz)
             if event_local != expected_local:
