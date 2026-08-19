@@ -586,3 +586,49 @@ def test_sync_now_not_connected(logged_in_client):
     assert body["error"] == "not_connected"
 
 
+def test_drift_check_uses_appointment_own_timezone_not_live_setting(logged_in_client, client, monkeypatch):
+    """Regression test: booking.timezone changing after an appointment
+    exists must not make detect_drift falsely flag it as changed on
+    Google when nothing actually moved. Appointment.timezone (snapshotted
+    at booking time) is what closes this — without it, detect_drift
+    reinterprets the stored date/time under whatever booking.timezone
+    currently is, which is a different zone here on purpose."""
+    _enable_sync()
+    _create_active_credential()
+    date = _nth_future_workday(169)
+
+    with session_scope() as db:
+        set_setting(db, "booking.timezone", "America/New_York", actor_id=None, actor_username="test-setup")
+
+    monkeypatch.setattr("app.google_calendar_client.get_busy_times", lambda *a, **k: [])
+    monkeypatch.setattr("app.google_calendar_client.create_event", lambda *a, **kw: "gcal-evt-tz-1")
+
+    created = client.post("/api/booking/appointments", json={"date": date, "slot": "09:00", **VALID_APPT}).json()
+    assert created["appointment"]["timezone"] == "America/New_York"
+
+    # The business's configured timezone changes (new location, a
+    # correction, whatever) — the appointment above was booked before
+    # this change and must keep being read back in the zone it was
+    # actually booked under.
+    with session_scope() as db:
+        set_setting(db, "booking.timezone", "Asia/Tokyo", actor_id=None, actor_username="test-setup")
+
+    from zoneinfo import ZoneInfo
+    start_local = dt.datetime.combine(dt.date.fromisoformat(date), dt.time(9, 0), tzinfo=ZoneInfo("America/New_York"))
+    end_local = start_local + dt.timedelta(minutes=30)
+    # The event on Google is exactly what it should be — nothing changed there.
+    monkeypatch.setattr("app.google_calendar_client.list_all_events", lambda *a, **kw: ([
+        {"id": "gcal-evt-tz-1", "status": "confirmed",
+         "start": {"dateTime": start_local.isoformat()}, "end": {"dateTime": end_local.isoformat()}},
+    ], "next-token-tz"))
+
+    resp = logged_in_client.post("/admin/api/calendar-sync/sync-now")
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["flagged"] == 0
+
+    lookup = client.post("/api/booking/appointments/lookup", json={
+        "id": created["id"], "email": VALID_APPT["email"],
+    }).json()
+    assert not lookup["appointment"]["calendar_drift"]
+
+

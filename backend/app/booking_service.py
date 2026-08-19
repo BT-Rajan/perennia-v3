@@ -367,6 +367,12 @@ def create_appointment(
 
     appt = Appointment(
         id=_generate_code(db), date=date_str, time=time_str, lang=lang or "en",
+        # Snapshotted at booking time (see Appointment.timezone's
+        # docstring) - a separate read of booking.timezone from the one
+        # inside available_slots() above, but get_setting is
+        # process-cached (settings_service.py), so this costs nothing
+        # extra in practice.
+        timezone=_booking_config(db)["timezone"],
         name=name.strip(), email=email.strip(), phone=phone.strip(),
         service=service.strip(), service_id=service_id, notes=notes.strip(),
         status="pending" if (svc is not None and svc.requires_confirmation) else "confirmed",
@@ -410,9 +416,12 @@ def lookup_appointment(db: Session, appt_id: str, email: str) -> dict:
 def _has_enough_notice(db: Session, appt: Appointment) -> bool:
     cfg = _booking_config(db)
     now = _now(cfg)
-    appt_dt = dt.datetime.combine(
-        dt.date.fromisoformat(appt.date), dt.time.fromisoformat(appt.time), tzinfo=ZoneInfo(cfg["timezone"])
-    )
+    # Prefer the timezone this appointment was actually booked/moved
+    # under (see Appointment.timezone) over the live setting, so
+    # changing booking.timezone later can't silently move an existing
+    # appointment's notice-window deadline.
+    tz = ZoneInfo(appt.timezone or cfg["timezone"])
+    appt_dt = dt.datetime.combine(dt.date.fromisoformat(appt.date), dt.time.fromisoformat(appt.time), tzinfo=tz)
     # An appointment already in the past always allows cancellation
     # (nothing left to protect by refusing) — reschedules are guarded
     # separately, by the new slot's own notice window.
@@ -465,6 +474,11 @@ def reschedule_appointment(db: Session, appt_id: str, email: str, new_date_str: 
 
     appt.date = new_date_str
     appt.time = new_time_str
+    # Re-snapshot: the new date/time was just chosen from slots computed
+    # under the *current* live booking.timezone (available_slots above),
+    # so that's what this appointment's stored timezone should become
+    # too — see Appointment.timezone's docstring.
+    appt.timezone = _booking_config(db)["timezone"]
     return {"ok": True, "appointment": _serialize(db, appt)}
 
 
@@ -493,6 +507,7 @@ def admin_reschedule_appointment(db: Session, appt_id: str, new_date_str: str, n
 
     appt.date = new_date_str
     appt.time = new_time_str
+    appt.timezone = _booking_config(db)["timezone"]  # re-snapshot — same reasoning as reschedule_appointment above
     return {"ok": True, "appointment": _serialize(db, appt)}
 
 
@@ -509,6 +524,7 @@ def _serialize(db: Session, appt: Appointment) -> dict:
     ]
     return {
         "id": appt.id, "date": appt.date, "time": appt.time, "slot": appt.time,
+        "timezone": appt.timezone,  # the IANA zone date/time above should be read in — see Appointment.timezone
         "name": appt.name, "email": appt.email, "phone": appt.phone,
         "service": appt.service, "service_id": appt.service_id, "service_name": service_name,
         "notes": appt.notes, "status": appt.status,
