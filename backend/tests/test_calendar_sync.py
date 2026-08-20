@@ -465,7 +465,7 @@ def test_event_recreated_on_reschedule_if_update_fails(client, monkeypatch):
 
     def boom_update(*a, **kw):
         from app.google_calendar_client import GoogleCalendarError
-        raise GoogleCalendarError("simulated 404 — event no longer exists")
+        raise GoogleCalendarError("simulated 404 — event no longer exists", status_code=404)
 
     monkeypatch.setattr("app.google_calendar_client.update_event", boom_update)
 
@@ -479,6 +479,47 @@ def test_event_recreated_on_reschedule_if_update_fails(client, monkeypatch):
     assert body["ok"] is True
     assert len(create_calls) == 2  # original + the fallback recreate
     assert body["appointment"]["external_event_id"] == "gcal-evt-2"
+
+
+def test_event_not_recreated_on_reschedule_if_update_fails_for_other_reason(client, monkeypatch):
+    """Regression test: a transient failure (rate limit, timeout, 500 —
+    anything that isn't specifically a 404) during the reschedule PATCH
+    must NOT fall back to recreating the event. The original is
+    presumably still sitting on the calendar untouched; blindly
+    recreating on every failure used to leave that original orphaned
+    while creating a duplicate alongside it. Confirmed this fails
+    without the fix (create_calls ends up at 2, a duplicate, instead of
+    staying at 1)."""
+    _enable_sync()
+    _create_active_credential()
+    date = _nth_future_workday(145)
+    new_date = _nth_future_workday(146)
+
+    create_calls = []
+    monkeypatch.setattr("app.google_calendar_client.get_busy_times", lambda *a, **k: [])
+    monkeypatch.setattr("app.google_calendar_client.create_event",
+                         lambda *a, **kw: create_calls.append(kw) or f"gcal-evt-{len(create_calls)}")
+
+    def boom_update(*a, **kw):
+        from app.google_calendar_client import GoogleCalendarError
+        raise GoogleCalendarError("simulated rate limit", status_code=429)
+
+    monkeypatch.setattr("app.google_calendar_client.update_event", boom_update)
+
+    created = client.post("/api/booking/appointments", json={"date": date, "slot": "09:00", **VALID_APPT}).json()
+    assert created["appointment"]["external_event_id"] == "gcal-evt-1"
+
+    resp = client.post("/api/booking/appointments/reschedule", json={
+        "id": created["id"], "email": VALID_APPT["email"], "date": new_date, "time": "10:00",
+    })
+    body = resp.json()
+    # The reschedule itself still succeeds — it's the calendar push that
+    # failed, best-effort, and must never block the booking outcome.
+    assert body["ok"] is True
+    assert len(create_calls) == 1  # only the original — no duplicate
+    # The stale link is left alone (not cleared, not repointed) so a
+    # retry or the next drift check has something to act on.
+    assert body["appointment"]["external_event_id"] == "gcal-evt-1"
 
 
 # ── Admin-side reschedule/edit ───────────────────────────────────────

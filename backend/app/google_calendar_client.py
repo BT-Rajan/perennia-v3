@@ -29,7 +29,18 @@ class GoogleCalendarError(Exception):
     """Raised for any failure talking to Google — a timeout, a
     non-2xx response, a malformed reply. Callers (calendar_sync_service.py)
     decide what to do about it (fail-open vs fail-closed for slot
-    generation, best-effort-and-swallow for event creation)."""
+    generation, best-effort-and-swallow for event creation).
+
+    status_code carries the HTTP status when the failure was an actual
+    non-2xx response from Google — None for a timeout, connection
+    error, or malformed reply, where there wasn't one to carry. Lets a
+    caller that needs to tell "the resource is gone" (404) apart from
+    "something else went wrong" (a 429, a 500, a timeout) check that
+    directly instead of parsing this exception's message string."""
+
+    def __init__(self, message: str, *, status_code: int | None = None):
+        super().__init__(message)
+        self.status_code = status_code
 
 
 class SyncTokenExpired(GoogleCalendarError):
@@ -151,7 +162,8 @@ def create_event(access_token: str, *, calendar_id: str, summary: str, descripti
         resp.raise_for_status()
         return resp.json()["id"]
     except httpx.HTTPStatusError as e:
-        raise GoogleCalendarError(f"Event creation returned {e.response.status_code}") from e
+        raise GoogleCalendarError(f"Event creation returned {e.response.status_code}",
+                                   status_code=e.response.status_code) from e
     except httpx.HTTPError as e:
         raise GoogleCalendarError(f"Event creation request failed: {e}") from e
 
@@ -177,7 +189,8 @@ def update_event(access_token: str, *, calendar_id: str, event_id: str, summary:
         resp.raise_for_status()
         return resp.json()["id"]
     except httpx.HTTPStatusError as e:
-        raise GoogleCalendarError(f"Event update returned {e.response.status_code}") from e
+        raise GoogleCalendarError(f"Event update returned {e.response.status_code}",
+                                   status_code=e.response.status_code) from e
     except httpx.HTTPError as e:
         raise GoogleCalendarError(f"Event update request failed: {e}") from e
 
@@ -209,11 +222,12 @@ def list_events_page(access_token: str, *, calendar_id: str, time_min: str | Non
             headers=_auth_headers(access_token), params=params, timeout=REQUEST_TIMEOUT_SECONDS,
         )
         if resp.status_code == 410:
-            raise SyncTokenExpired("Sync token expired or invalid; a full resync is required")
+            raise SyncTokenExpired("Sync token expired or invalid; a full resync is required", status_code=410)
         resp.raise_for_status()
         return resp.json()
     except httpx.HTTPStatusError as e:
-        raise GoogleCalendarError(f"Event list request returned {e.response.status_code}") from e
+        raise GoogleCalendarError(f"Event list request returned {e.response.status_code}",
+                                   status_code=e.response.status_code) from e
     except httpx.HTTPError as e:
         raise GoogleCalendarError(f"Event list request failed: {e}") from e
 
@@ -248,6 +262,6 @@ def delete_event(access_token: str, *, calendar_id: str, event_id: str) -> None:
         # 404/410 mean the event is already gone on Google's side -
         # exactly the outcome we wanted, not a failure to report.
         if resp.status_code not in (204, 404, 410) and resp.status_code >= 300:
-            raise GoogleCalendarError(f"Event deletion returned {resp.status_code}")
+            raise GoogleCalendarError(f"Event deletion returned {resp.status_code}", status_code=resp.status_code)
     except httpx.HTTPError as e:
         raise GoogleCalendarError(f"Event deletion request failed: {e}") from e

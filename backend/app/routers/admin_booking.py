@@ -102,8 +102,11 @@ def admin_reschedule(
     notification_service.notify_booking_rescheduled(db, result["appointment"])
     webhook_service.dispatch_event(db, "booking.rescheduled", result["appointment"])
     if result["appointment"]["status"] != "pending":
+        # See public_booking.py's reschedule_appointment for why this is
+        # conditional on a truthy event_id, not unconditional.
         event_id = calendar_sync_service.update_event_for_appointment(db, appt_id)
-        result["appointment"]["external_event_id"] = event_id
+        if event_id:
+            result["appointment"]["external_event_id"] = event_id
     db.commit()
     return result
 
