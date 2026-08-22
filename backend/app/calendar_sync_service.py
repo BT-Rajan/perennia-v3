@@ -249,11 +249,18 @@ def update_event_for_appointment(db: Session, appt_id: str) -> str | None:
     the old delete-then-recreate — preserves the event's Google id and
     anything attached to it there. If there's no linked event yet (sync
     turned on after this appointment was first confirmed, or the
-    original create silently failed), falls back to creating one. If
-    the linked event was deleted on Google's side (a 404 from the
-    PATCH), falls back to recreating it rather than leaving the
-    appointment silently unsynced. Never raises — same philosophy as
-    create_event_for_appointment."""
+    original create silently failed), falls back to creating one.
+
+    If the PATCH fails specifically because the linked event is gone on
+    Google's side (a 404), falls back to recreating it rather than
+    leaving the appointment silently unsynced. Any *other* failure — a
+    timeout, a 429, a 500 — does NOT fall back to recreating: the
+    original event is presumably still sitting on the calendar
+    untouched, and unconditionally recreating on every failure used to
+    leave it there, orphaned, while a duplicate got created alongside
+    it. Those failures are logged and left for a retry or the next
+    drift check to resolve instead of being made worse. Never raises —
+    same philosophy as create_event_for_appointment."""
     if not get_setting(db, "features.calendar_sync_enabled"):
         return None
     credential = get_active_credential(db)
@@ -282,15 +289,33 @@ def update_event_for_appointment(db: Session, appt_id: str) -> str | None:
         appt.calendar_drift = None  # this push supersedes any previously-flagged mismatch
         db.flush()
         return appt.external_event_id
+    except google.GoogleCalendarError as e:
+        import logging
+        logger = logging.getLogger("perennia.calendar_sync")
+        if e.status_code == 404:
+            logger.exception(
+                "Google Calendar event %s for appointment %s is gone (404) — recreating it",
+                appt.external_event_id, appt_id,
+            )
+            try:
+                return create_event_for_appointment(db, appt_id)
+            except Exception:
+                return None
+        logger.exception(
+            "Google Calendar event update failed for appointment %s (status=%s) — leaving the existing "
+            "event as-is rather than risking a duplicate; will be retried on the next drift check",
+            appt_id, e.status_code,
+        )
+        return None
     except Exception:
+        # Not even a GoogleCalendarError — e.g. _ensure_fresh_access_token's
+        # own failure modes (decrypt error, refresh failure). Same
+        # reasoning as the branch above: don't recreate, just report.
         import logging
         logging.getLogger("perennia.calendar_sync").exception(
-            "Google Calendar event update failed for appointment %s — attempting to recreate it", appt_id
+            "Google Calendar event update failed unexpectedly for appointment %s", appt_id
         )
-        try:
-            return create_event_for_appointment(db, appt_id)
-        except Exception:
-            return None
+        return None
 
 
 def delete_event_for_appointment(db: Session, appt_id: str) -> None:

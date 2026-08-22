@@ -144,8 +144,17 @@ def reschedule_appointment(request: Request, body: RescheduleRequest, db: Sessio
             # (falls back to creating one if there wasn't one already) —
             # keeps the same event id and anything attached to it on
             # Google's side, instead of the old delete-then-recreate.
+            # None means the push failed without changing anything (see
+            # update_event_for_appointment's docstring — a non-404
+            # failure deliberately leaves the existing link alone rather
+            # than risking a duplicate) - only overwrite the response
+            # when there's an actual new value to report, so a
+            # transient failure doesn't make an appointment that's
+            # still correctly linked in the database look unlinked to
+            # the client.
             event_id = calendar_sync_service.update_event_for_appointment(db, body.id)
-            result["appointment"]["external_event_id"] = event_id
+            if event_id:
+                result["appointment"]["external_event_id"] = event_id
         else:
             calendar_sync_service.delete_event_for_appointment(db, body.id)
             result["appointment"]["external_event_id"] = None
