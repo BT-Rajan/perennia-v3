@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { adminApi } from "../api/client.js";
 import { useAuth } from "../context/AuthContext.jsx";
 import "./ServiceDetailPanel.css";
@@ -26,6 +26,23 @@ export default function PageDetailPanel({ mode, page, onClose, onCreated, onUpda
   const [error, setError] = useState("");
   const fileInputRef = useRef(null);
 
+  // Version history — every save (edit mode only; a brand-new page has
+  // no prior state to snapshot) writes a version server-side, so an
+  // admin can see what changed and undo a bad edit without having to
+  // remember or retype the previous copy.
+  const [versions, setVersions] = useState(null);
+  const [versionsOpen, setVersionsOpen] = useState(false);
+  const [versionsError, setVersionsError] = useState("");
+  const [rollingBackId, setRollingBackId] = useState(null);
+
+  useEffect(() => {
+    if (mode !== "edit") return;
+    adminApi
+      .listPageVersions(page.slug)
+      .then(setVersions)
+      .catch((e) => (e.status === 401 ? handleSessionExpired() : setVersionsError(e.message)));
+  }, [mode, page?.slug, handleSessionExpired]);
+
   function setField(field, value) {
     setTranslations((prev) => ({ ...prev, [lang]: { ...prev[lang], [field]: value } }));
   }
@@ -33,6 +50,26 @@ export default function PageDetailPanel({ mode, page, onClose, onCreated, onUpda
   function handleApiError(e) {
     if (e.status === 401) handleSessionExpired();
     else setError(e.message);
+  }
+
+  async function handleRollback(versionId) {
+    if (!confirm("Restore this earlier version? Your current unsaved edits above will be replaced.")) return;
+    setRollingBackId(versionId);
+    setVersionsError("");
+    try {
+      const restored = await adminApi.rollbackPage(page.slug, versionId);
+      setTranslations({ ...emptyTranslations(), ...restored.translations });
+      setIsVisible(restored.is_visible);
+      setShowInNav(restored.show_in_nav);
+      onUpdated(restored);
+      const fresh = await adminApi.listPageVersions(page.slug);
+      setVersions(fresh);
+    } catch (e) {
+      if (e.status === 401) handleSessionExpired();
+      else setVersionsError(e.message);
+    } finally {
+      setRollingBackId(null);
+    }
   }
 
   async function handleFileUpload(e) {
@@ -61,7 +98,12 @@ export default function PageDetailPanel({ mode, page, onClose, onCreated, onUpda
         translations, is_visible: isVisible, show_in_nav: showInNav,
       });
       if (mode === "create") onCreated(saved);
-      else onUpdated(saved);
+      else {
+        onUpdated(saved);
+        // The backend snapshots the pre-edit state on every save, so
+        // the version list has a new entry the moment this succeeds.
+        adminApi.listPageVersions(saved.slug).then(setVersions).catch(() => {});
+      }
     } catch (e) {
       handleApiError(e);
     } finally {
@@ -164,6 +206,49 @@ export default function PageDetailPanel({ mode, page, onClose, onCreated, onUpda
         <button className="service-panel-delete" onClick={handleDelete}>
           Delete page
         </button>
+      )}
+
+      {mode === "edit" && (
+        <>
+          <button
+            type="button"
+            className="service-panel-save"
+            style={{ background: "transparent", color: "var(--text-muted)", border: "1px solid var(--border)" }}
+            onClick={() => setVersionsOpen((o) => !o)}
+          >
+            {versionsOpen ? "Hide" : "Show"} version history{versions ? ` (${versions.length})` : ""}
+          </button>
+
+          {versionsOpen && (
+            <div className="question-list">
+              {versions === null && !versionsError && (
+                <div className="table-subtext">Loading…</div>
+              )}
+              {versions?.length === 0 && (
+                <div className="table-subtext">No earlier versions yet — one is saved automatically every time you edit this page.</div>
+              )}
+              {versions?.map((v) => (
+                <div className="question-row" key={v.id}>
+                  <div className="question-row-main">
+                    {new Date(v.saved_at).toLocaleString()}
+                    {v.saved_by_username ? ` — ${v.saved_by_username}` : ""}
+                  </div>
+                  <div className="question-row-actions">
+                    <button
+                      type="button"
+                      className="row-action"
+                      disabled={rollingBackId === v.id}
+                      onClick={() => handleRollback(v.id)}
+                    >
+                      {rollingBackId === v.id ? "Restoring…" : "Restore this version"}
+                    </button>
+                  </div>
+                </div>
+              ))}
+              {versionsError && <div className="service-panel-error">{versionsError}</div>}
+            </div>
+          )}
+        </>
       )}
     </aside>
   );

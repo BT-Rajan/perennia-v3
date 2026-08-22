@@ -84,10 +84,25 @@ FAQ_SEED = [
             "a": "نعمل مع عملاء حول العالم ونلتقي افتراضيًا أو شخصيًا — أخبرنا أثناء الحجز وسنوفر لك ما يناسبك."}},
 ]
 
+# Must stay in sync with copy.home's default in settings_registry.py —
+# get_setting() only merges copy.home at the top level (per-language,
+# not per-field), so a DB row missing a field here would silently drop
+# that field out of the live response rather than falling through to
+# the registry default. See withHomeFallbacks in Hero.jsx for the
+# frontend-side safety net this is meant to make unnecessary.
 COPY_HOME = {
     "en": {"welcome": "Welcome to Perennia", "tagline": "Visit our V-Lounge for more",
+           "hero_statement": "Practical AI\nBuilt for Businesses",
+           "tagline_line1": "Solving Today.", "tagline_line2": "Shaping Tomorrow.",
+           "supporting_text": "Digital products for businesses across India and the GCC.",
+           "example_prompts": ["What does Perennia build?", "How can Perennia help my business?",
+                                "Explore our products"],
            "hint": "Start chatting", "lang_switch": "AR | عربي"},
     "ar": {"welcome": "مرحبا بك في بيرينيا", "tagline": "زوروا V-Lounge الخاص بنا لمزيد من المعلومات",
+           "hero_statement": "حلول ذكاء اصطناعي عملية ومنتجات رقمية للأعمال",
+           "tagline_line1": "حلول اليوم.", "tagline_line2": "لصناعة الغد.",
+           "supporting_text": "منتجات رقمية للشركات في الهند ودول الخليج.",
+           "example_prompts": ["ما الذي تبنيه بيرينيا؟", "كيف يمكن لبيرينيا مساعدة أعمالي؟", "استكشف منتجاتنا"],
            "hint": "ابدأ المحادثة", "lang_switch": "EN | English"},
 }
 
