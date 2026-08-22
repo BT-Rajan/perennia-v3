@@ -91,7 +91,7 @@ export function HeroChatComposer({ value, onChange, onSend, placeholder, sendLab
  * sweep across the gradient fill (see .fit-one-line-inner in
  * Hero.css), which animates safely without touching layout at all.
  */
-export function FitOneLine({ text, className, styleId, caret }) {
+export function FitOneLine({ text, className, styleId }) {
   const outerRef = useRef(null);
   const innerRef = useRef(null);
 
@@ -140,11 +140,6 @@ export function FitOneLine({ text, className, styleId, caret }) {
     <div ref={outerRef} className={`fit-one-line ${className || ""}`.trim()} data-headline-style={styleId || "ripple-gradient"}>
       <span ref={innerRef} className="fit-one-line-inner">
         {text}
-        {/* Rendered inside the same scaled/gradient-clipped span as the
-            text (not as a sibling outside it) so it sits inline right
-            after the last typed character at any scale, instead of
-            wrapping onto its own line below a block-level FitOneLine. */}
-        {caret && <span className="hero-caret" />}
       </span>
     </div>
   );
@@ -215,12 +210,7 @@ export function HeroHeadline({ statement, taglineLine1, taglineLine2, className,
       {statement && (
         <span className={`hero-headline-layer ${typingDone ? "is-hidden" : ""}`} aria-hidden="true">
           {typedLines.map((line, i) => (
-            <FitOneLine
-              key={i}
-              text={line}
-              styleId="solid-white"
-              caret={!typingDone && i === typedLines.length - 1}
-            />
+            <FitOneLine key={i} text={line} styleId="solid-white" />
           ))}
         </span>
       )}
