@@ -182,6 +182,14 @@ export const adminApi = {
     request("admin/api/content/pages/reorder", { method: "POST", body: JSON.stringify({ ordered_slugs: orderedSlugs }) }),
   listPageVersions: (slug) => request(`admin/api/content/pages/${slug}/versions`),
   rollbackPage: (slug, versionId) => request(`admin/api/content/pages/${slug}/rollback/${versionId}`, { method: "POST" }),
+
+  getFaqSchema: () => request("admin/api/content/faq/schema"),
+  listFaq: () => request("admin/api/content/faq"),
+  createFaq: (body) => request("admin/api/content/faq", { method: "POST", body: JSON.stringify(body) }),
+  updateFaq: (id, body) => request(`admin/api/content/faq/${id}`, { method: "PUT", body: JSON.stringify(body) }),
+  deleteFaq: (id) => request(`admin/api/content/faq/${id}`, { method: "DELETE" }),
+  reorderFaq: (orderedIds) =>
+    request("admin/api/content/faq/reorder", { method: "POST", body: JSON.stringify({ ordered_ids: orderedIds }) }),
 };
 
 export { ApiError };

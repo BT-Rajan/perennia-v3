@@ -19,6 +19,7 @@ import LogoZoomControl from "../components/LogoZoomControl.jsx";
 import CalendarSyncConnector from "../components/CalendarSyncConnector.jsx";
 import WebhooksPage from "./WebhooksPage.jsx";
 import PagesPage from "./PagesPage.jsx";
+import FaqPage from "./FaqPage.jsx";
 import "./SettingsPage.css";
 
 // Nicer labels for the sidebar than a raw category key. Anything not
@@ -38,15 +39,18 @@ const CATEGORY_LABELS = {
   calendar_sync: "Calendar Sync",
   webhooks: "Webhooks",
   pages: "Pages",
+  faq: "FAQ",
 };
 
-// Webhooks and Pages aren't schema-driven categories from the backend
-// registry like the rest — they're each their own CRUD resource (see
-// WebhooksPage.jsx / PagesPage.jsx) — so they're pinned into the
-// sidebar as virtual entries instead, letting them live under Settings
-// without needing a settings_registry entry of their own.
+// Webhooks, Pages, and FAQ aren't schema-driven categories from the
+// backend registry like the rest — they're each their own CRUD
+// resource (see WebhooksPage.jsx / PagesPage.jsx / FaqPage.jsx) — so
+// they're pinned into the sidebar as virtual entries instead, letting
+// them live under Settings without needing a settings_registry entry
+// of their own.
 const VIRTUAL_CATEGORIES = [
   { key: "pages", Component: PagesPage },
+  { key: "faq", Component: FaqPage },
   { key: "webhooks", Component: WebhooksPage },
 ];
 const VIRTUAL_CATEGORY_KEYS = new Set(VIRTUAL_CATEGORIES.map((v) => v.key));
