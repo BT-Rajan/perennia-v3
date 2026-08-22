@@ -149,3 +149,37 @@ def reorder_faq(db: Session, ordered_ids: list[str], *, actor_id: str | None, ac
     for idx, item_id in enumerate(ordered_ids):
         items[item_id].order = idx
     db.add(AuditLog(actor_id=actor_id, actor_username=actor_username, action="faq.reorder"))
+
+
+# -- Chat integration ---------------------------------------------------
+# Mirrors knowledge_service.build_prompt_block's shape: turn the
+# admin-managed records into one block appended to the chat system
+# prompt (see chat_service._build_system_prompt), so the assistant can
+# actually draw on this content instead of it only existing for admins
+# to browse. Empty/blank means "nothing to add", not an error.
+
+def build_faq_prompt_block(db: Session, lang: str) -> str:
+    items = list_faq(db, active_only=True)
+    if not items:
+        return ""
+
+    lines = []
+    for item in items:
+        t = item.translations.get(lang) or item.translations.get("en") or next(iter(item.translations.values()), {})
+        q, a = (t.get("q") or "").strip(), (t.get("a") or "").strip()
+        if q and a:
+            lines.append(f"Q: {q}\nA: {a}")
+    if not lines:
+        return ""
+
+    faqs = "\n\n".join(lines)
+    if lang == "ar":
+        return (
+            "\n\nالأسئلة الشائعة (أجب بهذه المعلومات بالضبط عندما يسأل الزائر شيئاً مطابقاً لأحد "
+            "هذه الأسئلة — أعد صياغتها بأسلوبك المحادثي بدلاً من نسخها حرفياً):\n" + faqs
+        )
+    return (
+        "\n\nFREQUENTLY ASKED QUESTIONS (answer with this exact information when a visitor asks "
+        "something matching one of these questions — rephrase it conversationally rather than "
+        "copying it verbatim):\n" + faqs
+    )

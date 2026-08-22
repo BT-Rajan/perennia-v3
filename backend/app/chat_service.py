@@ -1,7 +1,7 @@
 """
 Orchestrates a single chat turn: reads chat.* config, builds a grounded
-system prompt (persona + knowledge + contact info + conversational lead
-capture + turn-budget nudge), calls the configured LLM provider (or
+system prompt (persona + knowledge + FAQ + contact info + conversational
+lead capture + turn-budget nudge), calls the configured LLM provider (or
 skips straight to the fallback message if none is configured), and
 captures a lead — either from a hidden tag the assistant emits once it
 has collected name/phone/email conversationally, or opportunistically
@@ -14,7 +14,7 @@ import re
 
 from sqlalchemy.orm import Session
 
-from app import chat_tools, knowledge_service, leads_service, llm_client
+from app import chat_tools, content_service, knowledge_service, leads_service, llm_client
 from app.settings_service import get_setting
 
 EMAIL_RE = re.compile(r"[^\s@,;:!?()<>\[\]\"']+@[^\s@,;:!?()<>\[\]\"']+\.[^\s@,;:!?()<>\[\]\"']+")
@@ -182,13 +182,15 @@ def _build_system_prompt(
     if not kb_block:
         kb_block = f"\n\n{DEFAULT_KNOWLEDGE}"
 
+    faq_block = content_service.build_faq_prompt_block(db, lang)
+
     contact_block = _contact_block(db, lang)
     lead_block = "" if lead_captured else _lead_capture_instructions(lang)
     booking_block = _booking_instructions(lang) if booking_enabled else ""
     nudge_block = _nudge_text(lang, turns_used, max_turns)
     brevity_block = _brevity_instructions(lang)
 
-    return f"{base}{kb_block}{contact_block}{lead_block}{booking_block}{nudge_block}{brevity_block}"
+    return f"{base}{kb_block}{faq_block}{contact_block}{lead_block}{booking_block}{nudge_block}{brevity_block}"
 
 
 def _extract_conversational_lead(reply: str) -> tuple[str, dict | None]:
