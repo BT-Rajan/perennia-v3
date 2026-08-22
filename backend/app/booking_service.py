@@ -31,7 +31,7 @@ from sqlalchemy import select, text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.models import Appointment, AppointmentQuestionAnswer, BookingLock, Service
+from app.models import Appointment, AppointmentQuestionAnswer, Service
 from app.settings_service import get_setting
 
 EMAIL_RE = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
