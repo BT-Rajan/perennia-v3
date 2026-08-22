@@ -597,7 +597,31 @@ _DEFS: list[SettingDef] = [
     # Structured content that's genuinely record-shaped (pages, FAQ)
     # lives in content_schema.py / content_service.py instead — see
     # PASS2_NOTES.md for why the split.
-    SettingDef("copy.home", "copy", "Home screen text", SettingType.JSON, {"en": {}, "ar": {}}, i18n=True,
+    SettingDef("copy.home", "copy", "Home screen text", SettingType.JSON, {
+        "en": {
+            "welcome": "Welcome to Perennia",
+            "tagline": "Visit our V-Lounge for more",
+            "hero_statement": "Practical AI\nBuilt for Businesses",
+            "tagline_line1": "Solving Today.",
+            "tagline_line2": "Shaping Tomorrow.",
+            "supporting_text": "Digital products for businesses across India and the GCC.",
+            "example_prompts": ["What does Perennia build?", "How can Perennia help my business?",
+                                 "Explore our products"],
+            "hint": "Start chatting",
+            "lang_switch": "AR | عربي",
+        },
+        "ar": {
+            "welcome": "مرحبا بك في بيرينيا",
+            "tagline": "زوروا V-Lounge الخاص بنا لمزيد من المعلومات",
+            "hero_statement": "حلول ذكاء اصطناعي عملية ومنتجات رقمية للأعمال",
+            "tagline_line1": "حلول اليوم.",
+            "tagline_line2": "لصناعة الغد.",
+            "supporting_text": "منتجات رقمية للشركات في الهند ودول الخليج.",
+            "example_prompts": ["ما الذي تبنيه بيرينيا؟", "كيف يمكن لبيرينيا مساعدة أعمالي؟", "استكشف منتجاتنا"],
+            "hint": "ابدأ المحادثة",
+            "lang_switch": "EN | English",
+        },
+    }, i18n=True,
                help_text="welcome, tagline, hint, lang_switch, hero_statement, tagline_line1, tagline_line2, "
                           "supporting_text, example_prompts. hero_statement types itself out on the homepage "
                           "before handing off to tagline_line1/2 (see theme.headline_typing_speed_cps and "

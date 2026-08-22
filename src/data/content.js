@@ -124,7 +124,7 @@ export const COPY = {
     home: {
       welcome: "Welcome to Perennia",
       tagline: "Visit our V-Lounge for more",
-      heroStatement: "Practical AI and digital products\nbuilt for businesses",
+      heroStatement: "Practical AI\nBuilt for Businesses",
       taglineLine1: "Solving Today.",
       taglineLine2: "Shaping Tomorrow.",
       supportingText: "Digital products for businesses across India and the GCC.",
