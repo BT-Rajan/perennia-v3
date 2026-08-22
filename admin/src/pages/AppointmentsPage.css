@@ -74,12 +74,13 @@
   gap: 6px;
 }
 
-.appt-answers-row td {
-  background: var(--bg);
-  padding: var(--space-3) var(--space-4) !important;
-}
-
-.appt-answers {
+/* Was .appt-answers-row td, styling an inline expandable table row from
+   an earlier layout — appointment answers now render in
+   AppointmentDetailPanel.jsx's side panel instead, so that selector
+   never matched anything. Renamed to .appt-answers-list to match the
+   div AppointmentDetailPanel.jsx actually renders (it had drifted
+   out of sync, leaving that list completely unstyled). */
+.appt-answers-list {
   display: flex;
   flex-direction: column;
   gap: 6px;

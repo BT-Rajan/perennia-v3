@@ -120,7 +120,7 @@ export default function KnowledgePage() {
 
       <div className="kb-add-row">
         <div className="card kb-add-card">
-          <label className="setting-field-label">Upload a file</label>
+          <label className="setting-label">Upload a file</label>
           <p className="kb-add-hint">.txt, .md, .html, .docx, or .pdf - up to 8MB</p>
           <button
             className="row-action"
@@ -139,7 +139,7 @@ export default function KnowledgePage() {
         </div>
 
         <form className="card kb-add-card" onSubmit={handleAddUrl}>
-          <label className="setting-field-label" htmlFor="kb-url">Add a website address</label>
+          <label className="setting-label" htmlFor="kb-url">Add a website address</label>
           <p className="kb-add-hint">Fetched once, then refreshable any time from the list below</p>
           <div className="kb-url-row">
             <input
