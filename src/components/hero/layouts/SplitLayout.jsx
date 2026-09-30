@@ -1,4 +1,4 @@
-import { HeroButtons, HeroCapabilities, HeroProcess, HeroChatComposer, HeroCtas, HeroDiscovery, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroPrinciples, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
+import { HeroButtons, HeroCapabilities, HeroProcess, HeroChatComposer, HeroCtas, HeroDiscovery, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroTrust, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
 
 /**
  * "split" — two-column: headline, tagline, and the quick-chat box
@@ -6,7 +6,7 @@ import { HeroButtons, HeroCapabilities, HeroProcess, HeroChatComposer, HeroCtas,
  * on the other. Stacks to a single column (main content first, then
  * nav) below the tablet breakpoint — see .hero-split-* in Hero.css.
  */
-export default function SplitLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, onCtaPrimary, onCtaSecondary, copy, homeTopics, homeCapabilities, homeProcess, onTopicClick, headlineTypingSpeedCps }) {
+export default function SplitLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, onCtaPrimary, onCtaSecondary, copy, homeTopics, homeCapabilities, homeProcess, homeTrustPoints, onTopicClick, headlineTypingSpeedCps }) {
   return (
     <>
       <div className="hero-split-wrap">
@@ -21,7 +21,6 @@ export default function SplitLayout({ home, heroButtons, lang, quickDraft, setQu
           />
           <HeroSupportingText text={home.supportingText} className="hero-supporting-left" />
           <HeroCtas primaryLabel={home.ctaPrimary} secondaryLabel={home.ctaSecondary} onPrimary={onCtaPrimary} onSecondary={onCtaSecondary} className="hero-ctas-left" />
-          <HeroPrinciples items={home.principles} className="hero-principles-left" />
           {heroButtons?.length > 0 && <HeroButtons buttons={heroButtons} lang={lang} />}
 
           <HeroChatComposer
@@ -58,18 +57,27 @@ export default function SplitLayout({ home, heroButtons, lang, quickDraft, setQu
       />
 
       <HeroProcess
-        kicker={home.processKicker}
         heading={home.processHeading}
         intro={home.processIntro}
         steps={homeProcess}
-        ctas={
-          <HeroDiscovery
-            heading={home.discoveryHeading}
-            body={home.discoveryBody}
-            note={home.discoveryNote}
-            ctas={<HeroCtas primaryLabel={home.ctaPrimary} secondaryLabel={home.ctaSecondary} onPrimary={onCtaPrimary} onSecondary={onCtaSecondary} className="hero-ctas-left" />}
-          />
-        }
+        className="hero-block-start"
+      />
+
+      <HeroTrust
+        kicker={home.trustKicker}
+        heading={home.trustHeading}
+        intro={home.trustIntro}
+        contrast={{ labelA: home.trustContrastLabelA, a: home.trustContrastA, labelB: home.trustContrastLabelB, b: home.trustContrastB }}
+        points={homeTrustPoints}
+        principles={home.principles}
+        className="hero-block-start"
+      />
+
+      <HeroDiscovery
+        heading={home.discoveryHeading}
+        body={home.discoveryBody}
+        note={home.discoveryNote}
+        ctas={<HeroCtas primaryLabel={home.ctaPrimary} secondaryLabel={home.ctaSecondary} onPrimary={onCtaPrimary} onSecondary={onCtaSecondary} className="hero-ctas-left" />}
         className="hero-block-start"
       />
     </>

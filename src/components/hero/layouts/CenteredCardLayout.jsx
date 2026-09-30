@@ -3,7 +3,7 @@ import { HeroChatComposer, HeroCtas, HeroEyebrow, HeroHeadline, HeroSupportingTe
 /**
  * "centered-card" — headline, tagline, quick-chat, and topic pills all
  * live inside one bordered glass card instead of being spread across
- * the page. Deliberately kept lean (no principles/example prompts
+ * the page. Deliberately kept lean (no example prompts
  * here, unlike the other layouts — only the eyebrow, supporting line
  * and two CTAs) — that's the point of this template: everything in one
  * compact card, not a longer page.

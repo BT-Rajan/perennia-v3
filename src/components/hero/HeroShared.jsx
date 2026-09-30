@@ -47,15 +47,58 @@ function HeroBlockHead({ id, kicker, heading, intro }) {
  * sales banner. The hero and this panel are the only two places on the
  * homepage body that offer booking.
  */
-export function HeroDiscovery({ heading, body, note, ctas }) {
+export function HeroDiscovery({ heading, body, note, ctas, className }) {
   if (!ctas) return null;
   return (
-    <GlassPanel className="hero-discovery">
-      {heading && <h3>{heading}</h3>}
-      {body && <p>{body}</p>}
-      {note && <p className="hero-discovery-note">{note}</p>}
-      {ctas}
-    </GlassPanel>
+    <section className={`hero-block hero-discovery-block ${className || ""}`.trim()} aria-labelledby="hero-discovery-heading">
+      <GlassPanel className="hero-discovery">
+        {heading && <h2 id="hero-discovery-heading">{heading}</h2>}
+        {body && <p>{body}</p>}
+        {note && <p className="hero-discovery-note">{note}</p>}
+        {ctas}
+      </GlassPanel>
+    </section>
+  );
+}
+
+/**
+ * "Why trust Perennia" — the single differentiator section: the central
+ * claim (reliable technology induction), a two-sided contrast between
+ * delivering software and getting it working in the business, four
+ * grouped points on how Perennia approaches delivery (an approach, not
+ * guarantees), and the short trust line (copy.home.principles) that
+ * used to sit in the hero. Sits after the process, before the
+ * discovery panel.
+ */
+export function HeroTrust({ kicker, heading, intro, contrast, points, principles, className }) {
+  if (!heading) return null;
+  return (
+    <section className={`hero-block hero-trust ${className || ""}`.trim()} aria-labelledby="hero-trust-heading">
+      <HeroBlockHead id="hero-trust-heading" kicker={kicker} heading={heading} intro={intro} />
+      {contrast?.a && contrast?.b && (
+        <GlassPanel className="hero-trust-contrast">
+          <div className="hero-trust-side">
+            <span className="hero-trust-side-label">{contrast.labelA}</span>
+            <p>{contrast.a}</p>
+          </div>
+          <div className="hero-trust-side is-perennia">
+            <span className="hero-trust-side-label">{contrast.labelB}</span>
+            <p>{contrast.b}</p>
+          </div>
+        </GlassPanel>
+      )}
+      {points?.length > 0 && (
+        <ul className="hero-trust-points">
+          {points.map(({ id, label, body }) => (
+            <li key={id}>
+              <h3>{label}</h3>
+              <p>{body}</p>
+            </li>
+          ))}
+        </ul>
+      )}
+      <HeroPrinciples items={principles} className="hero-trust-principles" />
+    </section>
   );
 }
 
@@ -161,7 +204,8 @@ export function HeroEyebrow({ text, className }) {
 }
 
 /**
- * Short, quiet list of what Perennia stands for (copy.home.principles)
+ * Short, quiet list of what Perennia stands for (copy.home.principles),
+ * shown at the foot of the trust section (HeroTrust)
  * — plain text, not buttons, so it reads as context rather than as yet
  * another row of things to click.
  */

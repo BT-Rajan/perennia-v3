@@ -1,4 +1,4 @@
-import { HeroButtons, HeroChatComposer, HeroCtas, HeroDiscovery, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroCapabilities, HeroProcess, HeroPrinciples, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
+import { HeroButtons, HeroChatComposer, HeroCtas, HeroDiscovery, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroCapabilities, HeroProcess, HeroTrust, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
 
 /**
  * "classic" — the site's original, and default, homepage body:
@@ -7,7 +7,7 @@ import { HeroButtons, HeroChatComposer, HeroCtas, HeroDiscovery, HeroEyebrow, He
  * template setting did, so picking "classic" (or leaving the setting
  * unset) can never look different from what's already live.
  */
-export default function ClassicLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, onCtaPrimary, onCtaSecondary, copy, homeTopics, homeCapabilities, homeProcess, onTopicClick, headlineTypingSpeedCps }) {
+export default function ClassicLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, onCtaPrimary, onCtaSecondary, copy, homeTopics, homeCapabilities, homeProcess, homeTrustPoints, onTopicClick, headlineTypingSpeedCps }) {
   return (
     <>
       <div className="hero-center">
@@ -15,7 +15,6 @@ export default function ClassicLayout({ home, heroButtons, lang, quickDraft, set
         <HeroHeadline statement={home.heroStatement} taglineLine1={home.taglineLine1} taglineLine2={home.taglineLine2} typingSpeedCps={headlineTypingSpeedCps} />
         <HeroSupportingText text={home.supportingText} />
         <HeroCtas primaryLabel={home.ctaPrimary} secondaryLabel={home.ctaSecondary} onPrimary={onCtaPrimary} onSecondary={onCtaSecondary} />
-        <HeroPrinciples items={home.principles} />
         {heroButtons?.length > 0 && <HeroButtons buttons={heroButtons} lang={lang} />}
 
         <HeroChatComposer
@@ -46,18 +45,25 @@ export default function ClassicLayout({ home, heroButtons, lang, quickDraft, set
       />
 
       <HeroProcess
-        kicker={home.processKicker}
         heading={home.processHeading}
         intro={home.processIntro}
         steps={homeProcess}
-        ctas={
-          <HeroDiscovery
-            heading={home.discoveryHeading}
-            body={home.discoveryBody}
-            note={home.discoveryNote}
-            ctas={<HeroCtas primaryLabel={home.ctaPrimary} secondaryLabel={home.ctaSecondary} onPrimary={onCtaPrimary} onSecondary={onCtaSecondary} />}
-          />
-        }
+      />
+
+      <HeroTrust
+        kicker={home.trustKicker}
+        heading={home.trustHeading}
+        intro={home.trustIntro}
+        contrast={{ labelA: home.trustContrastLabelA, a: home.trustContrastA, labelB: home.trustContrastLabelB, b: home.trustContrastB }}
+        points={homeTrustPoints}
+        principles={home.principles}
+      />
+
+      <HeroDiscovery
+        heading={home.discoveryHeading}
+        body={home.discoveryBody}
+        note={home.discoveryNote}
+        ctas={<HeroCtas primaryLabel={home.ctaPrimary} secondaryLabel={home.ctaSecondary} onPrimary={onCtaPrimary} onSecondary={onCtaSecondary} />}
       />
     </>
   );

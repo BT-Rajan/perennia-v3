@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLang } from "../../context/LangContext.jsx";
-import { COPY, HOME_CAPABILITIES, HOME_PROCESS, HOME_TOPICS } from "../../data/content.js";
+import { COPY, HOME_CAPABILITIES, HOME_PROCESS, HOME_TOPICS, HOME_TRUST_POINTS } from "../../data/content.js";
 import TopBar from "../layout/TopBar.jsx";
 import ClassicLayout from "./layouts/ClassicLayout.jsx";
 import SplitLayout from "./layouts/SplitLayout.jsx";
@@ -58,9 +58,15 @@ function withHomeFallbacks(home, lang) {
     capabilitiesIntro: home.capabilitiesIntro ?? fallback.capabilitiesIntro,
     capabilitiesRoles: home.capabilitiesRoles ?? fallback.capabilitiesRoles,
     capabilitiesScopeNote: home.capabilitiesScopeNote ?? fallback.capabilitiesScopeNote,
-    processKicker: home.processKicker ?? fallback.processKicker,
     processHeading: home.processHeading ?? fallback.processHeading,
     processIntro: home.processIntro ?? fallback.processIntro,
+    trustKicker: home.trustKicker ?? fallback.trustKicker,
+    trustHeading: home.trustHeading ?? fallback.trustHeading,
+    trustIntro: home.trustIntro ?? fallback.trustIntro,
+    trustContrastLabelA: home.trustContrastLabelA ?? fallback.trustContrastLabelA,
+    trustContrastA: home.trustContrastA ?? fallback.trustContrastA,
+    trustContrastLabelB: home.trustContrastLabelB ?? fallback.trustContrastLabelB,
+    trustContrastB: home.trustContrastB ?? fallback.trustContrastB,
     discoveryHeading: home.discoveryHeading ?? fallback.discoveryHeading,
     discoveryBody: home.discoveryBody ?? fallback.discoveryBody,
     discoveryNote: home.discoveryNote ?? fallback.discoveryNote,
@@ -106,6 +112,7 @@ export default function Hero({ onEnter, onNavigate, onBookingClick }) {
 
   const homeCapabilities = HOME_CAPABILITIES[lang] || HOME_CAPABILITIES.en;
   const homeProcess = HOME_PROCESS[lang] || HOME_PROCESS.en;
+  const homeTrustPoints = HOME_TRUST_POINTS[lang] || HOME_TRUST_POINTS.en;
 
   const Layout = LAYOUTS[theme?.layoutTemplate] || ClassicLayout;
 
@@ -133,6 +140,7 @@ export default function Hero({ onEnter, onNavigate, onBookingClick }) {
         homeTopics={homeTopics}
         homeCapabilities={homeCapabilities}
         homeProcess={homeProcess}
+        homeTrustPoints={homeTrustPoints}
         onTopicClick={handleTopicClick}
       />
 

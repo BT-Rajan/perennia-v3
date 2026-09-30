@@ -152,6 +152,24 @@ export const HOME_PROCESS = {
   ],
 };
 
+// Homepage trust section (HeroTrust in HeroShared.jsx) — how Perennia
+// approaches delivery, grouped into four points rather than a long
+// feature list. These describe an approach, not guarantees.
+export const HOME_TRUST_POINTS = {
+  en: [
+    { id: "business-first", label: "Business first", body: "We understand the business before building, and design around your actual process." },
+    { id: "careful", label: "Careful implementation", body: "We introduce technology carefully to minimise disruption, and help your people adopt and use it." },
+    { id: "security", label: "Security and accountability", body: "We treat security and data protection seriously, with clear accountability for what we deliver." },
+    { id: "support", label: "Support as you change", body: "Ongoing support where required, and technology that adapts as your requirements evolve." },
+  ],
+  ar: [
+    { id: "business-first", label: "الأعمال أولًا", body: "نفهم أعمالك قبل أن نبني، ونصمّم حول عملياتك الفعلية." },
+    { id: "careful", label: "تنفيذ مدروس", body: "ندخل التقنية بعناية لتقليل التعطّل، ونساعد فريقك على اعتمادها واستخدامها." },
+    { id: "security", label: "الأمان والمسؤولية", body: "نتعامل مع الأمان وحماية البيانات بجدية، مع مسؤولية واضحة عمّا نقدّمه." },
+    { id: "support", label: "دعم مع تغيّر أعمالك", body: "دعم مستمر عند الحاجة، وتقنية تتكيّف مع تطور متطلباتك." },
+  ],
+};
+
 export const SECTIONS = {
   en: {
     about: {
@@ -213,6 +231,13 @@ export const COPY = {
       ctaSecondary: "Explore What We Build",
       situationsHeading: "A technology partner at every stage",
       situationsIntro: "Whatever stage your business is at, Perennia helps you adopt technology reliably, practically and with a clear path forward.",
+      trustKicker: "What sets Perennia apart",
+      trustHeading: "Reliable technology induction for your business.",
+      trustIntro: "Technology only creates value when it works in the real business. Building software is one part of that — we focus on the complete journey, from understanding the business through implementation, adoption and change.",
+      trustContrastLabelA: "Software delivery",
+      trustContrastA: "“We can build software.”",
+      trustContrastLabelB: "Technology induction",
+      trustContrastB: "“We can help you introduce technology into your business reliably.”",
       discoveryHeading: "Let's understand the problem before deciding what to build.",
       discoveryBody: "In 30 minutes we look at your business, your current process or problem, the outcome you want, whether technology can help — and what the sensible next step is.",
       discoveryNote: "A working conversation, not a sales pitch — no solution or price is committed in the meeting.",
@@ -220,14 +245,12 @@ export const COPY = {
       capabilitiesIntro: "Understand the business. Decide what technology is needed. Build it. Put it into operation. Help the business adapt.",
       capabilitiesRoles: "Work with us as an advisor, an implementation partner, a software builder, an AI implementation partner — or a combination of these.",
       capabilitiesScopeNote: "Scope and investment are agreed once we understand your requirements.",
-      processKicker: "Reliable technology induction for your business",
       processHeading: "Start with the business. Build the technology around it.",
       processIntro: "We normally take responsibility for the whole journey — from the first conversation to the solution in operation — so you are not left coordinating several vendors.",
       principles: [
-        "Business first, technology second",
         "Practical AI, not fashionable AI",
         "Experienced technology professionals",
-        "Built for GCC businesses",
+        "Kuwait-based, built for GCC businesses",
         "Transparent scope and investment",
       ],
       examplePrompts: ["Where should my business start with technology?", "Where could AI genuinely help my business?", "What happens in a discovery meeting?"],
@@ -328,6 +351,13 @@ export const COPY = {
       ctaSecondary: "استكشف ما نبنيه",
       situationsHeading: "شريك تقني في كل مرحلة",
       situationsIntro: "أيًّا كانت المرحلة التي تمر بها أعمالك، تساعدك بيرينيا على تبنّي التقنية بشكل موثوق وعملي، مع مسار واضح للمضي قدمًا.",
+      trustKicker: "ما يميّز بيرينيا",
+      trustHeading: "إدخال موثوق للتقنية إلى أعمالك.",
+      trustIntro: "لا تُحدث التقنية قيمة إلا عندما تعمل في واقع الأعمال. بناء البرمجيات جزء من ذلك فقط — نحن نركّز على الرحلة كاملة، من فهم الأعمال إلى التنفيذ والاعتماد والتكيّف مع التغيير.",
+      trustContrastLabelA: "تسليم البرمجيات",
+      trustContrastA: "«نستطيع بناء البرمجيات.»",
+      trustContrastLabelB: "إدخال التقنية",
+      trustContrastB: "«نساعدك على إدخال التقنية إلى أعمالك بشكل موثوق.»",
       discoveryHeading: "لنفهم المشكلة قبل أن نقرر ما يجب بناؤه.",
       discoveryBody: "خلال 30 دقيقة نتعرّف على أعمالك، والعملية أو المشكلة الحالية، والنتيجة التي تريدها، وما إذا كانت التقنية قادرة على المساعدة — وما الخطوة التالية المناسبة.",
       discoveryNote: "محادثة عمل، لا عرض مبيعات — لا نلتزم في الاجتماع بحل أو سعر.",
@@ -335,14 +365,12 @@ export const COPY = {
       capabilitiesIntro: "نفهم الأعمال. نحدد التقنية المطلوبة. نبنيها. نضعها قيد التشغيل. ونساعد الأعمال على التكيّف.",
       capabilitiesRoles: "اعمل معنا كمستشار، أو شريك تنفيذ، أو مطوّر برمجيات، أو شريك لتطبيق الذكاء الاصطناعي — أو مزيج من ذلك.",
       capabilitiesScopeNote: "نتفق على نطاق العمل والتكلفة بعد فهم متطلباتك.",
-      processKicker: "إدخال موثوق للتقنية إلى أعمالك",
       processHeading: "ابدأ بالأعمال. وابنِ التقنية حولها.",
       processIntro: "نتحمّل عادةً مسؤولية الرحلة كاملة — من المحادثة الأولى حتى تشغيل الحل — فلا تضطر إلى التنسيق بين عدة موردين.",
       principles: [
-        "الأعمال أولًا، ثم التقنية",
         "ذكاء اصطناعي عملي، لا لمجرد مواكبة الموضة",
         "خبراء تقنية ذوو خبرة",
-        "فهم لبيئة الأعمال الخليجية",
+        "مقرّنا الكويت، ونفهم بيئة الأعمال الخليجية",
         "نطاق عمل وتكلفة واضحان",
       ],
       examplePrompts: ["من أين تبدأ أعمالي مع التقنية؟", "أين يمكن للذكاء الاصطناعي أن يفيد أعمالي فعلًا؟", "ماذا يحدث في الاجتماع الاستكشافي؟"],

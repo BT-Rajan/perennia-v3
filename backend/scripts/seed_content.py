@@ -101,6 +101,14 @@ COPY_HOME = {
            "situations_heading": "A technology partner at every stage",
            "situations_intro": "Whatever stage your business is at, Perennia helps you adopt technology "
                                "reliably, practically and with a clear path forward.",
+           "trust_kicker": "What sets Perennia apart",
+           "trust_heading": "Reliable technology induction for your business.",
+           "trust_intro": "Technology only creates value when it works in the real business. Building software is one part of that — "
+                          "we focus on the complete journey, from understanding the business through implementation, adoption and change.",
+           "trust_contrast_label_a": "Software delivery",
+           "trust_contrast_a": "“We can build software.”",
+           "trust_contrast_label_b": "Technology induction",
+           "trust_contrast_b": "“We can help you introduce technology into your business reliably.”",
            "discovery_heading": "Let's understand the problem before deciding what to build.",
            "discovery_body": "In 30 minutes we look at your business, your current process or problem, "
                              "the outcome you want, whether technology can help — and what the sensible "
@@ -112,12 +120,11 @@ COPY_HOME = {
            "capabilities_roles": "Work with us as an advisor, an implementation partner, a software builder, "
                                  "an AI implementation partner — or a combination of these.",
            "capabilities_scope_note": "Scope and investment are agreed once we understand your requirements.",
-           "process_kicker": "Reliable technology induction for your business",
            "process_heading": "Start with the business. Build the technology around it.",
            "process_intro": "We normally take responsibility for the whole journey — from the first conversation "
                             "to the solution in operation — so you are not left coordinating several vendors.",
-           "principles": ["Business first, technology second", "Practical AI, not fashionable AI",
-                          "Experienced technology professionals", "Built for GCC businesses",
+           "principles": ["Practical AI, not fashionable AI",
+                          "Experienced technology professionals", "Kuwait-based, built for GCC businesses",
                           "Transparent scope and investment"],
            "example_prompts": ["Where should my business start with technology?",
                                 "Where could AI genuinely help my business?",
@@ -133,6 +140,14 @@ COPY_HOME = {
            "situations_heading": "شريك تقني في كل مرحلة",
            "situations_intro": "أيًّا كانت المرحلة التي تمر بها أعمالك، تساعدك بيرينيا على تبنّي التقنية "
                                "بشكل موثوق وعملي، مع مسار واضح للمضي قدمًا.",
+           "trust_kicker": "ما يميّز بيرينيا",
+           "trust_heading": "إدخال موثوق للتقنية إلى أعمالك.",
+           "trust_intro": "لا تُحدث التقنية قيمة إلا عندما تعمل في واقع الأعمال. بناء البرمجيات جزء من ذلك فقط — "
+                          "نحن نركّز على الرحلة كاملة، من فهم الأعمال إلى التنفيذ والاعتماد والتكيّف مع التغيير.",
+           "trust_contrast_label_a": "تسليم البرمجيات",
+           "trust_contrast_a": "«نستطيع بناء البرمجيات.»",
+           "trust_contrast_label_b": "إدخال التقنية",
+           "trust_contrast_b": "«نساعدك على إدخال التقنية إلى أعمالك بشكل موثوق.»",
            "discovery_heading": "لنفهم المشكلة قبل أن نقرر ما يجب بناؤه.",
            "discovery_body": "خلال 30 دقيقة نتعرّف على أعمالك، والعملية أو المشكلة الحالية، والنتيجة التي "
                              "تريدها، وما إذا كانت التقنية قادرة على المساعدة — وما الخطوة التالية المناسبة.",
@@ -143,12 +158,11 @@ COPY_HOME = {
            "capabilities_roles": "اعمل معنا كمستشار، أو شريك تنفيذ، أو مطوّر برمجيات، أو شريك لتطبيق الذكاء "
                                  "الاصطناعي — أو مزيج من ذلك.",
            "capabilities_scope_note": "نتفق على نطاق العمل والتكلفة بعد فهم متطلباتك.",
-           "process_kicker": "إدخال موثوق للتقنية إلى أعمالك",
            "process_heading": "ابدأ بالأعمال. وابنِ التقنية حولها.",
            "process_intro": "نتحمّل عادةً مسؤولية الرحلة كاملة — من المحادثة الأولى حتى تشغيل الحل — فلا تضطر "
                             "إلى التنسيق بين عدة موردين.",
-           "principles": ["الأعمال أولًا، ثم التقنية", "ذكاء اصطناعي عملي، لا لمجرد مواكبة الموضة",
-                          "خبراء تقنية ذوو خبرة", "فهم لبيئة الأعمال الخليجية", "نطاق عمل وتكلفة واضحان"],
+           "principles": ["ذكاء اصطناعي عملي، لا لمجرد مواكبة الموضة",
+                          "خبراء تقنية ذوو خبرة", "مقرّنا الكويت، ونفهم بيئة الأعمال الخليجية", "نطاق عمل وتكلفة واضحان"],
            "example_prompts": ["من أين تبدأ أعمالي مع التقنية؟", "أين يمكن للذكاء الاصطناعي أن يفيد أعمالي فعلًا؟",
                                 "ماذا يحدث في الاجتماع الاستكشافي؟"],
            "hint": "ابدأ المحادثة", "lang_switch": "EN | English"},

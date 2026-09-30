@@ -1,4 +1,4 @@
-import { HeroButtons, HeroChatComposer, HeroCtas, HeroDiscovery, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroCapabilities, HeroProcess, HeroPrinciples, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
+import { HeroButtons, HeroChatComposer, HeroCtas, HeroDiscovery, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroCapabilities, HeroProcess, HeroTrust, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
 
 /**
  * "editorial" — a bigger, left-aligned headline and a narrower
@@ -6,7 +6,7 @@ import { HeroButtons, HeroChatComposer, HeroCtas, HeroDiscovery, HeroEyebrow, He
  * horizontal-scrolling strip of compact cards instead of a grid —
  * a more magazine/editorial feel than the centered classic layout.
  */
-export default function EditorialLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, onCtaPrimary, onCtaSecondary, copy, homeTopics, homeCapabilities, homeProcess, onTopicClick, headlineTypingSpeedCps }) {
+export default function EditorialLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, onCtaPrimary, onCtaSecondary, copy, homeTopics, homeCapabilities, homeProcess, homeTrustPoints, onTopicClick, headlineTypingSpeedCps }) {
   return (
     <>
       <div className="hero-editorial-main">
@@ -20,7 +20,6 @@ export default function EditorialLayout({ home, heroButtons, lang, quickDraft, s
         />
         <HeroSupportingText text={home.supportingText} className="hero-supporting-left" />
         <HeroCtas primaryLabel={home.ctaPrimary} secondaryLabel={home.ctaSecondary} onPrimary={onCtaPrimary} onSecondary={onCtaSecondary} className="hero-ctas-left" />
-        <HeroPrinciples items={home.principles} className="hero-principles-left" />
         {heroButtons?.length > 0 && <HeroButtons buttons={heroButtons} lang={lang} />}
 
         <HeroChatComposer
@@ -55,18 +54,27 @@ export default function EditorialLayout({ home, heroButtons, lang, quickDraft, s
       />
 
       <HeroProcess
-        kicker={home.processKicker}
         heading={home.processHeading}
         intro={home.processIntro}
         steps={homeProcess}
-        ctas={
-          <HeroDiscovery
-            heading={home.discoveryHeading}
-            body={home.discoveryBody}
-            note={home.discoveryNote}
-            ctas={<HeroCtas primaryLabel={home.ctaPrimary} secondaryLabel={home.ctaSecondary} onPrimary={onCtaPrimary} onSecondary={onCtaSecondary} className="hero-ctas-left" />}
-          />
-        }
+        className="hero-block-start"
+      />
+
+      <HeroTrust
+        kicker={home.trustKicker}
+        heading={home.trustHeading}
+        intro={home.trustIntro}
+        contrast={{ labelA: home.trustContrastLabelA, a: home.trustContrastA, labelB: home.trustContrastLabelB, b: home.trustContrastB }}
+        points={homeTrustPoints}
+        principles={home.principles}
+        className="hero-block-start"
+      />
+
+      <HeroDiscovery
+        heading={home.discoveryHeading}
+        body={home.discoveryBody}
+        note={home.discoveryNote}
+        ctas={<HeroCtas primaryLabel={home.ctaPrimary} secondaryLabel={home.ctaSecondary} onPrimary={onCtaPrimary} onSecondary={onCtaSecondary} className="hero-ctas-left" />}
         className="hero-block-start"
       />
     </>

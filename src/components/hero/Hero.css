@@ -489,7 +489,7 @@
   text-align: center;
 }
 .hero-discovery:hover { border-color: color-mix(in srgb, var(--gold) 15%, transparent); }
-.hero-discovery h3 {
+.hero-discovery h2 {
   margin: 0;
   font-family: var(--font-display);
   font-weight: 600;
@@ -497,7 +497,7 @@
   line-height: 1.25;
   color: var(--white-soft);
 }
-[dir="rtl"] .hero-discovery h3 { font-family: var(--font-ar); }
+[dir="rtl"] .hero-discovery h2 { font-family: var(--font-ar); }
 .hero-discovery p {
   margin: 0;
   max-width: 60ch;
@@ -508,6 +508,90 @@
 .hero-discovery .hero-discovery-note { color: var(--muted); font-size: var(--fs-sm); }
 .hero-discovery .hero-ctas { margin-top: var(--space-2); }
 .hero-block-start .hero-discovery { align-items: flex-start; text-align: start; margin-inline: 0; }
+.hero-discovery-block { padding-top: 0; }
+
+/* ── Trust (HeroTrust) — central claim, a two-sided contrast panel,
+   four plain text points (no cards, no icons) and the short trust
+   line. Mature and quiet: hairlines, not boxes. */
+.hero-trust-contrast {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 0;
+  max-width: 900px;
+  width: 100%;
+  margin-inline: auto;
+}
+.hero-trust-contrast:hover { border-color: color-mix(in srgb, var(--gold) 15%, transparent); }
+.hero-trust-side {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  text-align: start;
+}
+.hero-trust-side + .hero-trust-side {
+  border-inline-start: 1px solid color-mix(in srgb, var(--white-soft) 10%, transparent);
+}
+.hero-trust-side-label {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+[dir="rtl"] .hero-trust-side-label { letter-spacing: 0; text-transform: none; }
+.hero-trust-side p {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: calc(var(--fs-body) * 1.1);
+  line-height: 1.4;
+  color: var(--muted-strong);
+}
+[dir="rtl"] .hero-trust-side p { font-family: var(--font-ar); }
+.hero-trust-side.is-perennia .hero-trust-side-label { color: var(--gold); }
+.hero-trust-side.is-perennia p { color: var(--white-soft); font-weight: 600; }
+.hero-block-start .hero-trust-contrast { margin-inline: 0; }
+
+.hero-trust-points {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-5);
+}
+.hero-trust-points li {
+  padding-top: var(--space-3);
+  border-top: 1px solid color-mix(in srgb, var(--gold) 35%, transparent);
+  text-align: start;
+}
+.hero-trust-points h3 {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--fs-body);
+  color: var(--white-soft);
+}
+[dir="rtl"] .hero-trust-points h3 { font-family: var(--font-ar); }
+.hero-trust-points p {
+  margin: 0;
+  color: var(--muted-strong);
+  font-size: var(--fs-sm);
+  line-height: calc(1.6 * var(--line-height-scale));
+}
+.hero-trust .hero-trust-principles { margin-inline: auto; max-width: 80ch; }
+.hero-block-start .hero-trust-principles { justify-content: flex-start; margin-inline: 0; }
+@media (max-width: 1024px) {
+  .hero-trust-points { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .hero-trust-contrast { grid-template-columns: 1fr; }
+  .hero-trust-side + .hero-trust-side {
+    border-inline-start: none;
+    border-top: 1px solid color-mix(in srgb, var(--white-soft) 10%, transparent);
+  }
+  .hero-trust-points { grid-template-columns: 1fr; gap: var(--space-4); }
+}
 .hero-block-start .hero-block-head { text-align: start; margin-inline: 0; }
 
 /* Situations: the section owns the spacing, so the inner list
