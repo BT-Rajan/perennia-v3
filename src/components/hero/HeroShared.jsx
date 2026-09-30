@@ -40,29 +40,36 @@ function HeroBlockHead({ id, kicker, heading, intro }) {
 }
 
 /**
- * A section's closing call to action: a short note beside the booking
- * button (same handler as the hero's primary CTA).
+ * The homepage's closing conversion point, after the visitor has seen
+ * who Perennia helps, what it does and how it works: what the discovery
+ * meeting is for (and is not), then the same HeroCtas as the hero —
+ * one primary booking button, one secondary. A quiet GlassPanel, not a
+ * sales banner. The hero and this panel are the only two places on the
+ * homepage body that offer booking.
  */
-function HeroBlockCta({ note, label, onClick }) {
-  if (!label || !onClick) return null;
+export function HeroDiscovery({ heading, body, note, ctas }) {
+  if (!ctas) return null;
   return (
-    <div className="hero-block-cta">
-      {note && <p>{note}</p>}
-      <Button variant="primary" onClick={onClick}>{label}</Button>
-    </div>
+    <GlassPanel className="hero-discovery">
+      {heading && <h3>{heading}</h3>}
+      {body && <p>{body}</p>}
+      {note && <p className="hero-discovery-note">{note}</p>}
+      {ctas}
+    </GlassPanel>
   );
 }
 
 /**
  * "Which situation are you in?" section under the hero — heading,
- * one-line intro, the three situation cards (HOME_TOPICS), and a
- * discovery-meeting CTA. Shared by the classic/split/editorial layouts;
- * each passes its own list/card classes (grid, stacked rows, or a
- * horizontal strip) so only the arrangement differs, never the content.
- * Clicking a card still hands its question to the AI Assistant.
+ * one-line intro and the three situation cards (HOME_TOPICS). Shared by
+ * the classic/split/editorial layouts; each passes its own list/card
+ * classes (grid, stacked rows, or a horizontal strip) so only the
+ * arrangement differs, never the content. Clicking a card still hands
+ * its question to the AI Assistant. No booking CTA here on purpose —
+ * see HeroDiscovery.
  */
 export function HeroSituations({
-  heading, intro, topics, onTopicClick, ctaNote, ctaLabel, onCta,
+  heading, intro, topics, onTopicClick,
   className, listClassName, cardClassName,
 }) {
   if (!topics?.length) return null;
@@ -79,7 +86,6 @@ export function HeroSituations({
           </button>
         ))}
       </div>
-      <HeroBlockCta note={ctaNote} label={ctaLabel} onClick={onCta} />
     </section>
   );
 }

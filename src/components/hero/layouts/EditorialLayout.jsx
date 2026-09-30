@@ -1,4 +1,4 @@
-import { HeroButtons, HeroChatComposer, HeroCtas, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroCapabilities, HeroProcess, HeroPrinciples, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
+import { HeroButtons, HeroChatComposer, HeroCtas, HeroDiscovery, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroCapabilities, HeroProcess, HeroPrinciples, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
 
 /**
  * "editorial" — a bigger, left-aligned headline and a narrower
@@ -40,9 +40,6 @@ export default function EditorialLayout({ home, heroButtons, lang, quickDraft, s
         intro={home.situationsIntro}
         topics={homeTopics}
         onTopicClick={onTopicClick}
-        ctaNote={home.situationsCtaNote}
-        ctaLabel={home.ctaPrimary}
-        onCta={onCtaPrimary}
         className="hero-block-start"
         listClassName="hero-editorial-strip"
         cardClassName="hero-section-compact"
@@ -62,7 +59,14 @@ export default function EditorialLayout({ home, heroButtons, lang, quickDraft, s
         heading={home.processHeading}
         intro={home.processIntro}
         steps={homeProcess}
-        ctas={<HeroCtas primaryLabel={home.ctaPrimary} secondaryLabel={home.ctaSecondary} onPrimary={onCtaPrimary} onSecondary={onCtaSecondary} className="hero-ctas-left" />}
+        ctas={
+          <HeroDiscovery
+            heading={home.discoveryHeading}
+            body={home.discoveryBody}
+            note={home.discoveryNote}
+            ctas={<HeroCtas primaryLabel={home.ctaPrimary} secondaryLabel={home.ctaSecondary} onPrimary={onCtaPrimary} onSecondary={onCtaSecondary} className="hero-ctas-left" />}
+          />
+        }
         className="hero-block-start"
       />
     </>

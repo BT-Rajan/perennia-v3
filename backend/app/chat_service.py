@@ -59,7 +59,7 @@ def _contact_block(db: Session, lang: str) -> str:
 
 
 def _nudge_text(lang: str, turns_used: int, max_turns: int) -> str:
-    """Steers the assistant toward booking a call as the session's
+    """Steers the assistant toward booking a discovery meeting as the session's
     message budget runs low. Nothing shown to the visitor until the
     model naturally works it into a reply."""
     if max_turns - turns_used > 3:
@@ -67,11 +67,11 @@ def _nudge_text(lang: str, turns_used: int, max_turns: int) -> str:
     if lang == "ar":
         return (
             "\n\nملاحظة مهمة: تبقّت بضع رسائل فقط في هذه الجلسة. اختم إجابتك القادمة بدعوة لطيفة "
-            "وغير مُلحّة لحجز موعد مع الفريق لمناقشة التفاصيل مباشرة، دون تجاهل سؤال الزائر."
+            "وغير مُلحّة لحجز اجتماع استكشافي مدته 30 دقيقة مع الفريق لمناقشة التفاصيل مباشرة، دون تجاهل سؤال الزائر."
         )
     return (
         "\n\nIMPORTANT: only a few messages remain in this session. End your next reply with a "
-        "brief, low-pressure invitation to book a short call with the team — answer their "
+        "brief, low-pressure invitation to book a 30-minute discovery meeting with the team — answer their "
         "question fully first, don't just deflect to booking."
     )
 

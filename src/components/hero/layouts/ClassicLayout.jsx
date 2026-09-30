@@ -1,4 +1,4 @@
-import { HeroButtons, HeroChatComposer, HeroCtas, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroCapabilities, HeroProcess, HeroPrinciples, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
+import { HeroButtons, HeroChatComposer, HeroCtas, HeroDiscovery, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroCapabilities, HeroProcess, HeroPrinciples, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
 
 /**
  * "classic" — the site's original, and default, homepage body:
@@ -34,9 +34,6 @@ export default function ClassicLayout({ home, heroButtons, lang, quickDraft, set
         intro={home.situationsIntro}
         topics={homeTopics}
         onTopicClick={onTopicClick}
-        ctaNote={home.situationsCtaNote}
-        ctaLabel={home.ctaPrimary}
-        onCta={onCtaPrimary}
         listClassName="hero-sections"
       />
 
@@ -53,7 +50,14 @@ export default function ClassicLayout({ home, heroButtons, lang, quickDraft, set
         heading={home.processHeading}
         intro={home.processIntro}
         steps={homeProcess}
-        ctas={<HeroCtas primaryLabel={home.ctaPrimary} secondaryLabel={home.ctaSecondary} onPrimary={onCtaPrimary} onSecondary={onCtaSecondary} />}
+        ctas={
+          <HeroDiscovery
+            heading={home.discoveryHeading}
+            body={home.discoveryBody}
+            note={home.discoveryNote}
+            ctas={<HeroCtas primaryLabel={home.ctaPrimary} secondaryLabel={home.ctaSecondary} onPrimary={onCtaPrimary} onSecondary={onCtaSecondary} />}
+          />
+        }
       />
     </>
   );

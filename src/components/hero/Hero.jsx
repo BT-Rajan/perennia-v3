@@ -54,7 +54,6 @@ function withHomeFallbacks(home, lang) {
     principles: home.principles ?? fallback.principles,
     situationsHeading: home.situationsHeading ?? fallback.situationsHeading,
     situationsIntro: home.situationsIntro ?? fallback.situationsIntro,
-    situationsCtaNote: home.situationsCtaNote ?? fallback.situationsCtaNote,
     capabilitiesHeading: home.capabilitiesHeading ?? fallback.capabilitiesHeading,
     capabilitiesIntro: home.capabilitiesIntro ?? fallback.capabilitiesIntro,
     capabilitiesRoles: home.capabilitiesRoles ?? fallback.capabilitiesRoles,
@@ -62,6 +61,9 @@ function withHomeFallbacks(home, lang) {
     processKicker: home.processKicker ?? fallback.processKicker,
     processHeading: home.processHeading ?? fallback.processHeading,
     processIntro: home.processIntro ?? fallback.processIntro,
+    discoveryHeading: home.discoveryHeading ?? fallback.discoveryHeading,
+    discoveryBody: home.discoveryBody ?? fallback.discoveryBody,
+    discoveryNote: home.discoveryNote ?? fallback.discoveryNote,
   };
 }
 

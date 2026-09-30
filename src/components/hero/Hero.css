@@ -475,21 +475,40 @@
   font-size: var(--fs-body);
   line-height: calc(1.6 * var(--line-height-scale));
 }
-.hero-block-cta {
+/* ── Discovery panel (HeroDiscovery) — the homepage's closing
+   conversion point: a restrained GlassPanel, not a sales banner. */
+.hero-discovery {
+  max-width: 760px;
+  width: 100%;
+  margin: var(--space-3) auto 0;
+  padding: var(--space-6) var(--space-5);
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: var(--space-3) var(--space-4);
+  gap: var(--space-3);
   text-align: center;
 }
-.hero-block-cta p { margin: 0; color: var(--muted-strong); font-size: var(--fs-sm); }
-.hero-block-cta .btn {
-  white-space: normal;
-  box-shadow: 0 6px 18px color-mix(in srgb, var(--gold) 22%, transparent);
+.hero-discovery:hover { border-color: color-mix(in srgb, var(--gold) 15%, transparent); }
+.hero-discovery h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--fs-h2);
+  line-height: 1.25;
+  color: var(--white-soft);
 }
+[dir="rtl"] .hero-discovery h3 { font-family: var(--font-ar); }
+.hero-discovery p {
+  margin: 0;
+  max-width: 60ch;
+  color: var(--muted-strong);
+  font-size: var(--fs-body);
+  line-height: calc(1.6 * var(--line-height-scale));
+}
+.hero-discovery .hero-discovery-note { color: var(--muted); font-size: var(--fs-sm); }
+.hero-discovery .hero-ctas { margin-top: var(--space-2); }
+.hero-block-start .hero-discovery { align-items: flex-start; text-align: start; margin-inline: 0; }
 .hero-block-start .hero-block-head { text-align: start; margin-inline: 0; }
-.hero-block-start .hero-block-cta { justify-content: flex-start; text-align: start; }
 
 /* Situations: the section owns the spacing, so the inner list
    containers (grid / rows / strip) drop their own when nested in it. */

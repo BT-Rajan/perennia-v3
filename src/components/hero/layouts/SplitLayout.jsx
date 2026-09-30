@@ -1,4 +1,4 @@
-import { HeroButtons, HeroCapabilities, HeroProcess, HeroChatComposer, HeroCtas, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroPrinciples, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
+import { HeroButtons, HeroCapabilities, HeroProcess, HeroChatComposer, HeroCtas, HeroDiscovery, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroPrinciples, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
 
 /**
  * "split" — two-column: headline, tagline, and the quick-chat box
@@ -62,7 +62,14 @@ export default function SplitLayout({ home, heroButtons, lang, quickDraft, setQu
         heading={home.processHeading}
         intro={home.processIntro}
         steps={homeProcess}
-        ctas={<HeroCtas primaryLabel={home.ctaPrimary} secondaryLabel={home.ctaSecondary} onPrimary={onCtaPrimary} onSecondary={onCtaSecondary} className="hero-ctas-left" />}
+        ctas={
+          <HeroDiscovery
+            heading={home.discoveryHeading}
+            body={home.discoveryBody}
+            note={home.discoveryNote}
+            ctas={<HeroCtas primaryLabel={home.ctaPrimary} secondaryLabel={home.ctaSecondary} onPrimary={onCtaPrimary} onSecondary={onCtaSecondary} className="hero-ctas-left" />}
+          />
+        }
         className="hero-block-start"
       />
     </>

@@ -417,10 +417,12 @@ _DEFS: list[SettingDef] = [
         "en": "You are Perennia's AI assistant. Be warm, concise, and professional. Early in the "
               "conversation, ask the visitor's name so you can personalize the chat and so the team can "
               "follow up. Help visitors understand Perennia's AI products and services, and encourage "
-              "booking a call via \"Talk to Us\" when they show real interest.",
+              "booking a 30-minute discovery meeting (\"Book a 30-Minute Discovery Meeting\") when they show "
+              "real interest.",
         "ar": "أنت المساعد الذكي لشركة بيرينيا. كن ودودًا ومختصرًا ومحترفًا. في وقت مبكر من المحادثة، اسأل "
               "الزائر عن اسمه حتى تتمكن من تخصيص المحادثة ومتابعة الطلب. ساعد الزوار على فهم منتجات وخدمات "
-              "بيرينيا، وشجعهم على حجز مكالمة عبر \"تحدث إلينا\" عند إبداء اهتمام حقيقي.",
+              "بيرينيا، وشجعهم على حجز اجتماع استكشافي مدته 30 دقيقة عبر \"احجز اجتماعًا استكشافيًا لمدة 30 دقيقة\" عند "
+              "إبداء اهتمام حقيقي.",
     }, i18n=True),
     SettingDef("chat.unavailable_message", "chat", "Fallback message (LLM unavailable)", SettingType.TEXT, {
         "en": "Thanks for sharing that! Someone from our team will follow up shortly. "
@@ -618,7 +620,11 @@ _DEFS: list[SettingDef] = [
             "situations_heading": "A technology partner at every stage",
             "situations_intro": "Whatever stage your business is at, Perennia helps you adopt technology "
                                 "reliably, practically and with a clear path forward.",
-            "situations_cta_note": "Not sure which describes you? That is what the discovery meeting is for.",
+            "discovery_heading": "Let's understand the problem before deciding what to build.",
+            "discovery_body": "In 30 minutes we look at your business, your current process or problem, "
+                              "the outcome you want, whether technology can help — and what the sensible "
+                              "next step is.",
+            "discovery_note": "A working conversation, not a sales pitch — no solution or price is committed in the meeting.",
             "capabilities_heading": "Three capabilities. One technology partner.",
             "capabilities_intro": "Understand the business. Decide what technology is needed. Build it. "
                                   "Put it into operation. Help the business adapt.",
@@ -652,7 +658,10 @@ _DEFS: list[SettingDef] = [
             "situations_heading": "شريك تقني في كل مرحلة",
             "situations_intro": "أيًّا كانت المرحلة التي تمر بها أعمالك، تساعدك بيرينيا على تبنّي التقنية "
                                 "بشكل موثوق وعملي، مع مسار واضح للمضي قدمًا.",
-            "situations_cta_note": "لست متأكدًا أيّها ينطبق عليك؟ هذا بالضبط هدف الاجتماع الاستكشافي.",
+            "discovery_heading": "لنفهم المشكلة قبل أن نقرر ما يجب بناؤه.",
+            "discovery_body": "خلال 30 دقيقة نتعرّف على أعمالك، والعملية أو المشكلة الحالية، والنتيجة التي "
+                              "تريدها، وما إذا كانت التقنية قادرة على المساعدة — وما الخطوة التالية المناسبة.",
+            "discovery_note": "محادثة عمل، لا عرض مبيعات — لا نلتزم في الاجتماع بحل أو سعر.",
             "capabilities_heading": "ثلاث قدرات. شريك تقني واحد.",
             "capabilities_intro": "نفهم الأعمال. نحدد التقنية المطلوبة. نبنيها. نضعها قيد التشغيل. "
                                   "ونساعد الأعمال على التكيّف.",
@@ -673,10 +682,11 @@ _DEFS: list[SettingDef] = [
     }, i18n=True,
                help_text="welcome, tagline, hint, lang_switch, hero_statement, tagline_line1, tagline_line2, "
                           "eyebrow, supporting_text, cta_primary, cta_secondary, principles, assistant_label, example_prompts, "
-                          "situations_heading, situations_intro, situations_cta_note (the section under the hero), "
+                          "situations_heading, situations_intro (the section under the hero), "
                           "capabilities_heading, capabilities_intro, capabilities_roles, "
                           "capabilities_scope_note (the Technology/AI/Advisory section), "
-                          "process_kicker, process_heading, process_intro (the how-we-work section). "
+                          "process_kicker, process_heading, process_intro (the how-we-work section), discovery_heading, "
+                          "discovery_body, discovery_note (the discovery-meeting panel after it). "
                           "eyebrow is the static line above the headline. cta_primary opens "
                           "the booking panel (or the Contact page if booking is off); cta_secondary opens the "
                           "products page. hero_statement (empty by default) types itself out on the homepage "

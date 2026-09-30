@@ -57,10 +57,10 @@ PAGE_META = {
     },
     "contact": {
         "en": {"nav_label": "Contact Us", "section_title": "Contact Us",
-               "section_body": "Ready to talk? Use \"Talk to Us\" to book time directly, or start a chat below and our assistant will connect you with the right person.",
+               "section_body": "Ready to talk? Use \"Book a 30-Minute Discovery Meeting\" to pick a time directly, or start a chat below and our assistant will connect you with the right person.",
                "tagline_line1": "Let's ", "tagline_line2": "Talk", "tagline_sub": "GET IN TOUCH"},
         "ar": {"nav_label": "تواصل معنا", "section_title": "تواصل معنا",
-               "section_body": "جاهز للتحدث؟ استخدم \"تحدث إلينا\" لحجز موعد مباشرة، أو ابدأ محادثة أدناه وسيقوم مساعدنا بتوصيلك بالشخص المناسب.",
+               "section_body": "جاهز للتحدث؟ استخدم \"احجز اجتماعًا استكشافيًا لمدة 30 دقيقة\" لاختيار موعد مباشرة، أو ابدأ محادثة أدناه وسيقوم مساعدنا بتوصيلك بالشخص المناسب.",
                "tagline_line1": "لنتحدث", "tagline_line2": "", "tagline_sub": "تواصل معنا"},
     },
 }
@@ -71,9 +71,9 @@ FAQ_SEED = [
      "ar": {"q": "ما هي الخدمات التي تقدمها بيرينيا؟",
             "a": "نصمم مساعدين مدعومين بالذكاء الاصطناعي وحلول أتمتة ومنتجات رقمية مخصصة لعملك — من الفكرة وحتى الدعم الإنتاجي."}},
     {"en": {"q": "How can I book a consultation?",
-            "a": "Tap \"Talk to Us\" above, choose a free slot, and you'll get an instant confirmation by email — no back-and-forth required."},
+            "a": "Tap \"Book a 30-Minute Discovery Meeting\", choose a free slot, and you'll get an instant confirmation by email — no back-and-forth required."},
      "ar": {"q": "كيف يمكنني حجز استشارة؟",
-            "a": "اضغط على \"تحدث إلينا\" أعلاه، اختر موعدًا متاحًا، وستحصل على تأكيد فوري عبر البريد الإلكتروني."}},
+            "a": "اضغط على \"احجز اجتماعًا استكشافيًا لمدة 30 دقيقة\"، اختر موعدًا متاحًا، وستحصل على تأكيد فوري عبر البريد الإلكتروني."}},
     {"en": {"q": "Do you support Arabic and English?",
             "a": "Yes — the whole experience, including this assistant, works fully in both English and Arabic with proper right-to-left layout."},
      "ar": {"q": "هل تدعمون اللغتين العربية والإنجليزية؟",
@@ -101,7 +101,11 @@ COPY_HOME = {
            "situations_heading": "A technology partner at every stage",
            "situations_intro": "Whatever stage your business is at, Perennia helps you adopt technology "
                                "reliably, practically and with a clear path forward.",
-           "situations_cta_note": "Not sure which describes you? That is what the discovery meeting is for.",
+           "discovery_heading": "Let's understand the problem before deciding what to build.",
+           "discovery_body": "In 30 minutes we look at your business, your current process or problem, "
+                             "the outcome you want, whether technology can help — and what the sensible "
+                             "next step is.",
+           "discovery_note": "A working conversation, not a sales pitch — no solution or price is committed in the meeting.",
            "capabilities_heading": "Three capabilities. One technology partner.",
            "capabilities_intro": "Understand the business. Decide what technology is needed. Build it. "
                                  "Put it into operation. Help the business adapt.",
@@ -129,7 +133,10 @@ COPY_HOME = {
            "situations_heading": "شريك تقني في كل مرحلة",
            "situations_intro": "أيًّا كانت المرحلة التي تمر بها أعمالك، تساعدك بيرينيا على تبنّي التقنية "
                                "بشكل موثوق وعملي، مع مسار واضح للمضي قدمًا.",
-           "situations_cta_note": "لست متأكدًا أيّها ينطبق عليك؟ هذا بالضبط هدف الاجتماع الاستكشافي.",
+           "discovery_heading": "لنفهم المشكلة قبل أن نقرر ما يجب بناؤه.",
+           "discovery_body": "خلال 30 دقيقة نتعرّف على أعمالك، والعملية أو المشكلة الحالية، والنتيجة التي "
+                             "تريدها، وما إذا كانت التقنية قادرة على المساعدة — وما الخطوة التالية المناسبة.",
+           "discovery_note": "محادثة عمل، لا عرض مبيعات — لا نلتزم في الاجتماع بحل أو سعر.",
            "capabilities_heading": "ثلاث قدرات. شريك تقني واحد.",
            "capabilities_intro": "نفهم الأعمال. نحدد التقنية المطلوبة. نبنيها. نضعها قيد التشغيل. "
                                  "ونساعد الأعمال على التكيّف.",
@@ -150,14 +157,14 @@ COPY_HOME = {
 COPY_CHAT = {
     "en": {"tagline_line1": "Solving Today. ", "tagline_line2": "Shaping Tomorrow.",
            "sub": "AI-POWERED TECHNOLOGY & INNOVATION", "header": "Perennia Assistant",
-           "book_btn": "Talk to Us", "faq_title": "Quick Questions",
+           "book_btn": "Book a 30-Minute Discovery Meeting", "faq_title": "Quick Questions",
            "input_placeholder": "Type your message…",
            "welcome_msg": "Hello! I'm Perennia's AI assistant. Before we get started, may I know your name? "
                           "It helps us build a good relationship with you and follow up properly.",
            "lang_switch": "AR | عربي"},
     "ar": {"tagline_line1": "حلول اليوم. ", "tagline_line2": "لصناعة الغد.",
            "sub": "تقنية وابتكار مدعومان بالذكاء الاصطناعي", "header": "مساعد بيرينيا",
-           "book_btn": "تحدث إلينا", "faq_title": "أسئلة سريعة",
+           "book_btn": "احجز اجتماعًا استكشافيًا لمدة 30 دقيقة", "faq_title": "أسئلة سريعة",
            "input_placeholder": "اكتب رسالتك…",
            "welcome_msg": "مرحباً! أنا المساعد الذكي لبيرينيا. قبل أن نبدأ، هل لي أن أعرف اسمك؟ "
                           "هذا يساعدنا على بناء علاقة أفضل معك ومتابعة طلبك بشكل صحيح.",
@@ -165,7 +172,9 @@ COPY_CHAT = {
 }
 
 COPY_BOOKING = {
-    "en": {"title": "Talk to Us", "subtitle": "Pick a time that works for you — we'll confirm by email.",
+    "en": {"title": "Book a 30-Minute Discovery Meeting",
+           "subtitle": "A conversation about your business, the problem and the outcome you want. "
+                       "Pick a time — we'll confirm by email.",
            "tab_new": "New Appointment", "tab_manage": "Manage Booking", "date": "Date",
            "slot": "Available times", "slot_empty": "Pick a date to see available times",
            "name": "Name", "email": "Email", "phone": "Phone (optional)",
@@ -196,7 +205,9 @@ COPY_BOOKING = {
                "booking_disabled": "Booking is currently unavailable — please check back soon.",
                "generic": "Something went wrong — please try again.",
            }},
-    "ar": {"title": "تحدث إلينا", "subtitle": "اختر الوقت المناسب لك — سنؤكد ذلك عبر البريد الإلكتروني.",
+    "ar": {"title": "احجز اجتماعًا استكشافيًا لمدة 30 دقيقة",
+           "subtitle": "محادثة حول أعمالك والمشكلة والنتيجة التي تريدها. اختر الوقت المناسب — "
+                       "سنؤكد عبر البريد الإلكتروني.",
            "tab_new": "موعد جديد", "tab_manage": "إدارة الحجز", "date": "التاريخ",
            "slot": "الأوقات المتاحة", "slot_empty": "اختر تاريخًا لرؤية الأوقات المتاحة",
            "name": "الاسم", "email": "البريد الإلكتروني", "phone": "الهاتف (اختياري)",

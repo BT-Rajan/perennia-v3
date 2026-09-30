@@ -168,7 +168,7 @@ export const SECTIONS = {
     },
     contact: {
       title: "Contact Us",
-      body: "Ready to talk? Use \"Talk to Us\" to book time directly, or start a chat below and our assistant will connect you with the right person.",
+      body: "Ready to talk? Use \"Book a 30-Minute Discovery Meeting\" to pick a time directly, or start a chat below and our assistant will connect you with the right person.",
     },
   },
   ar: {
@@ -186,7 +186,7 @@ export const SECTIONS = {
     },
     contact: {
       title: "تواصل معنا",
-      body: "جاهز للتحدث؟ استخدم \"تحدث إلينا\" لحجز موعد مباشرة، أو ابدأ محادثة أدناه وسيقوم مساعدنا بتوصيلك بالشخص المناسب.",
+      body: "جاهز للتحدث؟ استخدم \"احجز اجتماعًا استكشافيًا لمدة 30 دقيقة\" لاختيار موعد مباشرة، أو ابدأ محادثة أدناه وسيقوم مساعدنا بتوصيلك بالشخص المناسب.",
     },
   },
 };
@@ -213,7 +213,9 @@ export const COPY = {
       ctaSecondary: "Explore What We Build",
       situationsHeading: "A technology partner at every stage",
       situationsIntro: "Whatever stage your business is at, Perennia helps you adopt technology reliably, practically and with a clear path forward.",
-      situationsCtaNote: "Not sure which describes you? That is what the discovery meeting is for.",
+      discoveryHeading: "Let's understand the problem before deciding what to build.",
+      discoveryBody: "In 30 minutes we look at your business, your current process or problem, the outcome you want, whether technology can help — and what the sensible next step is.",
+      discoveryNote: "A working conversation, not a sales pitch — no solution or price is committed in the meeting.",
       capabilitiesHeading: "Three capabilities. One technology partner.",
       capabilitiesIntro: "Understand the business. Decide what technology is needed. Build it. Put it into operation. Help the business adapt.",
       capabilitiesRoles: "Work with us as an advisor, an implementation partner, a software builder, an AI implementation partner — or a combination of these.",
@@ -239,7 +241,7 @@ export const COPY = {
       header: "AI Assistant",
       onlineStatus: "Online · AI Assistant",
       poweredBy: "Powered by",
-      bookBtn: "Book a call",
+      bookBtn: "Book a 30-Minute Discovery Meeting",
       faqTitle: "Quick Questions",
       inputPlaceholder: "Ask Perennia AI anything…",
       welcomeMsg:
@@ -254,8 +256,8 @@ export const COPY = {
       unmuteTts: "Unmute replies",
     },
     booking: {
-      title: "Talk to Us",
-      subtitle: "Pick a time that works for you — we'll confirm by email.",
+      title: "Book a 30-Minute Discovery Meeting",
+      subtitle: "A conversation about your business, the problem and the outcome you want. Pick a time — we'll confirm by email.",
       tabNew: "New Appointment",
       tabManage: "Manage Booking",
       date: "Date",
@@ -326,7 +328,9 @@ export const COPY = {
       ctaSecondary: "استكشف ما نبنيه",
       situationsHeading: "شريك تقني في كل مرحلة",
       situationsIntro: "أيًّا كانت المرحلة التي تمر بها أعمالك، تساعدك بيرينيا على تبنّي التقنية بشكل موثوق وعملي، مع مسار واضح للمضي قدمًا.",
-      situationsCtaNote: "لست متأكدًا أيّها ينطبق عليك؟ هذا بالضبط هدف الاجتماع الاستكشافي.",
+      discoveryHeading: "لنفهم المشكلة قبل أن نقرر ما يجب بناؤه.",
+      discoveryBody: "خلال 30 دقيقة نتعرّف على أعمالك، والعملية أو المشكلة الحالية، والنتيجة التي تريدها، وما إذا كانت التقنية قادرة على المساعدة — وما الخطوة التالية المناسبة.",
+      discoveryNote: "محادثة عمل، لا عرض مبيعات — لا نلتزم في الاجتماع بحل أو سعر.",
       capabilitiesHeading: "ثلاث قدرات. شريك تقني واحد.",
       capabilitiesIntro: "نفهم الأعمال. نحدد التقنية المطلوبة. نبنيها. نضعها قيد التشغيل. ونساعد الأعمال على التكيّف.",
       capabilitiesRoles: "اعمل معنا كمستشار، أو شريك تنفيذ، أو مطوّر برمجيات، أو شريك لتطبيق الذكاء الاصطناعي — أو مزيج من ذلك.",
@@ -352,7 +356,7 @@ export const COPY = {
       header: "المساعد الذكي",
       onlineStatus: "متصل الآن · مساعد ذكي",
       poweredBy: "بدعم من",
-      bookBtn: "احجز مكالمة",
+      bookBtn: "احجز اجتماعًا استكشافيًا لمدة 30 دقيقة",
       faqTitle: "أسئلة سريعة",
       inputPlaceholder: "اسأل مساعد بيرينيا أي شيء…",
       welcomeMsg:
@@ -367,8 +371,8 @@ export const COPY = {
       unmuteTts: "تفعيل الردود الصوتية",
     },
     booking: {
-      title: "تحدث إلينا",
-      subtitle: "اختر الوقت المناسب لك — سنؤكد ذلك عبر البريد الإلكتروني.",
+      title: "احجز اجتماعًا استكشافيًا لمدة 30 دقيقة",
+      subtitle: "محادثة حول أعمالك والمشكلة والنتيجة التي تريدها. اختر الوقت المناسب — سنؤكد عبر البريد الإلكتروني.",
       tabNew: "موعد جديد",
       tabManage: "إدارة الحجز",
       date: "التاريخ",
@@ -425,13 +429,13 @@ export const COPY = {
 export const FAQ = {
   en: [
     { q: "What services does Perennia offer?", a: "We build AI-powered assistants, automation, and digital products tailored to your business — from concept through to production support." },
-    { q: "How can I book a consultation?", a: "Tap \"Talk to Us\" above, choose a free slot, and you'll get an instant confirmation by email — no back-and-forth required." },
+    { q: "How can I book a discovery meeting?", a: "Tap \"Book a 30-Minute Discovery Meeting\", choose a free slot, and you'll get an instant confirmation by email — no back-and-forth required." },
     { q: "Do you support Arabic and English?", a: "Yes — the whole experience, including this assistant, works fully in both English and Arabic with proper right-to-left layout." },
     { q: "Where are you located?", a: "We work with clients globally and meet either virtually or in person — ask during booking and we'll accommodate you." },
   ],
   ar: [
     { q: "ما هي الخدمات التي تقدمها بيرينيا؟", a: "نصمم مساعدين مدعومين بالذكاء الاصطناعي وحلول أتمتة ومنتجات رقمية مخصصة لعملك — من الفكرة وحتى الدعم الإنتاجي." },
-    { q: "كيف يمكنني حجز استشارة؟", a: "اضغط على \"تحدث إلينا\" أعلاه، اختر موعدًا متاحًا، وستحصل على تأكيد فوري عبر البريد الإلكتروني." },
+    { q: "كيف يمكنني حجز اجتماع استكشافي؟", a: "اضغط على \"احجز اجتماعًا استكشافيًا لمدة 30 دقيقة\"، اختر موعدًا متاحًا، وستحصل على تأكيد فوري عبر البريد الإلكتروني." },
     { q: "هل تدعمون اللغتين العربية والإنجليزية؟", a: "نعم — التجربة بأكملها، بما في ذلك هذا المساعد، تعمل بالكامل باللغتين مع تخطيط صحيح من اليمين إلى اليسار." },
     { q: "أين يقع مقركم؟", a: "نعمل مع عملاء حول العالم ونلتقي افتراضيًا أو شخصيًا — أخبرنا أثناء الحجز وسنوفر لك ما يناسبك." },
   ],
