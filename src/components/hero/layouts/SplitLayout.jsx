@@ -1,4 +1,4 @@
-import { HeroButtons, HeroCapabilities, HeroChatComposer, HeroCtas, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroPrinciples, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
+import { HeroButtons, HeroCapabilities, HeroProcess, HeroChatComposer, HeroCtas, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroPrinciples, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
 
 /**
  * "split" — two-column: headline, tagline, and the quick-chat box
@@ -6,7 +6,7 @@ import { HeroButtons, HeroCapabilities, HeroChatComposer, HeroCtas, HeroEyebrow,
  * on the other. Stacks to a single column (main content first, then
  * nav) below the tablet breakpoint — see .hero-split-* in Hero.css.
  */
-export default function SplitLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, onCtaPrimary, onCtaSecondary, copy, homeTopics, homeCapabilities, onTopicClick, headlineTypingSpeedCps }) {
+export default function SplitLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, onCtaPrimary, onCtaSecondary, copy, homeTopics, homeCapabilities, homeProcess, onTopicClick, headlineTypingSpeedCps }) {
   return (
     <>
       <div className="hero-split-wrap">
@@ -54,6 +54,14 @@ export default function SplitLayout({ home, heroButtons, lang, quickDraft, setQu
         items={homeCapabilities}
         roles={home.capabilitiesRoles}
         scopeNote={home.capabilitiesScopeNote}
+        className="hero-block-start"
+      />
+
+      <HeroProcess
+        kicker={home.processKicker}
+        heading={home.processHeading}
+        intro={home.processIntro}
+        steps={homeProcess}
         ctas={<HeroCtas primaryLabel={home.ctaPrimary} secondaryLabel={home.ctaSecondary} onPrimary={onCtaPrimary} onSecondary={onCtaSecondary} className="hero-ctas-left" />}
         className="hero-block-start"
       />

@@ -28,10 +28,11 @@ export function HeroCtas({ primaryLabel, secondaryLabel, onPrimary, onSecondary,
  * Heading + one-line intro shared by every homepage section below the
  * hero (situations, capabilities, …) so they read as one family.
  */
-function HeroBlockHead({ id, heading, intro }) {
+function HeroBlockHead({ id, kicker, heading, intro }) {
   if (!heading && !intro) return null;
   return (
     <div className="hero-block-head">
+      {kicker && <p className="hero-eyebrow hero-block-kicker">{kicker}</p>}
       {heading && <h2 id={id}>{heading}</h2>}
       {intro && <p>{intro}</p>}
     </div>
@@ -88,10 +89,11 @@ export function HeroSituations({
  * as three columns of ONE GlassPanel (the design system's shared
  * surface, so it follows the admin surface-style setting), deliberately
  * not three more cards: these are facets of one partner, not separate
- * services. Closes with the ways a customer can engage, the scope/
- * investment note (no prices, by design) and the hero's own CTAs.
+ * services. Closes with the ways a customer can engage and the scope/
+ * investment note (no prices, by design); the CTAs follow the process
+ * section right after it.
  */
-export function HeroCapabilities({ heading, intro, items, roles, scopeNote, ctas, className }) {
+export function HeroCapabilities({ heading, intro, items, roles, scopeNote, className }) {
   if (!items?.length) return null;
   return (
     <section className={`hero-block hero-capabilities ${className || ""}`.trim()} aria-labelledby="hero-capabilities-heading">
@@ -111,6 +113,32 @@ export function HeroCapabilities({ heading, intro, items, roles, scopeNote, ctas
           {scopeNote && <p className="hero-capabilities-scope">{scopeNote}</p>}
         </div>
       )}
+    </section>
+  );
+}
+
+/**
+ * "How we work" — the seven-step method (HOME_PROCESS) as one ordered
+ * list: a horizontal timeline on desktop, a vertical one on mobile
+ * (see .hero-process in Hero.css). Plain numbered markers on a hairline
+ * — a method, not an infographic. Followed by the page's closing CTAs.
+ */
+export function HeroProcess({ kicker, heading, intro, steps, ctas, className }) {
+  if (!steps?.length) return null;
+  return (
+    <section className={`hero-block hero-process-block ${className || ""}`.trim()} aria-labelledby="hero-process-heading">
+      <HeroBlockHead id="hero-process-heading" kicker={kicker} heading={heading} intro={intro} />
+      <ol className="hero-process">
+        {steps.map(({ id, label, body }, i) => (
+          <li key={id} className="hero-process-step">
+            <span className="hero-process-marker" aria-hidden="true">{i + 1}</span>
+            <div className="hero-process-text">
+              <h3>{label}</h3>
+              <p>{body}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
       {ctas}
     </section>
   );

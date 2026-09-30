@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLang } from "../../context/LangContext.jsx";
-import { COPY, HOME_CAPABILITIES, HOME_TOPICS } from "../../data/content.js";
+import { COPY, HOME_CAPABILITIES, HOME_PROCESS, HOME_TOPICS } from "../../data/content.js";
 import TopBar from "../layout/TopBar.jsx";
 import ClassicLayout from "./layouts/ClassicLayout.jsx";
 import SplitLayout from "./layouts/SplitLayout.jsx";
@@ -59,6 +59,9 @@ function withHomeFallbacks(home, lang) {
     capabilitiesIntro: home.capabilitiesIntro ?? fallback.capabilitiesIntro,
     capabilitiesRoles: home.capabilitiesRoles ?? fallback.capabilitiesRoles,
     capabilitiesScopeNote: home.capabilitiesScopeNote ?? fallback.capabilitiesScopeNote,
+    processKicker: home.processKicker ?? fallback.processKicker,
+    processHeading: home.processHeading ?? fallback.processHeading,
+    processIntro: home.processIntro ?? fallback.processIntro,
   };
 }
 
@@ -100,6 +103,7 @@ export default function Hero({ onEnter, onNavigate, onBookingClick }) {
   }
 
   const homeCapabilities = HOME_CAPABILITIES[lang] || HOME_CAPABILITIES.en;
+  const homeProcess = HOME_PROCESS[lang] || HOME_PROCESS.en;
 
   const Layout = LAYOUTS[theme?.layoutTemplate] || ClassicLayout;
 
@@ -126,6 +130,7 @@ export default function Hero({ onEnter, onNavigate, onBookingClick }) {
         branding={branding}
         homeTopics={homeTopics}
         homeCapabilities={homeCapabilities}
+        homeProcess={homeProcess}
         onTopicClick={handleTopicClick}
       />
 

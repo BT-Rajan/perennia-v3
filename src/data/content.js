@@ -128,6 +128,30 @@ export const HOME_CAPABILITIES = {
   ],
 };
 
+// Homepage process (HeroProcess in HeroShared.jsx) — how Perennia takes
+// a business from a problem to a working solution. Rendered as one
+// ordered list: horizontal timeline on desktop, vertical on mobile.
+export const HOME_PROCESS = {
+  en: [
+    { id: "understand", label: "Understand", body: "A 30-minute discovery conversation to understand the business, problem and desired outcome." },
+    { id: "assess", label: "Assess", body: "Examine the existing process, identify gaps and determine where technology can genuinely help." },
+    { id: "propose", label: "Propose", body: "Define the solution, scope, implementation approach and investment clearly." },
+    { id: "prototype", label: "Prototype", body: "Where appropriate, demonstrate the proposed solution before committing to the full build." },
+    { id: "build", label: "Build", body: "Develop and integrate the solution around the customer's actual business process." },
+    { id: "deploy", label: "Deploy", body: "Put the technology into operation, provide training and support adoption." },
+    { id: "adapt", label: "Adapt", body: "Continue improving the solution as the business, market and requirements evolve." },
+  ],
+  ar: [
+    { id: "understand", label: "الفهم", body: "محادثة استكشافية مدتها 30 دقيقة لفهم الأعمال والمشكلة والنتيجة المطلوبة." },
+    { id: "assess", label: "التقييم", body: "دراسة العملية الحالية، وتحديد الفجوات، وتحديد أين يمكن للتقنية أن تساعد فعلًا." },
+    { id: "propose", label: "المقترح", body: "تحديد الحل ونطاق العمل وأسلوب التنفيذ والتكلفة بوضوح." },
+    { id: "prototype", label: "النموذج الأولي", body: "حيثما كان مناسبًا، نعرض الحل المقترح قبل الالتزام بالبناء الكامل." },
+    { id: "build", label: "البناء", body: "تطوير الحل ودمجه حول عمليات أعمال العميل الفعلية." },
+    { id: "deploy", label: "التشغيل", body: "وضع التقنية قيد التشغيل، وتقديم التدريب، ودعم اعتمادها." },
+    { id: "adapt", label: "التكيّف", body: "مواصلة تحسين الحل مع تطور الأعمال والسوق والمتطلبات." },
+  ],
+};
+
 export const SECTIONS = {
   en: {
     about: {
@@ -194,6 +218,9 @@ export const COPY = {
       capabilitiesIntro: "Understand the business. Decide what technology is needed. Build it. Put it into operation. Help the business adapt.",
       capabilitiesRoles: "Work with us as an advisor, an implementation partner, a software builder, an AI implementation partner — or a combination of these.",
       capabilitiesScopeNote: "Scope and investment are agreed once we understand your requirements.",
+      processKicker: "Reliable technology induction for your business",
+      processHeading: "Start with the business. Build the technology around it.",
+      processIntro: "We normally take responsibility for the whole journey — from the first conversation to the solution in operation — so you are not left coordinating several vendors.",
       principles: [
         "Business first, technology second",
         "Practical AI, not fashionable AI",
@@ -304,6 +331,9 @@ export const COPY = {
       capabilitiesIntro: "نفهم الأعمال. نحدد التقنية المطلوبة. نبنيها. نضعها قيد التشغيل. ونساعد الأعمال على التكيّف.",
       capabilitiesRoles: "اعمل معنا كمستشار، أو شريك تنفيذ، أو مطوّر برمجيات، أو شريك لتطبيق الذكاء الاصطناعي — أو مزيج من ذلك.",
       capabilitiesScopeNote: "نتفق على نطاق العمل والتكلفة بعد فهم متطلباتك.",
+      processKicker: "إدخال موثوق للتقنية إلى أعمالك",
+      processHeading: "ابدأ بالأعمال. وابنِ التقنية حولها.",
+      processIntro: "نتحمّل عادةً مسؤولية الرحلة كاملة — من المحادثة الأولى حتى تشغيل الحل — فلا تضطر إلى التنسيق بين عدة موردين.",
       principles: [
         "الأعمال أولًا، ثم التقنية",
         "ذكاء اصطناعي عملي، لا لمجرد مواكبة الموضة",

@@ -108,6 +108,10 @@ COPY_HOME = {
            "capabilities_roles": "Work with us as an advisor, an implementation partner, a software builder, "
                                  "an AI implementation partner — or a combination of these.",
            "capabilities_scope_note": "Scope and investment are agreed once we understand your requirements.",
+           "process_kicker": "Reliable technology induction for your business",
+           "process_heading": "Start with the business. Build the technology around it.",
+           "process_intro": "We normally take responsibility for the whole journey — from the first conversation "
+                            "to the solution in operation — so you are not left coordinating several vendors.",
            "principles": ["Business first, technology second", "Practical AI, not fashionable AI",
                           "Experienced technology professionals", "Built for GCC businesses",
                           "Transparent scope and investment"],
@@ -132,6 +136,10 @@ COPY_HOME = {
            "capabilities_roles": "اعمل معنا كمستشار، أو شريك تنفيذ، أو مطوّر برمجيات، أو شريك لتطبيق الذكاء "
                                  "الاصطناعي — أو مزيج من ذلك.",
            "capabilities_scope_note": "نتفق على نطاق العمل والتكلفة بعد فهم متطلباتك.",
+           "process_kicker": "إدخال موثوق للتقنية إلى أعمالك",
+           "process_heading": "ابدأ بالأعمال. وابنِ التقنية حولها.",
+           "process_intro": "نتحمّل عادةً مسؤولية الرحلة كاملة — من المحادثة الأولى حتى تشغيل الحل — فلا تضطر "
+                            "إلى التنسيق بين عدة موردين.",
            "principles": ["الأعمال أولًا، ثم التقنية", "ذكاء اصطناعي عملي، لا لمجرد مواكبة الموضة",
                           "خبراء تقنية ذوو خبرة", "فهم لبيئة الأعمال الخليجية", "نطاق عمل وتكلفة واضحان"],
            "example_prompts": ["من أين تبدأ أعمالي مع التقنية؟", "أين يمكن للذكاء الاصطناعي أن يفيد أعمالي فعلًا؟",

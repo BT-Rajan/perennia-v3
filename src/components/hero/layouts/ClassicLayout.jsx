@@ -1,4 +1,4 @@
-import { HeroButtons, HeroChatComposer, HeroCtas, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroCapabilities, HeroPrinciples, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
+import { HeroButtons, HeroChatComposer, HeroCtas, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroCapabilities, HeroProcess, HeroPrinciples, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
 
 /**
  * "classic" — the site's original, and default, homepage body:
@@ -7,7 +7,7 @@ import { HeroButtons, HeroChatComposer, HeroCtas, HeroEyebrow, HeroExamplePrompt
  * template setting did, so picking "classic" (or leaving the setting
  * unset) can never look different from what's already live.
  */
-export default function ClassicLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, onCtaPrimary, onCtaSecondary, copy, homeTopics, homeCapabilities, onTopicClick, headlineTypingSpeedCps }) {
+export default function ClassicLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, onCtaPrimary, onCtaSecondary, copy, homeTopics, homeCapabilities, homeProcess, onTopicClick, headlineTypingSpeedCps }) {
   return (
     <>
       <div className="hero-center">
@@ -46,6 +46,13 @@ export default function ClassicLayout({ home, heroButtons, lang, quickDraft, set
         items={homeCapabilities}
         roles={home.capabilitiesRoles}
         scopeNote={home.capabilitiesScopeNote}
+      />
+
+      <HeroProcess
+        kicker={home.processKicker}
+        heading={home.processHeading}
+        intro={home.processIntro}
+        steps={homeProcess}
         ctas={<HeroCtas primaryLabel={home.ctaPrimary} secondaryLabel={home.ctaSecondary} onPrimary={onCtaPrimary} onSecondary={onCtaSecondary} />}
       />
     </>

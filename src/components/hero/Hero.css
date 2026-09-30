@@ -507,6 +507,93 @@
   .hero-situations-aside .hero-block-head { text-align: center; margin-inline: auto; }
 }
 
+.hero-block-head .hero-block-kicker {
+  margin: 0 0 var(--space-2);
+  color: var(--gold);
+  font-size: var(--fs-sm);
+}
+
+/* ── Process (HeroProcess) — one ordered list. Mobile/tablet: vertical,
+   marker beside text with a hairline down the marker column. Desktop:
+   seven equal columns, markers joined by a horizontal hairline. No
+   cards, no animation. */
+.hero-process {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 640px;
+  width: 100%;
+  margin-inline: auto;
+  --marker: 30px;
+}
+.hero-process-step {
+  position: relative;
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  text-align: start;
+}
+.hero-process-marker {
+  flex: none;
+  width: var(--marker);
+  height: var(--marker);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--gold) 55%, transparent);
+  background: var(--brand-bg);
+  color: var(--gold);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  position: relative;
+  z-index: 1;
+}
+.hero-process-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  inset-inline-start: calc(var(--marker) / 2);
+  top: var(--marker);
+  bottom: calc(-1 * var(--space-4));
+  width: 1px;
+  background: color-mix(in srgb, var(--white-soft) 14%, transparent);
+}
+.hero-process-text h3 {
+  margin: 3px 0 var(--space-1);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--fs-body);
+  color: var(--white-soft);
+}
+[dir="rtl"] .hero-process-text h3 { font-family: var(--font-ar); }
+.hero-process-text p {
+  margin: 0;
+  color: var(--muted-strong);
+  font-size: var(--fs-sm);
+  line-height: calc(1.55 * var(--line-height-scale));
+}
+@media (min-width: 1025px) {
+  .hero-process {
+    max-width: none;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+  .hero-process-step { flex-direction: column; gap: var(--space-3); }
+  .hero-process-step:not(:last-child)::after {
+    top: calc(var(--marker) / 2);
+    bottom: auto;
+    inset-inline-start: calc(var(--marker) + var(--space-2));
+    inset-inline-end: calc(-1 * var(--space-4) + var(--space-2));
+    width: auto;
+    height: 1px;
+  }
+  .hero-process-text h3 { margin-top: 0; }
+}
+
 /* ── Capabilities (HeroCapabilities) — one GlassPanel split into three
    columns by hairline dividers (not three separate cards). Stacks with
    horizontal dividers on narrow screens. */
