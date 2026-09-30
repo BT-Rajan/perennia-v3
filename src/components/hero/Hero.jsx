@@ -52,6 +52,9 @@ function withHomeFallbacks(home, lang) {
     ctaPrimary: home.ctaPrimary ?? fallback.ctaPrimary,
     ctaSecondary: home.ctaSecondary ?? fallback.ctaSecondary,
     principles: home.principles ?? fallback.principles,
+    situationsHeading: home.situationsHeading ?? fallback.situationsHeading,
+    situationsIntro: home.situationsIntro ?? fallback.situationsIntro,
+    situationsCtaNote: home.situationsCtaNote ?? fallback.situationsCtaNote,
   };
 }
 
@@ -83,8 +86,8 @@ export default function Hero({ onEnter, onNavigate, onBookingClick }) {
     : () => onNavigate("contact");
   const handleCtaSecondary = pages?.products ? () => onNavigate("products") : null;
 
-  // The homepage capability buttons (Technology / AI / Advisory) aren't
-  // page links — clicking one hands its preset question straight to the
+  // The homepage situation cards (Starting Digital / Making AI
+  // Practical / Scaling Technology) aren't page links — clicking one hands its preset question straight to the
   // AI Assistant, the same handoff the quick-chat box uses above.
   const homeTopics = HOME_TOPICS[lang] || HOME_TOPICS.en;
   function handleTopicClick(topicId) {

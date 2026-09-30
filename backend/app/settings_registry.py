@@ -615,6 +615,10 @@ _DEFS: list[SettingDef] = [
                                "first digital initiative to practical AI and larger-scale transformation.",
             "cta_primary": "Book a 30-Minute Discovery Meeting",
             "cta_secondary": "Explore What We Build",
+            "situations_heading": "A technology partner at every stage",
+            "situations_intro": "Whatever stage your business is at, Perennia helps you adopt technology "
+                                "reliably, practically and with a clear path forward.",
+            "situations_cta_note": "Not sure which describes you? That is what the discovery meeting is for.",
             "principles": ["Business first, technology second", "Practical AI, not fashionable AI",
                            "Experienced technology professionals", "Built for GCC businesses",
                            "Transparent scope and investment"],
@@ -635,6 +639,10 @@ _DEFS: list[SettingDef] = [
                                "مبادرة رقمية إلى الذكاء الاصطناعي العملي والتحول على نطاق أوسع.",
             "cta_primary": "احجز اجتماعًا استكشافيًا لمدة 30 دقيقة",
             "cta_secondary": "استكشف ما نبنيه",
+            "situations_heading": "شريك تقني في كل مرحلة",
+            "situations_intro": "أيًّا كانت المرحلة التي تمر بها أعمالك، تساعدك بيرينيا على تبنّي التقنية "
+                                "بشكل موثوق وعملي، مع مسار واضح للمضي قدمًا.",
+            "situations_cta_note": "لست متأكدًا أيّها ينطبق عليك؟ هذا بالضبط هدف الاجتماع الاستكشافي.",
             "principles": ["الأعمال أولًا، ثم التقنية", "ذكاء اصطناعي عملي، لا لمجرد مواكبة الموضة",
                            "خبراء تقنية ذوو خبرة", "فهم لبيئة الأعمال الخليجية", "نطاق عمل وتكلفة واضحان"],
             "example_prompts": ["من أين تبدأ أعمالي مع التقنية؟", "أين يمكن للذكاء الاصطناعي أن يفيد أعمالي فعلًا؟",
@@ -644,7 +652,8 @@ _DEFS: list[SettingDef] = [
         },
     }, i18n=True,
                help_text="welcome, tagline, hint, lang_switch, hero_statement, tagline_line1, tagline_line2, "
-                          "eyebrow, supporting_text, cta_primary, cta_secondary, principles, assistant_label, example_prompts. "
+                          "eyebrow, supporting_text, cta_primary, cta_secondary, principles, assistant_label, example_prompts, "
+                          "situations_heading, situations_intro, situations_cta_note (the section under the hero). "
                           "eyebrow is the static line above the headline. cta_primary opens "
                           "the booking panel (or the Contact page if booking is off); cta_secondary opens the "
                           "products page. hero_statement (empty by default) types itself out on the homepage "

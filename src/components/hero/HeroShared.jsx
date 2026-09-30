@@ -24,6 +24,47 @@ export function HeroCtas({ primaryLabel, secondaryLabel, onPrimary, onSecondary,
 }
 
 /**
+ * "Which situation are you in?" section under the hero — heading,
+ * one-line intro, the three situation cards (HOME_TOPICS), and a
+ * discovery-meeting CTA. Shared by the classic/split/editorial layouts;
+ * each passes its own list/card classes (grid, stacked rows, or a
+ * horizontal strip) so only the arrangement differs, never the content.
+ * Clicking a card still hands its question to the AI Assistant.
+ */
+export function HeroSituations({
+  heading, intro, topics, onTopicClick, ctaNote, ctaLabel, onCta,
+  className, listClassName, cardClassName,
+}) {
+  if (!topics?.length) return null;
+  return (
+    <section className={`hero-situations ${className || ""}`.trim()} aria-labelledby="hero-situations-heading">
+      {(heading || intro) && (
+        <div className="hero-situations-head">
+          {heading && <h2 id="hero-situations-heading">{heading}</h2>}
+          {intro && <p>{intro}</p>}
+        </div>
+      )}
+      <div className={listClassName}>
+        {topics.map(({ id, label, audience, body }) => (
+          <button key={id} className={`hero-section ${cardClassName || ""}`.trim()} onClick={() => onTopicClick(id)}>
+            <h3>{label}</h3>
+            {audience && <span className="hero-section-audience">{audience}</span>}
+            <p>{body}</p>
+            <span className="hero-section-arrow" aria-hidden="true">→</span>
+          </button>
+        ))}
+      </div>
+      {ctaLabel && onCta && (
+        <div className="hero-situations-cta">
+          {ctaNote && <p>{ctaNote}</p>}
+          <Button variant="primary" onClick={onCta}>{ctaLabel}</Button>
+        </div>
+      )}
+    </section>
+  );
+}
+
+/**
  * Small static line above the H1 (copy.home.eyebrow) — the brand
  * proposition. Deliberately not animated: the headline beneath it must
  * be readable the moment the page paints.

@@ -1,4 +1,4 @@
-import { HeroButtons, HeroChatComposer, HeroCtas, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroPrinciples, HeroSupportingText } from "../HeroShared.jsx";
+import { HeroButtons, HeroChatComposer, HeroCtas, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroPrinciples, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
 
 /**
  * "editorial" — a bigger, left-aligned headline and a narrower
@@ -35,15 +35,18 @@ export default function EditorialLayout({ home, heroButtons, lang, quickDraft, s
         <HeroExamplePrompts prompts={home.examplePrompts} onPick={onExamplePick} className="hero-example-prompts-left" />
       </div>
 
-      <div className="hero-editorial-strip">
-        {homeTopics.map(({ id, label, body }) => (
-          <button key={id} className="hero-section hero-section-compact" onClick={() => onTopicClick(id)}>
-            <h2>{label}</h2>
-            <p>{body}</p>
-            <span className="hero-section-arrow" aria-hidden="true">→</span>
-          </button>
-        ))}
-      </div>
+      <HeroSituations
+        heading={home.situationsHeading}
+        intro={home.situationsIntro}
+        topics={homeTopics}
+        onTopicClick={onTopicClick}
+        ctaNote={home.situationsCtaNote}
+        ctaLabel={home.ctaPrimary}
+        onCta={onCtaPrimary}
+        className="hero-situations-start"
+        listClassName="hero-editorial-strip"
+        cardClassName="hero-section-compact"
+      />
     </>
   );
 }

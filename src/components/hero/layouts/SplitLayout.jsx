@@ -1,4 +1,4 @@
-import { HeroButtons, HeroChatComposer, HeroCtas, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroPrinciples, HeroSupportingText } from "../HeroShared.jsx";
+import { HeroButtons, HeroChatComposer, HeroCtas, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroPrinciples, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
 
 /**
  * "split" — two-column: headline, tagline, and the quick-chat box
@@ -34,15 +34,17 @@ export default function SplitLayout({ home, heroButtons, lang, quickDraft, setQu
         <HeroExamplePrompts prompts={home.examplePrompts} onPick={onExamplePick} className="hero-example-prompts-left" />
       </div>
 
-      <div className="hero-split-nav">
-        {homeTopics.map(({ id, label, body }) => (
-          <button key={id} className="hero-section hero-section-row" onClick={() => onTopicClick(id)}>
-            <h2>{label}</h2>
-            <p>{body}</p>
-            <span className="hero-section-arrow" aria-hidden="true">→</span>
-          </button>
-        ))}
-      </div>
+      {/* No section CTA here — this column sits right beside the hero's
+          own CTAs, so a second booking button would just repeat them. */}
+      <HeroSituations
+        heading={home.situationsHeading}
+        intro={home.situationsIntro}
+        topics={homeTopics}
+        onTopicClick={onTopicClick}
+        className="hero-situations-aside hero-situations-start"
+        listClassName="hero-split-nav"
+        cardClassName="hero-section-row"
+      />
     </div>
   );
 }

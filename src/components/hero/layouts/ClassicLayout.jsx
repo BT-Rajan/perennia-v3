@@ -1,4 +1,4 @@
-import { HeroButtons, HeroChatComposer, HeroCtas, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroPrinciples, HeroSupportingText } from "../HeroShared.jsx";
+import { HeroButtons, HeroChatComposer, HeroCtas, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroPrinciples, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
 
 /**
  * "classic" — the site's original, and default, homepage body:
@@ -29,15 +29,16 @@ export default function ClassicLayout({ home, heroButtons, lang, quickDraft, set
         <HeroExamplePrompts prompts={home.examplePrompts} onPick={onExamplePick} />
       </div>
 
-      <div className="hero-sections">
-        {homeTopics.map(({ id, label, body }) => (
-          <button key={id} className="hero-section" onClick={() => onTopicClick(id)}>
-            <h2>{label}</h2>
-            <p>{body}</p>
-            <span className="hero-section-arrow" aria-hidden="true">→</span>
-          </button>
-        ))}
-      </div>
+      <HeroSituations
+        heading={home.situationsHeading}
+        intro={home.situationsIntro}
+        topics={homeTopics}
+        onTopicClick={onTopicClick}
+        ctaNote={home.situationsCtaNote}
+        ctaLabel={home.ctaPrimary}
+        onCta={onCtaPrimary}
+        listClassName="hero-sections"
+      />
     </>
   );
 }

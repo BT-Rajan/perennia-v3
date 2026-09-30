@@ -98,6 +98,10 @@ COPY_HOME = {
            "supporting_text": "Perennia helps GCC businesses adopt, build and scale technology — from their "
                               "first digital initiative to practical AI and larger-scale transformation.",
            "cta_primary": "Book a 30-Minute Discovery Meeting", "cta_secondary": "Explore What We Build",
+           "situations_heading": "A technology partner at every stage",
+           "situations_intro": "Whatever stage your business is at, Perennia helps you adopt technology "
+                               "reliably, practically and with a clear path forward.",
+           "situations_cta_note": "Not sure which describes you? That is what the discovery meeting is for.",
            "principles": ["Business first, technology second", "Practical AI, not fashionable AI",
                           "Experienced technology professionals", "Built for GCC businesses",
                           "Transparent scope and investment"],
@@ -112,6 +116,10 @@ COPY_HOME = {
            "supporting_text": "تساعد بيرينيا الشركات في دول الخليج على تبنّي التقنية وبنائها وتوسيعها — من أول "
                               "مبادرة رقمية إلى الذكاء الاصطناعي العملي والتحول على نطاق أوسع.",
            "cta_primary": "احجز اجتماعًا استكشافيًا لمدة 30 دقيقة", "cta_secondary": "استكشف ما نبنيه",
+           "situations_heading": "شريك تقني في كل مرحلة",
+           "situations_intro": "أيًّا كانت المرحلة التي تمر بها أعمالك، تساعدك بيرينيا على تبنّي التقنية "
+                               "بشكل موثوق وعملي، مع مسار واضح للمضي قدمًا.",
+           "situations_cta_note": "لست متأكدًا أيّها ينطبق عليك؟ هذا بالضبط هدف الاجتماع الاستكشافي.",
            "principles": ["الأعمال أولًا، ثم التقنية", "ذكاء اصطناعي عملي، لا لمجرد مواكبة الموضة",
                           "خبراء تقنية ذوو خبرة", "فهم لبيئة الأعمال الخليجية", "نطاق عمل وتكلفة واضحان"],
            "example_prompts": ["من أين تبدأ أعمالي مع التقنية؟", "أين يمكن للذكاء الاصطناعي أن يفيد أعمالي فعلًا؟",

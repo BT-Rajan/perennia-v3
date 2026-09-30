@@ -27,50 +27,57 @@ export const NAV = {
   ],
 };
 
-// Homepage "topic" buttons (hero-sections / hero-card-pills). Unlike
-// NAV/SECTIONS above these don't navigate to a page — clicking one
-// hands its `question` straight to the AI Assistant chat (see
-// Hero.jsx handleTopicClick), so the button IS the entry point into
-// a relevant conversation rather than a page link.
+// Homepage "situations" cards — the three customer situations Perennia
+// serves (HeroSituations in HeroShared.jsx; label-only pills in the
+// centered-card layout). Unlike NAV/SECTIONS above these don't
+// navigate to a page — clicking one hands its `question` straight to
+// the AI Assistant chat (see Hero.jsx handleTopicClick), so the card
+// IS the entry point into a relevant conversation, not a page link.
 export const HOME_TOPICS = {
   en: [
     {
-      id: "technology",
-      label: "Technology",
-      body: "Reliable technology introduced into your business the right way — from your first digital initiative to systems that scale as you grow.",
-      question: "How can Perennia help my business start or scale its technology?",
+      id: "starting-digital",
+      label: "Starting Digital",
+      audience: "For businesses beginning their digital journey",
+      body: "You have a business process, but technology has not yet been properly integrated into it.",
+      question: "My business is just starting with technology — how can Perennia help?",
     },
     {
-      id: "ai",
-      label: "AI",
-      body: "Practical AI, applied only where it genuinely makes business sense — automation and assistants that earn their place in your operations.",
+      id: "practical-ai",
+      label: "Making AI Practical",
+      audience: "For businesses that want to use AI without the uncertainty",
+      body: "We identify where AI genuinely adds value and implement it around the business — not simply because it is fashionable.",
       question: "Where could practical AI genuinely help my business?",
     },
     {
-      id: "advisory",
-      label: "Advisory",
-      body: "Business-first guidance with transparent scope and investment. We take responsibility from discovery through implementation, and help you adapt as markets and technology change.",
-      question: "How does Perennia's advisory and discovery process work?",
+      id: "scaling-technology",
+      label: "Scaling Technology",
+      audience: "For businesses ready for their next stage of growth",
+      body: "Technology needs to become more capable, connected and reliable as the business grows.",
+      question: "My business is growing — how can Perennia help our technology scale with it?",
     },
   ],
   ar: [
     {
-      id: "technology",
-      label: "التقنية",
-      body: "إدخال التقنية إلى أعمالك بشكل موثوق وصحيح — من أول مبادرة رقمية إلى أنظمة تتوسع مع نمو أعمالك.",
-      question: "كيف يمكن لبيرينيا مساعدة أعمالي على البدء بالتقنية أو توسيعها؟",
+      id: "starting-digital",
+      label: "البدء رقميًا",
+      audience: "للشركات التي تبدأ رحلتها الرقمية",
+      body: "لديك عمليات أعمال قائمة، لكن التقنية لم تُدمج فيها بالشكل الصحيح بعد.",
+      question: "أعمالي في بداية رحلتها مع التقنية — كيف يمكن لبيرينيا المساعدة؟",
     },
     {
-      id: "ai",
-      label: "الذكاء الاصطناعي",
-      body: "ذكاء اصطناعي عملي، نطبّقه فقط حيث يكون له معنى حقيقي للأعمال — أتمتة ومساعدون يستحقون مكانهم في عملياتك.",
+      id: "practical-ai",
+      label: "ذكاء اصطناعي عملي",
+      audience: "للشركات التي تريد استخدام الذكاء الاصطناعي دون حيرة أو غموض",
+      body: "نحدد أين يضيف الذكاء الاصطناعي قيمة حقيقية، ونطبّقه بما يخدم أعمالك — لا لمجرد أنه رائج.",
       question: "أين يمكن للذكاء الاصطناعي العملي أن يفيد أعمالي فعلًا؟",
     },
     {
-      id: "advisory",
-      label: "الاستشارات",
-      body: "توجيه يضع الأعمال أولًا، مع نطاق عمل وتكلفة واضحين. نتحمّل المسؤولية من مرحلة الاستكشاف حتى التنفيذ، ونساعدك على التكيّف مع تغيّر السوق والتقنية.",
-      question: "كيف تعمل خدمات الاستشارات ومرحلة الاستكشاف لدى بيرينيا؟",
+      id: "scaling-technology",
+      label: "توسيع التقنية",
+      audience: "للشركات المستعدة لمرحلة النمو التالية",
+      body: "مع نمو أعمالك، تحتاج التقنية إلى أن تصبح أكثر قدرة وترابطًا وموثوقية.",
+      question: "أعمالي تنمو — كيف يمكن لبيرينيا مساعدتنا على توسيع التقنية معها؟",
     },
   ],
 };
@@ -134,6 +141,9 @@ export const COPY = {
       supportingText: "Perennia helps GCC businesses adopt, build and scale technology — from their first digital initiative to practical AI and larger-scale transformation.",
       ctaPrimary: "Book a 30-Minute Discovery Meeting",
       ctaSecondary: "Explore What We Build",
+      situationsHeading: "A technology partner at every stage",
+      situationsIntro: "Whatever stage your business is at, Perennia helps you adopt technology reliably, practically and with a clear path forward.",
+      situationsCtaNote: "Not sure which describes you? That is what the discovery meeting is for.",
       principles: [
         "Business first, technology second",
         "Practical AI, not fashionable AI",
@@ -237,6 +247,9 @@ export const COPY = {
       supportingText: "تساعد بيرينيا الشركات في دول الخليج على تبنّي التقنية وبنائها وتوسيعها — من أول مبادرة رقمية إلى الذكاء الاصطناعي العملي والتحول على نطاق أوسع.",
       ctaPrimary: "احجز اجتماعًا استكشافيًا لمدة 30 دقيقة",
       ctaSecondary: "استكشف ما نبنيه",
+      situationsHeading: "شريك تقني في كل مرحلة",
+      situationsIntro: "أيًّا كانت المرحلة التي تمر بها أعمالك، تساعدك بيرينيا على تبنّي التقنية بشكل موثوق وعملي، مع مسار واضح للمضي قدمًا.",
+      situationsCtaNote: "لست متأكدًا أيّها ينطبق عليك؟ هذا بالضبط هدف الاجتماع الاستكشافي.",
       principles: [
         "الأعمال أولًا، ثم التقنية",
         "ذكاء اصطناعي عملي، لا لمجرد مواكبة الموضة",

@@ -167,18 +167,18 @@
   --fs-h2: 1.55rem;
 }
 
-/* "as-is" (default) needs no rules — .hero-section h2 is already
+/* "as-is" (default) needs no rules — .hero-section h3 is already
    normal-case today. Uppercase-tracked headings read as oversized at
    the same point-size as their normal-case equivalent (all-caps
    glyphs are visually "louder"), so this pairs the transform with a
    modest size reduction — a common pairing in editorial/corporate
    type systems, not an independent, unrelated size change. */
-[data-heading-case="uppercase-tracked"] .hero-section h2 {
+[data-heading-case="uppercase-tracked"] .hero-section h3 {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   font-size: calc(var(--fs-h2) * 0.8);
 }
-[data-heading-case="sentence-case"] .hero-section h2 {
+[data-heading-case="sentence-case"] .hero-section h3 {
   text-transform: none;
   letter-spacing: normal;
 }
