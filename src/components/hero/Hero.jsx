@@ -47,11 +47,14 @@ function withHomeFallbacks(home, lang) {
     taglineLine2: home.taglineLine2 ?? fallback.taglineLine2,
     supportingText: home.supportingText ?? fallback.supportingText,
     examplePrompts: home.examplePrompts ?? fallback.examplePrompts,
+    ctaPrimary: home.ctaPrimary ?? fallback.ctaPrimary,
+    ctaSecondary: home.ctaSecondary ?? fallback.ctaSecondary,
+    principles: home.principles ?? fallback.principles,
   };
 }
 
-export default function Hero({ onEnter, onNavigate }) {
-  const { copy, sections, nav, branding, heroButtons, lang, theme } = useLang();
+export default function Hero({ onEnter, onNavigate, onBookingClick }) {
+  const { copy, sections, nav, branding, heroButtons, lang, theme, pages, features } = useLang();
   const [quickDraft, setQuickDraft] = useState("");
   const home = withHomeFallbacks(copy.home, lang);
 
@@ -69,9 +72,17 @@ export default function Hero({ onEnter, onNavigate }) {
     onEnter(prompt);
   }
 
-  // The 4 homepage topic buttons (Software Development / Artificial
-  // Intelligence / Digital Transformation / Consulting) aren't page
-  // links — clicking one hands its preset question straight to the
+  // Primary CTA opens the same booking panel as the sticky Appointments
+  // button; with booking switched off it falls back to the Contact page
+  // rather than disappearing. Secondary CTA goes to the products ("What
+  // We Build") page, hidden only if an admin has removed that page.
+  const handleCtaPrimary = features?.bookingEnabled && onBookingClick
+    ? onBookingClick
+    : () => onNavigate("contact");
+  const handleCtaSecondary = pages?.products ? () => onNavigate("products") : null;
+
+  // The homepage capability buttons (Technology / AI / Advisory) aren't
+  // page links — clicking one hands its preset question straight to the
   // AI Assistant, the same handoff the quick-chat box uses above.
   const homeTopics = HOME_TOPICS[lang] || HOME_TOPICS.en;
   function handleTopicClick(topicId) {
@@ -97,6 +108,8 @@ export default function Hero({ onEnter, onNavigate }) {
         setQuickDraft={setQuickDraft}
         onQuickSend={handleQuickSend}
         onExamplePick={handleExamplePick}
+        onCtaPrimary={handleCtaPrimary}
+        onCtaSecondary={handleCtaSecondary}
         headlineStyle={theme?.headlineStyle}
         headlineTypingSpeedCps={theme?.headlineTypingSpeedCps}
         branding={branding}

@@ -203,7 +203,10 @@ export function buildFallbackSite() {
       logoUrl: "/static/logo.svg",
       logoScale: 1,
       faviconUrl: "/favicon.svg",
-      metaDescriptionByLang: { en: "Perennia — AI-powered technology & innovation.", ar: "" },
+      metaDescriptionByLang: {
+        en: "Perennia — a technology partner for GCC businesses. Practical AI. Affordable Innovation.",
+        ar: "بيرينيا — شريك تقني للشركات في دول الخليج. ذكاء اصطناعي عملي. ابتكار في المتناول.",
+      },
       chatAvatarUrl: "",
     },
     ...buildFromLocalFallback(supportedLanguages),

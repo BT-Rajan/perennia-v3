@@ -392,6 +392,44 @@
   outline-offset: 2px;
 }
 
+/* ── Homepage CTAs (HeroCtas) — reuses the shared .btn primary/ghost
+   styles; only the row layout lives here. Labels may wrap on narrow
+   screens rather than overflow (.btn defaults to nowrap). */
+.hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+}
+.hero-ctas-left { justify-content: flex-start; }
+.hero-ctas .btn { white-space: normal; text-align: center; }
+
+/* ── Principles (HeroPrinciples) — quiet, dot-marked context line,
+   deliberately not styled as buttons or chips. */
+.hero-principles {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-width: 64ch;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+.hero-principles-left { justify-content: flex-start; }
+.hero-principles li { display: inline-flex; align-items: center; gap: var(--space-2); }
+/* Every item gets its own marker (not a separator between items), so
+   a wrapped line never starts with a stray dot. */
+.hero-principles li::before {
+  content: "";
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--gold) 55%, transparent);
+}
+
 /* ── Feature grid — responsive card grid (was a full-width vertical
    stack) so the "explore the site" entry points read as a modern
    product grid rather than a list. */

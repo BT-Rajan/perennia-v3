@@ -1,4 +1,4 @@
-import { HeroButtons, HeroChatComposer, HeroExamplePrompts, HeroHeadline, HeroSupportingText } from "../HeroShared.jsx";
+import { HeroButtons, HeroChatComposer, HeroCtas, HeroExamplePrompts, HeroHeadline, HeroPrinciples, HeroSupportingText } from "../HeroShared.jsx";
 
 /**
  * "editorial" — a bigger, left-aligned headline and a narrower
@@ -6,7 +6,7 @@ import { HeroButtons, HeroChatComposer, HeroExamplePrompts, HeroHeadline, HeroSu
  * horizontal-scrolling strip of compact cards instead of a grid —
  * a more magazine/editorial feel than the centered classic layout.
  */
-export default function EditorialLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, copy, homeTopics, onTopicClick, headlineTypingSpeedCps }) {
+export default function EditorialLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, onCtaPrimary, onCtaSecondary, copy, homeTopics, onTopicClick, headlineTypingSpeedCps }) {
   return (
     <>
       <div className="hero-editorial-main">
@@ -18,6 +18,8 @@ export default function EditorialLayout({ home, heroButtons, lang, quickDraft, s
           typingSpeedCps={headlineTypingSpeedCps}
         />
         <HeroSupportingText text={home.supportingText} className="hero-supporting-left" />
+        <HeroCtas primaryLabel={home.ctaPrimary} secondaryLabel={home.ctaSecondary} onPrimary={onCtaPrimary} onSecondary={onCtaSecondary} className="hero-ctas-left" />
+        <HeroPrinciples items={home.principles} className="hero-principles-left" />
         {heroButtons?.length > 0 && <HeroButtons buttons={heroButtons} lang={lang} />}
 
         <HeroChatComposer

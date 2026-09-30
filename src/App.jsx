@@ -60,7 +60,7 @@ function AppShell() {
           fixed popover's box happens to land on top of in-flow
           content. */}
       <div className={`app-page-content ${chatOpen ? "app-page-content-dimmed" : ""}`.trim()}>
-        {page === "home" && <Hero onEnter={handleHeroEnter} onNavigate={setPage} />}
+        {page === "home" && <Hero onEnter={handleHeroEnter} onNavigate={setPage} onBookingClick={() => setBookingOpen(true)} />}
         {page === "contact" && <ContactPage onBack={() => setPage("home")} onNavigate={setPage} />}
         {!SPECIAL_PAGE_IDS.has(page) && (
           <ContentPage pageId={page} onBack={() => setPage("home")} onNavigate={setPage} />

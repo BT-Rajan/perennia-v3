@@ -92,17 +92,28 @@ FAQ_SEED = [
 # frontend-side safety net this is meant to make unnecessary.
 COPY_HOME = {
     "en": {"welcome": "Welcome to Perennia", "tagline": "Visit our V-Lounge for more",
-           "hero_statement": "Practical AI\nBuilt for Businesses",
-           "tagline_line1": "Solving Today.", "tagline_line2": "Shaping Tomorrow.",
-           "supporting_text": "Digital products for businesses across India and the GCC.",
-           "example_prompts": ["What does Perennia build?", "How can Perennia help my business?",
-                                "Explore our products"],
+           "hero_statement": "Practical AI.\nAffordable Innovation.",
+           "tagline_line1": "Technology that moves", "tagline_line2": "your business forward.",
+           "supporting_text": "Perennia helps GCC businesses adopt, build and scale technology — from their "
+                              "first digital initiative to practical AI and larger-scale transformation.",
+           "cta_primary": "Book a 30-Minute Discovery Meeting", "cta_secondary": "Explore What We Build",
+           "principles": ["Business first, technology second", "Practical AI, not fashionable AI",
+                          "Experienced technology professionals", "Built for GCC businesses",
+                          "Transparent scope and investment"],
+           "example_prompts": ["Where should my business start with technology?",
+                                "Where could AI genuinely help my business?",
+                                "What happens in a discovery meeting?"],
            "hint": "Start chatting", "lang_switch": "AR | عربي"},
     "ar": {"welcome": "مرحبا بك في بيرينيا", "tagline": "زوروا V-Lounge الخاص بنا لمزيد من المعلومات",
-           "hero_statement": "حلول ذكاء اصطناعي عملية ومنتجات رقمية للأعمال",
-           "tagline_line1": "حلول اليوم.", "tagline_line2": "لصناعة الغد.",
-           "supporting_text": "منتجات رقمية للشركات في الهند ودول الخليج.",
-           "example_prompts": ["ما الذي تبنيه بيرينيا؟", "كيف يمكن لبيرينيا مساعدة أعمالي؟", "استكشف منتجاتنا"],
+           "hero_statement": "ذكاء اصطناعي عملي.\nابتكار في المتناول.",
+           "tagline_line1": "تقنية تدفع", "tagline_line2": "أعمالك إلى الأمام.",
+           "supporting_text": "تساعد بيرينيا الشركات في دول الخليج على تبنّي التقنية وبنائها وتوسيعها — من أول "
+                              "مبادرة رقمية إلى الذكاء الاصطناعي العملي والتحول على نطاق أوسع.",
+           "cta_primary": "احجز اجتماعًا استكشافيًا لمدة 30 دقيقة", "cta_secondary": "استكشف ما نبنيه",
+           "principles": ["الأعمال أولًا، ثم التقنية", "ذكاء اصطناعي عملي، لا لمجرد مواكبة الموضة",
+                          "خبراء تقنية ذوو خبرة", "فهم لبيئة الأعمال الخليجية", "نطاق عمل وتكلفة واضحان"],
+           "example_prompts": ["من أين تبدأ أعمالي مع التقنية؟", "أين يمكن للذكاء الاصطناعي أن يفيد أعمالي فعلًا؟",
+                                "ماذا يحدث في الاجتماع الاستكشافي؟"],
            "hint": "ابدأ المحادثة", "lang_switch": "EN | English"},
 }
 

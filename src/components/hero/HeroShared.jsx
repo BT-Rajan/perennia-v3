@@ -1,6 +1,43 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { isSafeHref } from "../../data/siteContent.js";
 import ChatInput from "../chat/ChatInput.jsx";
+import Button from "../ui/Button.jsx";
+
+/**
+ * The homepage's two fixed calls to action (copy.home.cta_primary /
+ * cta_secondary) — primary opens the existing booking panel, secondary
+ * goes to the "What We Build" page. Hero.jsx resolves both handlers
+ * (and passes null for one it can't honour, e.g. the products page was
+ * removed), so every layout renders this the same way. Separate from
+ * the admin's HeroButtons row, which stays an optional extra.
+ */
+export function HeroCtas({ primaryLabel, secondaryLabel, onPrimary, onSecondary, className }) {
+  const showPrimary = primaryLabel && onPrimary;
+  const showSecondary = secondaryLabel && onSecondary;
+  if (!showPrimary && !showSecondary) return null;
+  return (
+    <div className={`hero-ctas ${className || ""}`.trim()}>
+      {showPrimary && <Button variant="primary" onClick={onPrimary}>{primaryLabel}</Button>}
+      {showSecondary && <Button variant="ghost" onClick={onSecondary}>{secondaryLabel}</Button>}
+    </div>
+  );
+}
+
+/**
+ * Short, quiet list of what Perennia stands for (copy.home.principles)
+ * — plain text, not buttons, so it reads as context rather than as yet
+ * another row of things to click.
+ */
+export function HeroPrinciples({ items, className }) {
+  if (!items?.length) return null;
+  return (
+    <ul className={`hero-principles ${className || ""}`.trim()}>
+      {items.map((item, i) => (
+        <li key={i}>{item}</li>
+      ))}
+    </ul>
+  );
+}
 
 /**
  * Resolves admin-provisioned hero buttons (copy.home_hero_buttons) into

@@ -152,6 +152,12 @@ def _valid_workdays(v: list) -> None:
         raise ValueError("workdays must not contain duplicates")
 
 
+# Default search/share description — also the bundled fallback in
+# src/data/siteContent.js and index.html; keep all three in sync.
+META_EN = "Perennia — a technology partner for GCC businesses. Practical AI. Affordable Innovation."
+META_AR = "بيرينيا — شريك تقني للشركات في دول الخليج. ذكاء اصطناعي عملي. ابتكار في المتناول."
+
+
 # ── Registry ──────────────────────────────────────────────────────────
 # Grouped by category purely for readability; the flat dict below is
 # what code actually consumes.
@@ -170,7 +176,7 @@ _DEFS: list[SettingDef] = [
                validator=_float_range(0.5, 3.0)),
     SettingDef("branding.favicon_url", "branding", "Favicon", SettingType.IMAGE, "/favicon.svg"),
     SettingDef("branding.meta_description", "branding", "Search/share description", SettingType.TEXT,
-               {"en": "Perennia — AI-powered technology & innovation.", "ar": ""}, i18n=True,
+               {"en": META_EN, "ar": META_AR}, i18n=True,
                help_text="Shown in search results and link previews (og:description)."),
 
     # locale ----------------------------------------------------------
@@ -601,29 +607,44 @@ _DEFS: list[SettingDef] = [
         "en": {
             "welcome": "Welcome to Perennia",
             "tagline": "Visit our V-Lounge for more",
-            "hero_statement": "Practical AI\nBuilt for Businesses",
-            "tagline_line1": "Solving Today.",
-            "tagline_line2": "Shaping Tomorrow.",
-            "supporting_text": "Digital products for businesses across India and the GCC.",
-            "example_prompts": ["What does Perennia build?", "How can Perennia help my business?",
-                                 "Explore our products"],
+            "hero_statement": "Practical AI.\nAffordable Innovation.",
+            "tagline_line1": "Technology that moves",
+            "tagline_line2": "your business forward.",
+            "supporting_text": "Perennia helps GCC businesses adopt, build and scale technology — from their "
+                               "first digital initiative to practical AI and larger-scale transformation.",
+            "cta_primary": "Book a 30-Minute Discovery Meeting",
+            "cta_secondary": "Explore What We Build",
+            "principles": ["Business first, technology second", "Practical AI, not fashionable AI",
+                           "Experienced technology professionals", "Built for GCC businesses",
+                           "Transparent scope and investment"],
+            "example_prompts": ["Where should my business start with technology?",
+                                 "Where could AI genuinely help my business?",
+                                 "What happens in a discovery meeting?"],
             "hint": "Start chatting",
             "lang_switch": "AR | عربي",
         },
         "ar": {
             "welcome": "مرحبا بك في بيرينيا",
             "tagline": "زوروا V-Lounge الخاص بنا لمزيد من المعلومات",
-            "hero_statement": "حلول ذكاء اصطناعي عملية ومنتجات رقمية للأعمال",
-            "tagline_line1": "حلول اليوم.",
-            "tagline_line2": "لصناعة الغد.",
-            "supporting_text": "منتجات رقمية للشركات في الهند ودول الخليج.",
-            "example_prompts": ["ما الذي تبنيه بيرينيا؟", "كيف يمكن لبيرينيا مساعدة أعمالي؟", "استكشف منتجاتنا"],
+            "hero_statement": "ذكاء اصطناعي عملي.\nابتكار في المتناول.",
+            "tagline_line1": "تقنية تدفع",
+            "tagline_line2": "أعمالك إلى الأمام.",
+            "supporting_text": "تساعد بيرينيا الشركات في دول الخليج على تبنّي التقنية وبنائها وتوسيعها — من أول "
+                               "مبادرة رقمية إلى الذكاء الاصطناعي العملي والتحول على نطاق أوسع.",
+            "cta_primary": "احجز اجتماعًا استكشافيًا لمدة 30 دقيقة",
+            "cta_secondary": "استكشف ما نبنيه",
+            "principles": ["الأعمال أولًا، ثم التقنية", "ذكاء اصطناعي عملي، لا لمجرد مواكبة الموضة",
+                           "خبراء تقنية ذوو خبرة", "فهم لبيئة الأعمال الخليجية", "نطاق عمل وتكلفة واضحان"],
+            "example_prompts": ["من أين تبدأ أعمالي مع التقنية؟", "أين يمكن للذكاء الاصطناعي أن يفيد أعمالي فعلًا؟",
+                                 "ماذا يحدث في الاجتماع الاستكشافي؟"],
             "hint": "ابدأ المحادثة",
             "lang_switch": "EN | English",
         },
     }, i18n=True,
                help_text="welcome, tagline, hint, lang_switch, hero_statement, tagline_line1, tagline_line2, "
-                          "supporting_text, example_prompts. hero_statement types itself out on the homepage "
+                          "supporting_text, cta_primary, cta_secondary, principles, example_prompts. cta_primary opens "
+                          "the booking panel (or the Contact page if booking is off); cta_secondary opens the "
+                          "products page. hero_statement types itself out on the homepage "
                           "before handing off to tagline_line1/2 (see theme.headline_typing_speed_cps and "
                           "theme.headline_dissolve_ms above) — include a literal newline in the string to "
                           "have it type across two lines instead of one."),
