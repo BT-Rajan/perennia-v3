@@ -128,6 +128,23 @@ export const HOME_CAPABILITIES = {
   ],
 };
 
+// Homepage GCC/Kuwait panel (HeroLocal in HeroShared.jsx) — only facts
+// the existing site already supports (Kuwait-based per About; Arabic/
+// English per the FAQ/Products page; in person or virtual per Contact).
+// No customer names, counts, offices or partnerships.
+export const HOME_LOCAL_POINTS = {
+  en: [
+    { id: "kuwait", label: "Based in Kuwait", body: "Working with businesses across the GCC, in person or virtually." },
+    { id: "bilingual", label: "Arabic and English", body: "Interfaces, content and AI assistants that work fully in both languages, right-to-left included — as on this site." },
+    { id: "fit", label: "Built around how you operate", body: "Technology fitted to how your business actually works here — not an imported template." },
+  ],
+  ar: [
+    { id: "kuwait", label: "مقرّنا الكويت", body: "نعمل مع الشركات في دول الخليج، حضوريًا أو عن بُعد." },
+    { id: "bilingual", label: "العربية والإنجليزية", body: "واجهات ومحتوى ومساعدون أذكياء يعملون بالكامل باللغتين، مع دعم الكتابة من اليمين إلى اليسار — كما في هذا الموقع." },
+    { id: "fit", label: "مصمَّمة حول طريقة عملك", body: "تقنية تناسب طريقة عمل أعمالك فعليًا هنا — لا قالبًا مستوردًا." },
+  ],
+};
+
 // Homepage process (HeroProcess in HeroShared.jsx) — how Perennia takes
 // a business from a problem to a working solution. Rendered as one
 // ordered list: horizontal timeline on desktop, vertical on mobile.
@@ -245,12 +262,14 @@ export const COPY = {
       capabilitiesIntro: "Understand the business. Decide what technology is needed. Build it. Put it into operation. Help the business adapt.",
       capabilitiesRoles: "Work with us as an advisor, an implementation partner, a software builder, an AI implementation partner — or a combination of these.",
       capabilitiesScopeNote: "Scope and investment are agreed once we understand your requirements.",
+      localKicker: "Kuwait and the GCC",
+      localHeading: "Technology built with your business environment in mind.",
+      localIntro: "Perennia combines technology expertise with practical understanding of how businesses operate in Kuwait and the wider GCC.",
       processHeading: "Start with the business. Build the technology around it.",
       processIntro: "We normally take responsibility for the whole journey — from the first conversation to the solution in operation — so you are not left coordinating several vendors.",
       principles: [
         "Practical AI, not fashionable AI",
         "Experienced technology professionals",
-        "Kuwait-based, built for GCC businesses",
         "Transparent scope and investment",
       ],
       examplePrompts: ["Where should my business start with technology?", "Where could AI genuinely help my business?", "What happens in a discovery meeting?"],
@@ -365,12 +384,14 @@ export const COPY = {
       capabilitiesIntro: "نفهم الأعمال. نحدد التقنية المطلوبة. نبنيها. نضعها قيد التشغيل. ونساعد الأعمال على التكيّف.",
       capabilitiesRoles: "اعمل معنا كمستشار، أو شريك تنفيذ، أو مطوّر برمجيات، أو شريك لتطبيق الذكاء الاصطناعي — أو مزيج من ذلك.",
       capabilitiesScopeNote: "نتفق على نطاق العمل والتكلفة بعد فهم متطلباتك.",
+      localKicker: "الكويت ودول الخليج",
+      localHeading: "تقنية مبنية مع مراعاة بيئة أعمالك.",
+      localIntro: "تجمع بيرينيا بين الخبرة التقنية والفهم العملي لطريقة عمل الشركات في الكويت ودول الخليج.",
       processHeading: "ابدأ بالأعمال. وابنِ التقنية حولها.",
       processIntro: "نتحمّل عادةً مسؤولية الرحلة كاملة — من المحادثة الأولى حتى تشغيل الحل — فلا تضطر إلى التنسيق بين عدة موردين.",
       principles: [
         "ذكاء اصطناعي عملي، لا لمجرد مواكبة الموضة",
         "خبراء تقنية ذوو خبرة",
-        "مقرّنا الكويت، ونفهم بيئة الأعمال الخليجية",
         "نطاق عمل وتكلفة واضحان",
       ],
       examplePrompts: ["من أين تبدأ أعمالي مع التقنية؟", "أين يمكن للذكاء الاصطناعي أن يفيد أعمالي فعلًا؟", "ماذا يحدث في الاجتماع الاستكشافي؟"],
@@ -459,12 +480,12 @@ export const FAQ = {
     { q: "What services does Perennia offer?", a: "We build AI-powered assistants, automation, and digital products tailored to your business — from concept through to production support." },
     { q: "How can I book a discovery meeting?", a: "Tap \"Book a 30-Minute Discovery Meeting\", choose a free slot, and you'll get an instant confirmation by email — no back-and-forth required." },
     { q: "Do you support Arabic and English?", a: "Yes — the whole experience, including this assistant, works fully in both English and Arabic with proper right-to-left layout." },
-    { q: "Where are you located?", a: "We work with clients globally and meet either virtually or in person — ask during booking and we'll accommodate you." },
+    { q: "Where are you located?", a: "We're based in Kuwait and work with businesses across the GCC. We meet either virtually or in person — ask during booking and we'll accommodate you." },
   ],
   ar: [
     { q: "ما هي الخدمات التي تقدمها بيرينيا؟", a: "نصمم مساعدين مدعومين بالذكاء الاصطناعي وحلول أتمتة ومنتجات رقمية مخصصة لعملك — من الفكرة وحتى الدعم الإنتاجي." },
     { q: "كيف يمكنني حجز اجتماع استكشافي؟", a: "اضغط على \"احجز اجتماعًا استكشافيًا لمدة 30 دقيقة\"، اختر موعدًا متاحًا، وستحصل على تأكيد فوري عبر البريد الإلكتروني." },
     { q: "هل تدعمون اللغتين العربية والإنجليزية؟", a: "نعم — التجربة بأكملها، بما في ذلك هذا المساعد، تعمل بالكامل باللغتين مع تخطيط صحيح من اليمين إلى اليسار." },
-    { q: "أين يقع مقركم؟", a: "نعمل مع عملاء حول العالم ونلتقي افتراضيًا أو شخصيًا — أخبرنا أثناء الحجز وسنوفر لك ما يناسبك." },
+    { q: "أين يقع مقركم؟", a: "مقرّنا الكويت، ونعمل مع الشركات في دول الخليج. نلتقي افتراضيًا أو شخصيًا — أخبرنا أثناء الحجز وسنوفر لك ما يناسبك." },
   ],
 };

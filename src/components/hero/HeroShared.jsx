@@ -167,6 +167,37 @@ export function HeroCapabilities({ heading, intro, items, roles, scopeNote, clas
 }
 
 /**
+ * Kuwait/GCC credibility — one restrained GlassPanel between "what we
+ * do" and "how we work" (technology → GCC understanding → practical
+ * implementation): the message on one side, three factual points on
+ * the other. No imagery, flags or maps; facts only (HOME_LOCAL_POINTS).
+ */
+export function HeroLocal({ kicker, heading, intro, points, className }) {
+  if (!heading) return null;
+  return (
+    <section className={`hero-block hero-local ${className || ""}`.trim()} aria-labelledby="hero-local-heading">
+      <GlassPanel className="hero-local-panel">
+        <div className="hero-local-message">
+          {kicker && <p className="hero-eyebrow hero-local-kicker">{kicker}</p>}
+          <h2 id="hero-local-heading">{heading}</h2>
+          {intro && <p>{intro}</p>}
+        </div>
+        {points?.length > 0 && (
+          <ul className="hero-local-points">
+            {points.map(({ id, label, body }) => (
+              <li key={id}>
+                <h3>{label}</h3>
+                <p>{body}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </GlassPanel>
+    </section>
+  );
+}
+
+/**
  * "How we work" — the seven-step method (HOME_PROCESS) as one ordered
  * list: a horizontal timeline on desktop, a vertical one on mobile
  * (see .hero-process in Hero.css). Plain numbered markers on a hairline

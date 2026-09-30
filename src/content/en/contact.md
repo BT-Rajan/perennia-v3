@@ -10,4 +10,4 @@ Ready to start a conversation? Use the button below to book time directly with o
 
 ## Where we work
 
-We support clients across India and the GCC, and we meet either virtually or in person — just let us know what works best for you when you book.
+We're based in Kuwait and work with businesses across the GCC. We meet either virtually or in person — just let us know what works best for you when you book.

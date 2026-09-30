@@ -639,11 +639,14 @@ _DEFS: list[SettingDef] = [
             "capabilities_roles": "Work with us as an advisor, an implementation partner, a software builder, "
                                   "an AI implementation partner — or a combination of these.",
             "capabilities_scope_note": "Scope and investment are agreed once we understand your requirements.",
+            "local_kicker": "Kuwait and the GCC",
+            "local_heading": "Technology built with your business environment in mind.",
+            "local_intro": "Perennia combines technology expertise with practical understanding of how businesses operate in Kuwait and the wider GCC.",
             "process_heading": "Start with the business. Build the technology around it.",
             "process_intro": "We normally take responsibility for the whole journey — from the first conversation "
                              "to the solution in operation — so you are not left coordinating several vendors.",
             "principles": ["Practical AI, not fashionable AI",
-                           "Experienced technology professionals", "Kuwait-based, built for GCC businesses",
+                           "Experienced technology professionals",
                            "Transparent scope and investment"],
             "example_prompts": ["Where should my business start with technology?",
                                  "Where could AI genuinely help my business?",
@@ -683,11 +686,14 @@ _DEFS: list[SettingDef] = [
             "capabilities_roles": "اعمل معنا كمستشار، أو شريك تنفيذ، أو مطوّر برمجيات، أو شريك لتطبيق الذكاء "
                                   "الاصطناعي — أو مزيج من ذلك.",
             "capabilities_scope_note": "نتفق على نطاق العمل والتكلفة بعد فهم متطلباتك.",
+            "local_kicker": "الكويت ودول الخليج",
+            "local_heading": "تقنية مبنية مع مراعاة بيئة أعمالك.",
+            "local_intro": "تجمع بيرينيا بين الخبرة التقنية والفهم العملي لطريقة عمل الشركات في الكويت ودول الخليج.",
             "process_heading": "ابدأ بالأعمال. وابنِ التقنية حولها.",
             "process_intro": "نتحمّل عادةً مسؤولية الرحلة كاملة — من المحادثة الأولى حتى تشغيل الحل — فلا تضطر "
                              "إلى التنسيق بين عدة موردين.",
             "principles": ["ذكاء اصطناعي عملي، لا لمجرد مواكبة الموضة",
-                           "خبراء تقنية ذوو خبرة", "مقرّنا الكويت، ونفهم بيئة الأعمال الخليجية", "نطاق عمل وتكلفة واضحان"],
+                           "خبراء تقنية ذوو خبرة", "نطاق عمل وتكلفة واضحان"],
             "example_prompts": ["من أين تبدأ أعمالي مع التقنية؟", "أين يمكن للذكاء الاصطناعي أن يفيد أعمالي فعلًا؟",
                                  "ماذا يحدث في الاجتماع الاستكشافي؟"],
             "hint": "ابدأ المحادثة",
@@ -699,6 +705,7 @@ _DEFS: list[SettingDef] = [
                           "situations_heading, situations_intro (the section under the hero), "
                           "capabilities_heading, capabilities_intro, capabilities_roles, "
                           "capabilities_scope_note (the Technology/AI/Advisory section), "
+                          "local_kicker, local_heading, local_intro (the Kuwait/GCC panel), "
                           "process_heading, process_intro (the how-we-work section), trust_kicker, trust_heading, trust_intro, "
                           "trust_contrast_label_a/_a/_label_b/_b (the reliable-induction section), discovery_heading, "
                           "discovery_body, discovery_note (the discovery-meeting panel after it). "

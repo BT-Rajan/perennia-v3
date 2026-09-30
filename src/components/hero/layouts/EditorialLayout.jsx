@@ -1,4 +1,4 @@
-import { HeroButtons, HeroChatComposer, HeroCtas, HeroDiscovery, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroCapabilities, HeroProcess, HeroTrust, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
+import { HeroButtons, HeroChatComposer, HeroCtas, HeroDiscovery, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroLocal, HeroCapabilities, HeroProcess, HeroTrust, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
 
 /**
  * "editorial" — a bigger, left-aligned headline and a narrower
@@ -6,7 +6,7 @@ import { HeroButtons, HeroChatComposer, HeroCtas, HeroDiscovery, HeroEyebrow, He
  * horizontal-scrolling strip of compact cards instead of a grid —
  * a more magazine/editorial feel than the centered classic layout.
  */
-export default function EditorialLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, onCtaPrimary, onCtaSecondary, copy, homeTopics, homeCapabilities, homeProcess, homeTrustPoints, onTopicClick, headlineTypingSpeedCps }) {
+export default function EditorialLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, onCtaPrimary, onCtaSecondary, copy, homeTopics, homeCapabilities, homeLocalPoints, homeProcess, homeTrustPoints, onTopicClick, headlineTypingSpeedCps }) {
   return (
     <>
       <div className="hero-editorial-main">
@@ -51,6 +51,13 @@ export default function EditorialLayout({ home, heroButtons, lang, quickDraft, s
         roles={home.capabilitiesRoles}
         scopeNote={home.capabilitiesScopeNote}
         className="hero-block-start"
+      />
+
+      <HeroLocal
+        kicker={home.localKicker}
+        heading={home.localHeading}
+        intro={home.localIntro}
+        points={homeLocalPoints}
       />
 
       <HeroProcess
