@@ -1187,3 +1187,51 @@
 @media (max-width: 760px) {
   .hero-work-list { grid-template-columns: 1fr; gap: var(--space-4); }
 }
+
+/* ── Sectors (inside HeroSituations) — plain text categories divided by
+   hairlines, same family as the trust points and other work; no icons. */
+.hero-sectors { display: flex; flex-direction: column; gap: var(--space-4); margin-top: var(--space-3); text-align: start; }
+.hero-sectors-heading {
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+[dir="rtl"] .hero-sectors-heading { letter-spacing: 0; text-transform: none; }
+.hero-sectors-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-5);
+}
+.hero-sectors-list li {
+  padding-top: var(--space-3);
+  border-top: 1px solid color-mix(in srgb, var(--gold) 35%, transparent);
+}
+.hero-sectors-list h4 {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--fs-body);
+  color: var(--white-soft);
+}
+[dir="rtl"] .hero-sectors-list h4 { font-family: var(--font-ar); }
+.hero-sectors-list p {
+  margin: 0;
+  color: var(--muted-strong);
+  font-size: var(--fs-sm);
+  line-height: calc(1.55 * var(--line-height-scale));
+}
+.hero-sectors-note { margin: 0; color: var(--muted); font-size: var(--fs-sm); }
+.hero-situations-aside .hero-sectors-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 1024px) {
+  .hero-sectors-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .hero-sectors-list,
+  .hero-situations-aside .hero-sectors-list { grid-template-columns: 1fr; gap: var(--space-4); }
+}

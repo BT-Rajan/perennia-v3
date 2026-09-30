@@ -7,7 +7,7 @@ import { HeroButtons, HeroChatComposer, HeroCtas, HeroDiscovery, HeroEyebrow, He
  * template setting did, so picking "classic" (or leaving the setting
  * unset) can never look different from what's already live.
  */
-export default function ClassicLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, onCtaPrimary, onCtaSecondary, copy, homeTopics, homeCapabilities, homeLocalPoints, homeProcess, homeTrustPoints, homeCaseStages, homeOtherWork, onOpenCaseStudy, onTopicClick, headlineTypingSpeedCps }) {
+export default function ClassicLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, onCtaPrimary, onCtaSecondary, copy, homeTopics, homeCapabilities, homeSectors, homeLocalPoints, homeProcess, homeTrustPoints, homeCaseStages, homeOtherWork, onOpenCaseStudy, onTopicClick, headlineTypingSpeedCps }) {
   return (
     <>
       <div className="hero-center">
@@ -29,10 +29,14 @@ export default function ClassicLayout({ home, heroButtons, lang, quickDraft, set
       </div>
 
       <HeroSituations
+        kicker={home.situationsKicker}
         heading={home.situationsHeading}
         intro={home.situationsIntro}
         topics={homeTopics}
         onTopicClick={onTopicClick}
+        sectorsHeading={home.sectorsHeading}
+        sectors={homeSectors}
+        sectorsNote={home.sectorsNote}
         listClassName="hero-sections"
       />
 

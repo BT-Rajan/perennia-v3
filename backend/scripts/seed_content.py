@@ -113,9 +113,12 @@ COPY_HOME = {
            "supporting_text": "Perennia helps GCC businesses adopt, build and scale technology — from their "
                               "first digital initiative to practical AI and larger-scale transformation.",
            "cta_primary": "Book a 30-Minute Discovery Meeting", "cta_secondary": "Explore What We Build",
-           "situations_heading": "A technology partner at every stage",
-           "situations_intro": "Whatever stage your business is at, Perennia helps you adopt technology "
-                               "reliably, practically and with a clear path forward.",
+           "situations_kicker": "Who we work with",
+           "situations_heading": "Technology should fit the business — not force the business into a template.",
+           "situations_intro": "We work with SMEs in Kuwait and the wider GCC, typically organisations of around 100 to 500 people. "
+                               "Whatever stage your business is at, we help you adopt technology reliably, practically and with a clear path forward.",
+           "sectors_heading": "Businesses we understand particularly well",
+           "sectors_note": "Not in one of these? The approach is the same: understand how your business works, then build the technology around it.",
            "work_kicker": "Our work",
            "work_heading": "Different businesses have different technology problems.",
            "work_intro": "We understand the problem first, then build the appropriate solution — "
@@ -168,9 +171,12 @@ COPY_HOME = {
            "supporting_text": "تساعد بيرينيا الشركات في دول الخليج على تبنّي التقنية وبنائها وتوسيعها — من أول "
                               "مبادرة رقمية إلى الذكاء الاصطناعي العملي والتحول على نطاق أوسع.",
            "cta_primary": "احجز اجتماعًا استكشافيًا لمدة 30 دقيقة", "cta_secondary": "استكشف ما نبنيه",
-           "situations_heading": "شريك تقني في كل مرحلة",
-           "situations_intro": "أيًّا كانت المرحلة التي تمر بها أعمالك، تساعدك بيرينيا على تبنّي التقنية "
-                               "بشكل موثوق وعملي، مع مسار واضح للمضي قدمًا.",
+           "situations_kicker": "مع من نعمل",
+           "situations_heading": "يجب أن تناسب التقنية الأعمال — لا أن تُجبر الأعمال على قالب جاهز.",
+           "situations_intro": "نعمل مع الشركات الصغيرة والمتوسطة في الكويت ودول الخليج، وعادةً ما تضم نحو 100 إلى 500 موظف. "
+                               "أيًّا كانت المرحلة التي تمر بها أعمالك، نساعدك على تبنّي التقنية بشكل موثوق وعملي، مع مسار واضح للمضي قدمًا.",
+           "sectors_heading": "أعمال نفهمها جيدًا بشكل خاص",
+           "sectors_note": "لست ضمن هذه القطاعات؟ النهج نفسه: نفهم طريقة عمل أعمالك، ثم نبني التقنية حولها.",
            "work_kicker": "أعمالنا",
            "work_heading": "لكل عمل مشكلاته التقنية الخاصة.",
            "work_intro": "نفهم المشكلة أولًا، ثم نبني الحل المناسب — "

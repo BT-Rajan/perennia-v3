@@ -6,7 +6,7 @@ import { HeroButtons, HeroCapabilities, HeroProcess, HeroChatComposer, HeroCtas,
  * on the other. Stacks to a single column (main content first, then
  * nav) below the tablet breakpoint — see .hero-split-* in Hero.css.
  */
-export default function SplitLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, onCtaPrimary, onCtaSecondary, copy, homeTopics, homeCapabilities, homeLocalPoints, homeProcess, homeTrustPoints, homeCaseStages, homeOtherWork, onOpenCaseStudy, onTopicClick, headlineTypingSpeedCps }) {
+export default function SplitLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, onCtaPrimary, onCtaSecondary, copy, homeTopics, homeCapabilities, homeSectors, homeLocalPoints, homeProcess, homeTrustPoints, homeCaseStages, homeOtherWork, onOpenCaseStudy, onTopicClick, headlineTypingSpeedCps }) {
   return (
     <>
       <div className="hero-split-wrap">
@@ -37,10 +37,14 @@ export default function SplitLayout({ home, heroButtons, lang, quickDraft, setQu
         {/* No section CTA here — this column sits right beside the hero's
             own CTAs, so a second booking button would just repeat them. */}
         <HeroSituations
+          kicker={home.situationsKicker}
           heading={home.situationsHeading}
           intro={home.situationsIntro}
           topics={homeTopics}
           onTopicClick={onTopicClick}
+          sectorsHeading={home.sectorsHeading}
+          sectors={homeSectors}
+          sectorsNote={home.sectorsNote}
           className="hero-situations-aside hero-block-start"
           listClassName="hero-split-nav"
           cardClassName="hero-section-row"

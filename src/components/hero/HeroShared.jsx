@@ -154,8 +154,11 @@ export function HeroTrust({ kicker, heading, intro, contrast, points, principles
 }
 
 /**
- * "Which situation are you in?" section under the hero — heading,
- * one-line intro and the three situation cards (HOME_TOPICS). Shared by
+ * "Who we work with" — the section under the hero: the positioning
+ * heading and target profile, the three situation cards (HOME_TOPICS),
+ * then the business types Perennia understands particularly well
+ * (HOME_SECTORS, plain text — not an icon grid) with a closing note so
+ * no other industry feels excluded. Shared by
  * the classic/split/editorial layouts; each passes its own list/card
  * classes (grid, stacked rows, or a horizontal strip) so only the
  * arrangement differs, never the content. Clicking a card still hands
@@ -163,13 +166,14 @@ export function HeroTrust({ kicker, heading, intro, contrast, points, principles
  * see HeroDiscovery.
  */
 export function HeroSituations({
-  heading, intro, topics, onTopicClick,
+  kicker, heading, intro, topics, onTopicClick,
+  sectorsHeading, sectors, sectorsNote,
   className, listClassName, cardClassName,
 }) {
   if (!topics?.length) return null;
   return (
     <section className={`hero-block hero-situations ${className || ""}`.trim()} aria-labelledby="hero-situations-heading">
-      <HeroBlockHead id="hero-situations-heading" heading={heading} intro={intro} />
+      <HeroBlockHead id="hero-situations-heading" kicker={kicker} heading={heading} intro={intro} />
       <div className={listClassName}>
         {topics.map(({ id, label, audience, body }) => (
           <button key={id} className={`hero-section ${cardClassName || ""}`.trim()} onClick={() => onTopicClick(id)}>
@@ -180,6 +184,20 @@ export function HeroSituations({
           </button>
         ))}
       </div>
+      {sectors?.length > 0 && (
+        <div className="hero-sectors">
+          {sectorsHeading && <h3 className="hero-sectors-heading">{sectorsHeading}</h3>}
+          <ul className="hero-sectors-list">
+            {sectors.map(({ id, label, body }) => (
+              <li key={id}>
+                <h4>{label}</h4>
+                <p>{body}</p>
+              </li>
+            ))}
+          </ul>
+          {sectorsNote && <p className="hero-sectors-note">{sectorsNote}</p>}
+        </div>
+      )}
     </section>
   );
 }

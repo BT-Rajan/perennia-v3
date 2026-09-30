@@ -6,7 +6,7 @@ import { HeroButtons, HeroChatComposer, HeroCtas, HeroDiscovery, HeroEyebrow, He
  * horizontal-scrolling strip of compact cards instead of a grid —
  * a more magazine/editorial feel than the centered classic layout.
  */
-export default function EditorialLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, onCtaPrimary, onCtaSecondary, copy, homeTopics, homeCapabilities, homeLocalPoints, homeProcess, homeTrustPoints, homeCaseStages, homeOtherWork, onOpenCaseStudy, onTopicClick, headlineTypingSpeedCps }) {
+export default function EditorialLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, onCtaPrimary, onCtaSecondary, copy, homeTopics, homeCapabilities, homeSectors, homeLocalPoints, homeProcess, homeTrustPoints, homeCaseStages, homeOtherWork, onOpenCaseStudy, onTopicClick, headlineTypingSpeedCps }) {
   return (
     <>
       <div className="hero-editorial-main">
@@ -35,10 +35,14 @@ export default function EditorialLayout({ home, heroButtons, lang, quickDraft, s
       </div>
 
       <HeroSituations
+        kicker={home.situationsKicker}
         heading={home.situationsHeading}
         intro={home.situationsIntro}
         topics={homeTopics}
         onTopicClick={onTopicClick}
+        sectorsHeading={home.sectorsHeading}
+        sectors={homeSectors}
+        sectorsNote={home.sectorsNote}
         className="hero-block-start"
         listClassName="hero-editorial-strip"
         cardClassName="hero-section-compact"

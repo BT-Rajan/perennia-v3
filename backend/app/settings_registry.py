@@ -617,9 +617,12 @@ _DEFS: list[SettingDef] = [
                                "first digital initiative to practical AI and larger-scale transformation.",
             "cta_primary": "Book a 30-Minute Discovery Meeting",
             "cta_secondary": "Explore What We Build",
-            "situations_heading": "A technology partner at every stage",
-            "situations_intro": "Whatever stage your business is at, Perennia helps you adopt technology "
-                                "reliably, practically and with a clear path forward.",
+            "situations_kicker": "Who we work with",
+            "situations_heading": "Technology should fit the business — not force the business into a template.",
+            "situations_intro": "We work with SMEs in Kuwait and the wider GCC, typically organisations of around 100 to 500 people. "
+                                "Whatever stage your business is at, we help you adopt technology reliably, practically and with a clear path forward.",
+            "sectors_heading": "Businesses we understand particularly well",
+            "sectors_note": "Not in one of these? The approach is the same: understand how your business works, then build the technology around it.",
             "work_kicker": "Our work",
             "work_heading": "Different businesses have different technology problems.",
             "work_intro": "We understand the problem first, then build the appropriate solution — "
@@ -678,9 +681,12 @@ _DEFS: list[SettingDef] = [
                                "مبادرة رقمية إلى الذكاء الاصطناعي العملي والتحول على نطاق أوسع.",
             "cta_primary": "احجز اجتماعًا استكشافيًا لمدة 30 دقيقة",
             "cta_secondary": "استكشف ما نبنيه",
-            "situations_heading": "شريك تقني في كل مرحلة",
-            "situations_intro": "أيًّا كانت المرحلة التي تمر بها أعمالك، تساعدك بيرينيا على تبنّي التقنية "
-                                "بشكل موثوق وعملي، مع مسار واضح للمضي قدمًا.",
+            "situations_kicker": "مع من نعمل",
+            "situations_heading": "يجب أن تناسب التقنية الأعمال — لا أن تُجبر الأعمال على قالب جاهز.",
+            "situations_intro": "نعمل مع الشركات الصغيرة والمتوسطة في الكويت ودول الخليج، وعادةً ما تضم نحو 100 إلى 500 موظف. "
+                                "أيًّا كانت المرحلة التي تمر بها أعمالك، نساعدك على تبنّي التقنية بشكل موثوق وعملي، مع مسار واضح للمضي قدمًا.",
+            "sectors_heading": "أعمال نفهمها جيدًا بشكل خاص",
+            "sectors_note": "لست ضمن هذه القطاعات؟ النهج نفسه: نفهم طريقة عمل أعمالك، ثم نبني التقنية حولها.",
             "work_kicker": "أعمالنا",
             "work_heading": "لكل عمل مشكلاته التقنية الخاصة.",
             "work_intro": "نفهم المشكلة أولًا، ثم نبني الحل المناسب — "
@@ -728,7 +734,8 @@ _DEFS: list[SettingDef] = [
     }, i18n=True,
                help_text="welcome, tagline, hint, lang_switch, hero_statement, tagline_line1, tagline_line2, "
                           "eyebrow, supporting_text, cta_primary, cta_secondary, principles, assistant_label, example_prompts, "
-                          "situations_heading, situations_intro (the section under the hero), "
+                          "situations_kicker, situations_heading, situations_intro, sectors_heading, sectors_note "
+                          "(the who-we-work-with section under the hero), "
                           "capabilities_heading, capabilities_intro, capabilities_roles, "
                           "capabilities_scope_note (the Technology/AI/Advisory section), "
                           "local_kicker, local_heading, local_intro (the Kuwait/GCC panel), "

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLang } from "../../context/LangContext.jsx";
-import { COPY, HOME_CAPABILITIES, HOME_CASE_STAGES, HOME_OTHER_WORK, HOME_LOCAL_POINTS, HOME_PROCESS, HOME_TOPICS, HOME_TRUST_POINTS } from "../../data/content.js";
+import { COPY, HOME_CAPABILITIES, HOME_SECTORS, HOME_CASE_STAGES, HOME_OTHER_WORK, HOME_LOCAL_POINTS, HOME_PROCESS, HOME_TOPICS, HOME_TRUST_POINTS } from "../../data/content.js";
 import TopBar from "../layout/TopBar.jsx";
 import ClassicLayout from "./layouts/ClassicLayout.jsx";
 import SplitLayout from "./layouts/SplitLayout.jsx";
@@ -52,7 +52,10 @@ function withHomeFallbacks(home, lang) {
     ctaPrimary: home.ctaPrimary ?? fallback.ctaPrimary,
     ctaSecondary: home.ctaSecondary ?? fallback.ctaSecondary,
     principles: home.principles ?? fallback.principles,
+    situationsKicker: home.situationsKicker ?? fallback.situationsKicker,
     situationsHeading: home.situationsHeading ?? fallback.situationsHeading,
+    sectorsHeading: home.sectorsHeading ?? fallback.sectorsHeading,
+    sectorsNote: home.sectorsNote ?? fallback.sectorsNote,
     situationsIntro: home.situationsIntro ?? fallback.situationsIntro,
     capabilitiesHeading: home.capabilitiesHeading ?? fallback.capabilitiesHeading,
     capabilitiesIntro: home.capabilitiesIntro ?? fallback.capabilitiesIntro,
@@ -127,6 +130,7 @@ export default function Hero({ onEnter, onNavigate, onBookingClick }) {
   }
 
   const homeCapabilities = HOME_CAPABILITIES[lang] || HOME_CAPABILITIES.en;
+  const homeSectors = HOME_SECTORS[lang] || HOME_SECTORS.en;
   const homeLocalPoints = HOME_LOCAL_POINTS[lang] || HOME_LOCAL_POINTS.en;
   const homeProcess = HOME_PROCESS[lang] || HOME_PROCESS.en;
   const homeTrustPoints = HOME_TRUST_POINTS[lang] || HOME_TRUST_POINTS.en;
@@ -158,6 +162,7 @@ export default function Hero({ onEnter, onNavigate, onBookingClick }) {
         branding={branding}
         homeTopics={homeTopics}
         homeCapabilities={homeCapabilities}
+        homeSectors={homeSectors}
         homeLocalPoints={homeLocalPoints}
         homeProcess={homeProcess}
         homeTrustPoints={homeTrustPoints}

@@ -82,6 +82,24 @@ export const HOME_TOPICS = {
   ],
 };
 
+// Homepage sectors (HeroSituations) — business types Perennia
+// understands particularly well. Framed as relevance, not a limit on
+// who we work with, and with no compliance/certification claims.
+export const HOME_SECTORS = {
+  en: [
+    { id: "trading", label: "Trading & Distribution", body: "Customers, orders, inventory, procurement and delivery, connected through business software built around how you trade." },
+    { id: "professional-services", label: "Professional Services", body: "Workflows, approvals, documents and client management, made more connected and efficient through automation and custom systems." },
+    { id: "healthcare", label: "Healthcare", body: "Dependable technology around operational workflows, information and service delivery." },
+    { id: "education", label: "Education", body: "Practical technology for learning, administration and digital experiences." },
+  ],
+  ar: [
+    { id: "trading", label: "التجارة والتوزيع", body: "العملاء والطلبات والمخزون والمشتريات والتسليم، مترابطة عبر برمجيات أعمال مبنية حول طريقة تجارتك." },
+    { id: "professional-services", label: "الخدمات المهنية", body: "سير العمل والاعتمادات والمستندات وإدارة العملاء، أكثر ترابطًا وكفاءة عبر الأتمتة والأنظمة المخصصة." },
+    { id: "healthcare", label: "الرعاية الصحية", body: "تقنية موثوقة حول سير العمل التشغيلي والمعلومات وتقديم الخدمات." },
+    { id: "education", label: "التعليم", body: "تقنية عملية للتعلّم والإدارة والتجارب الرقمية." },
+  ],
+};
+
 // Homepage capabilities (HeroCapabilities in HeroShared.jsx) — what
 // Perennia does, as three connected capabilities. Static content, not
 // links; the section's own CTAs lead to booking / the products page.
@@ -322,8 +340,11 @@ export const COPY = {
       supportingText: "Perennia helps GCC businesses adopt, build and scale technology — from their first digital initiative to practical AI and larger-scale transformation.",
       ctaPrimary: "Book a 30-Minute Discovery Meeting",
       ctaSecondary: "Explore What We Build",
-      situationsHeading: "A technology partner at every stage",
-      situationsIntro: "Whatever stage your business is at, Perennia helps you adopt technology reliably, practically and with a clear path forward.",
+      situationsKicker: "Who we work with",
+      situationsHeading: "Technology should fit the business — not force the business into a template.",
+      situationsIntro: "We work with SMEs in Kuwait and the wider GCC, typically organisations of around 100 to 500 people. Whatever stage your business is at, we help you adopt technology reliably, practically and with a clear path forward.",
+      sectorsHeading: "Businesses we understand particularly well",
+      sectorsNote: "Not in one of these? The approach is the same: understand how your business works, then build the technology around it.",
       workKicker: "Our work",
       workHeading: "Different businesses have different technology problems.",
       workIntro: "We understand the problem first, then build the appropriate solution — from a factory's complete operation to a sales team in the field.",
@@ -455,8 +476,11 @@ export const COPY = {
       supportingText: "تساعد بيرينيا الشركات في دول الخليج على تبنّي التقنية وبنائها وتوسيعها — من أول مبادرة رقمية إلى الذكاء الاصطناعي العملي والتحول على نطاق أوسع.",
       ctaPrimary: "احجز اجتماعًا استكشافيًا لمدة 30 دقيقة",
       ctaSecondary: "استكشف ما نبنيه",
-      situationsHeading: "شريك تقني في كل مرحلة",
-      situationsIntro: "أيًّا كانت المرحلة التي تمر بها أعمالك، تساعدك بيرينيا على تبنّي التقنية بشكل موثوق وعملي، مع مسار واضح للمضي قدمًا.",
+      situationsKicker: "مع من نعمل",
+      situationsHeading: "يجب أن تناسب التقنية الأعمال — لا أن تُجبر الأعمال على قالب جاهز.",
+      situationsIntro: "نعمل مع الشركات الصغيرة والمتوسطة في الكويت ودول الخليج، وعادةً ما تضم نحو 100 إلى 500 موظف. أيًّا كانت المرحلة التي تمر بها أعمالك، نساعدك على تبنّي التقنية بشكل موثوق وعملي، مع مسار واضح للمضي قدمًا.",
+      sectorsHeading: "أعمال نفهمها جيدًا بشكل خاص",
+      sectorsNote: "لست ضمن هذه القطاعات؟ النهج نفسه: نفهم طريقة عمل أعمالك، ثم نبني التقنية حولها.",
       workKicker: "أعمالنا",
       workHeading: "لكل عمل مشكلاته التقنية الخاصة.",
       workIntro: "نفهم المشكلة أولًا، ثم نبني الحل المناسب — من التشغيل الكامل لمصنع إلى فريق مبيعات في الميدان.",
