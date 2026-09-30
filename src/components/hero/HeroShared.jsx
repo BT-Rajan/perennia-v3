@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { isSafeHref } from "../../data/siteContent.js";
 import ChatInput from "../chat/ChatInput.jsx";
 import Button from "../ui/Button.jsx";
+import GlassPanel from "../ui/GlassPanel.jsx";
 
 /**
  * The homepage's two fixed calls to action (copy.home.cta_primary /
@@ -24,6 +25,34 @@ export function HeroCtas({ primaryLabel, secondaryLabel, onPrimary, onSecondary,
 }
 
 /**
+ * Heading + one-line intro shared by every homepage section below the
+ * hero (situations, capabilities, …) so they read as one family.
+ */
+function HeroBlockHead({ id, heading, intro }) {
+  if (!heading && !intro) return null;
+  return (
+    <div className="hero-block-head">
+      {heading && <h2 id={id}>{heading}</h2>}
+      {intro && <p>{intro}</p>}
+    </div>
+  );
+}
+
+/**
+ * A section's closing call to action: a short note beside the booking
+ * button (same handler as the hero's primary CTA).
+ */
+function HeroBlockCta({ note, label, onClick }) {
+  if (!label || !onClick) return null;
+  return (
+    <div className="hero-block-cta">
+      {note && <p>{note}</p>}
+      <Button variant="primary" onClick={onClick}>{label}</Button>
+    </div>
+  );
+}
+
+/**
  * "Which situation are you in?" section under the hero — heading,
  * one-line intro, the three situation cards (HOME_TOPICS), and a
  * discovery-meeting CTA. Shared by the classic/split/editorial layouts;
@@ -37,13 +66,8 @@ export function HeroSituations({
 }) {
   if (!topics?.length) return null;
   return (
-    <section className={`hero-situations ${className || ""}`.trim()} aria-labelledby="hero-situations-heading">
-      {(heading || intro) && (
-        <div className="hero-situations-head">
-          {heading && <h2 id="hero-situations-heading">{heading}</h2>}
-          {intro && <p>{intro}</p>}
-        </div>
-      )}
+    <section className={`hero-block hero-situations ${className || ""}`.trim()} aria-labelledby="hero-situations-heading">
+      <HeroBlockHead id="hero-situations-heading" heading={heading} intro={intro} />
       <div className={listClassName}>
         {topics.map(({ id, label, audience, body }) => (
           <button key={id} className={`hero-section ${cardClassName || ""}`.trim()} onClick={() => onTopicClick(id)}>
@@ -54,12 +78,40 @@ export function HeroSituations({
           </button>
         ))}
       </div>
-      {ctaLabel && onCta && (
-        <div className="hero-situations-cta">
-          {ctaNote && <p>{ctaNote}</p>}
-          <Button variant="primary" onClick={onCta}>{ctaLabel}</Button>
+      <HeroBlockCta note={ctaNote} label={ctaLabel} onClick={onCta} />
+    </section>
+  );
+}
+
+/**
+ * "What Perennia does" — Technology / AI / Advisory (HOME_CAPABILITIES)
+ * as three columns of ONE GlassPanel (the design system's shared
+ * surface, so it follows the admin surface-style setting), deliberately
+ * not three more cards: these are facets of one partner, not separate
+ * services. Closes with the ways a customer can engage, the scope/
+ * investment note (no prices, by design) and the hero's own CTAs.
+ */
+export function HeroCapabilities({ heading, intro, items, roles, scopeNote, ctas, className }) {
+  if (!items?.length) return null;
+  return (
+    <section className={`hero-block hero-capabilities ${className || ""}`.trim()} aria-labelledby="hero-capabilities-heading">
+      <HeroBlockHead id="hero-capabilities-heading" heading={heading} intro={intro} />
+      <GlassPanel className="hero-capabilities-panel">
+        {items.map(({ id, label, lead, body }) => (
+          <div key={id} className="hero-capability">
+            <h3>{label}</h3>
+            <p className="hero-capability-lead">{lead}</p>
+            <p>{body}</p>
+          </div>
+        ))}
+      </GlassPanel>
+      {(roles || scopeNote) && (
+        <div className="hero-capabilities-foot">
+          {roles && <p>{roles}</p>}
+          {scopeNote && <p className="hero-capabilities-scope">{scopeNote}</p>}
         </div>
       )}
+      {ctas}
     </section>
   );
 }

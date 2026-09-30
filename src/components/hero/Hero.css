@@ -444,11 +444,10 @@
   background: color-mix(in srgb, var(--gold) 55%, transparent);
 }
 
-/* ── Situations section (HeroSituations) — heading + intro, the three
-   cards (in whichever list arrangement the layout passes), and a
-   discovery-meeting CTA. It owns the section spacing, so the inner
-   list containers below drop their own when nested in it. */
-.hero-situations {
+/* ── Homepage sections below the hero (HeroSituations,
+   HeroCapabilities, …) — shared spacing, heading/intro and closing
+   CTA, so every section reads as one family. */
+.hero-block {
   width: 100%;
   max-width: var(--content-max);
   display: flex;
@@ -456,15 +455,12 @@
   gap: var(--space-5);
   padding: var(--section-gap) 0 var(--section-padding-block);
 }
-.hero-situations .hero-sections,
-.hero-situations .hero-editorial-strip { padding: 0; }
-.hero-situations .hero-split-nav { flex: none; }
-.hero-situations-head {
+.hero-block-head {
   text-align: center;
   max-width: 62ch;
   margin-inline: auto;
 }
-.hero-situations-head h2 {
+.hero-block-head h2 {
   margin: 0 0 var(--space-2);
   font-family: var(--font-display);
   font-weight: 600;
@@ -472,14 +468,14 @@
   line-height: 1.2;
   color: var(--white-soft);
 }
-[dir="rtl"] .hero-situations-head h2 { font-family: var(--font-ar); }
-.hero-situations-head p {
+[dir="rtl"] .hero-block-head h2 { font-family: var(--font-ar); }
+.hero-block-head p {
   margin: 0;
   color: var(--muted-strong);
   font-size: var(--fs-body);
   line-height: calc(1.6 * var(--line-height-scale));
 }
-.hero-situations-cta {
+.hero-block-cta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -487,14 +483,20 @@
   gap: var(--space-3) var(--space-4);
   text-align: center;
 }
-.hero-situations-cta p { margin: 0; color: var(--muted-strong); font-size: var(--fs-sm); }
-.hero-situations-cta .btn {
+.hero-block-cta p { margin: 0; color: var(--muted-strong); font-size: var(--fs-sm); }
+.hero-block-cta .btn {
   white-space: normal;
   box-shadow: 0 6px 18px color-mix(in srgb, var(--gold) 22%, transparent);
 }
-.hero-situations-start .hero-situations-head { text-align: start; margin-inline: 0; }
-.hero-situations-start .hero-situations-cta { justify-content: flex-start; text-align: start; }
-/* split layout: the section is the second column beside the hero. */
+.hero-block-start .hero-block-head { text-align: start; margin-inline: 0; }
+.hero-block-start .hero-block-cta { justify-content: flex-start; text-align: start; }
+
+/* Situations: the section owns the spacing, so the inner list
+   containers (grid / rows / strip) drop their own when nested in it. */
+.hero-situations .hero-sections,
+.hero-situations .hero-editorial-strip { padding: 0; }
+.hero-situations .hero-split-nav { flex: none; }
+/* split layout: situations are the second column beside the hero. */
 .hero-situations-aside {
   flex: 1 1 380px;
   min-width: 0;
@@ -502,7 +504,62 @@
   gap: var(--space-4);
 }
 @media (max-width: 900px) {
-  .hero-situations-aside .hero-situations-head { text-align: center; margin-inline: auto; }
+  .hero-situations-aside .hero-block-head { text-align: center; margin-inline: auto; }
+}
+
+/* ── Capabilities (HeroCapabilities) — one GlassPanel split into three
+   columns by hairline dividers (not three separate cards). Stacks with
+   horizontal dividers on narrow screens. */
+.hero-capabilities-panel {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 0;
+}
+.hero-capabilities-panel:hover { border-color: color-mix(in srgb, var(--gold) 15%, transparent); }
+.hero-capability {
+  padding: var(--space-6) var(--space-5);
+  text-align: start;
+}
+.hero-capability + .hero-capability {
+  border-inline-start: 1px solid color-mix(in srgb, var(--white-soft) 10%, transparent);
+}
+.hero-capability h3 {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--fs-h2);
+  color: var(--white-soft);
+}
+[dir="rtl"] .hero-capability h3 { font-family: var(--font-ar); }
+.hero-capability p {
+  margin: 0;
+  color: var(--muted-strong);
+  font-size: var(--fs-sm);
+  line-height: calc(1.6 * var(--line-height-scale));
+}
+.hero-capability .hero-capability-lead {
+  margin-bottom: var(--space-2);
+  color: var(--gold);
+  font-weight: 600;
+}
+.hero-capabilities-foot {
+  max-width: 70ch;
+  margin-inline: auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.hero-capabilities-foot p { margin: 0; color: var(--muted-strong); font-size: var(--fs-sm); }
+.hero-capabilities-foot .hero-capabilities-scope { color: var(--muted); }
+.hero-block-start .hero-capabilities-foot { text-align: start; margin-inline: 0; }
+@media (max-width: 760px) {
+  .hero-capabilities-panel { grid-template-columns: 1fr; }
+  .hero-capability { padding: var(--space-5) var(--space-4); }
+  .hero-capability + .hero-capability {
+    border-inline-start: none;
+    border-top: 1px solid color-mix(in srgb, var(--white-soft) 10%, transparent);
+  }
 }
 
 /* ── Feature grid — responsive card grid (was a full-width vertical

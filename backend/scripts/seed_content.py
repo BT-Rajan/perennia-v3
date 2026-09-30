@@ -102,6 +102,12 @@ COPY_HOME = {
            "situations_intro": "Whatever stage your business is at, Perennia helps you adopt technology "
                                "reliably, practically and with a clear path forward.",
            "situations_cta_note": "Not sure which describes you? That is what the discovery meeting is for.",
+           "capabilities_heading": "Three capabilities. One technology partner.",
+           "capabilities_intro": "Understand the business. Decide what technology is needed. Build it. "
+                                 "Put it into operation. Help the business adapt.",
+           "capabilities_roles": "Work with us as an advisor, an implementation partner, a software builder, "
+                                 "an AI implementation partner — or a combination of these.",
+           "capabilities_scope_note": "Scope and investment are agreed once we understand your requirements.",
            "principles": ["Business first, technology second", "Practical AI, not fashionable AI",
                           "Experienced technology professionals", "Built for GCC businesses",
                           "Transparent scope and investment"],
@@ -120,6 +126,12 @@ COPY_HOME = {
            "situations_intro": "أيًّا كانت المرحلة التي تمر بها أعمالك، تساعدك بيرينيا على تبنّي التقنية "
                                "بشكل موثوق وعملي، مع مسار واضح للمضي قدمًا.",
            "situations_cta_note": "لست متأكدًا أيّها ينطبق عليك؟ هذا بالضبط هدف الاجتماع الاستكشافي.",
+           "capabilities_heading": "ثلاث قدرات. شريك تقني واحد.",
+           "capabilities_intro": "نفهم الأعمال. نحدد التقنية المطلوبة. نبنيها. نضعها قيد التشغيل. "
+                                 "ونساعد الأعمال على التكيّف.",
+           "capabilities_roles": "اعمل معنا كمستشار، أو شريك تنفيذ، أو مطوّر برمجيات، أو شريك لتطبيق الذكاء "
+                                 "الاصطناعي — أو مزيج من ذلك.",
+           "capabilities_scope_note": "نتفق على نطاق العمل والتكلفة بعد فهم متطلباتك.",
            "principles": ["الأعمال أولًا، ثم التقنية", "ذكاء اصطناعي عملي، لا لمجرد مواكبة الموضة",
                           "خبراء تقنية ذوو خبرة", "فهم لبيئة الأعمال الخليجية", "نطاق عمل وتكلفة واضحان"],
            "example_prompts": ["من أين تبدأ أعمالي مع التقنية؟", "أين يمكن للذكاء الاصطناعي أن يفيد أعمالي فعلًا؟",

@@ -1,4 +1,4 @@
-import { HeroButtons, HeroChatComposer, HeroCtas, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroPrinciples, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
+import { HeroButtons, HeroChatComposer, HeroCtas, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroCapabilities, HeroPrinciples, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
 
 /**
  * "editorial" — a bigger, left-aligned headline and a narrower
@@ -6,7 +6,7 @@ import { HeroButtons, HeroChatComposer, HeroCtas, HeroEyebrow, HeroExamplePrompt
  * horizontal-scrolling strip of compact cards instead of a grid —
  * a more magazine/editorial feel than the centered classic layout.
  */
-export default function EditorialLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, onCtaPrimary, onCtaSecondary, copy, homeTopics, onTopicClick, headlineTypingSpeedCps }) {
+export default function EditorialLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, onCtaPrimary, onCtaSecondary, copy, homeTopics, homeCapabilities, onTopicClick, headlineTypingSpeedCps }) {
   return (
     <>
       <div className="hero-editorial-main">
@@ -43,9 +43,19 @@ export default function EditorialLayout({ home, heroButtons, lang, quickDraft, s
         ctaNote={home.situationsCtaNote}
         ctaLabel={home.ctaPrimary}
         onCta={onCtaPrimary}
-        className="hero-situations-start"
+        className="hero-block-start"
         listClassName="hero-editorial-strip"
         cardClassName="hero-section-compact"
+      />
+
+      <HeroCapabilities
+        heading={home.capabilitiesHeading}
+        intro={home.capabilitiesIntro}
+        items={homeCapabilities}
+        roles={home.capabilitiesRoles}
+        scopeNote={home.capabilitiesScopeNote}
+        ctas={<HeroCtas primaryLabel={home.ctaPrimary} secondaryLabel={home.ctaSecondary} onPrimary={onCtaPrimary} onSecondary={onCtaSecondary} className="hero-ctas-left" />}
+        className="hero-block-start"
       />
     </>
   );

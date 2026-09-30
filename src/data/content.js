@@ -82,6 +82,52 @@ export const HOME_TOPICS = {
   ],
 };
 
+// Homepage capabilities (HeroCapabilities in HeroShared.jsx) — what
+// Perennia does, as three connected capabilities. Static content, not
+// links; the section's own CTAs lead to booking / the products page.
+export const HOME_CAPABILITIES = {
+  en: [
+    {
+      id: "technology",
+      label: "Technology",
+      lead: "Build the technology your business needs.",
+      body: "Custom software, business applications, automation and digital systems designed around the way the business actually operates.",
+    },
+    {
+      id: "ai",
+      label: "AI",
+      lead: "Use AI where it makes business sense.",
+      body: "AI implementation, intelligent workflows and practical AI solutions focused on useful business outcomes — not AI for its own sake.",
+    },
+    {
+      id: "advisory",
+      label: "Advisory",
+      lead: "Make better technology decisions.",
+      body: "Technology consulting, process assessment and guidance that helps businesses understand what to change, what to build and how to implement it reliably.",
+    },
+  ],
+  ar: [
+    {
+      id: "technology",
+      label: "التقنية",
+      lead: "ابنِ التقنية التي تحتاجها أعمالك.",
+      body: "برمجيات مخصصة وتطبيقات أعمال وأتمتة وأنظمة رقمية مصممة وفق طريقة عمل أعمالك فعليًا.",
+    },
+    {
+      id: "ai",
+      label: "الذكاء الاصطناعي",
+      lead: "استخدم الذكاء الاصطناعي حيث يكون منطقيًا للأعمال.",
+      body: "تطبيق الذكاء الاصطناعي وسير عمل ذكي وحلول عملية تركّز على نتائج مفيدة للأعمال — لا ذكاء اصطناعي لذاته.",
+    },
+    {
+      id: "advisory",
+      label: "الاستشارات",
+      lead: "اتخذ قرارات تقنية أفضل.",
+      body: "استشارات تقنية وتقييم للعمليات وتوجيه يساعدك على فهم ما يجب تغييره، وما يجب بناؤه، وكيف تنفّذه بشكل موثوق.",
+    },
+  ],
+};
+
 export const SECTIONS = {
   en: {
     about: {
@@ -144,6 +190,10 @@ export const COPY = {
       situationsHeading: "A technology partner at every stage",
       situationsIntro: "Whatever stage your business is at, Perennia helps you adopt technology reliably, practically and with a clear path forward.",
       situationsCtaNote: "Not sure which describes you? That is what the discovery meeting is for.",
+      capabilitiesHeading: "Three capabilities. One technology partner.",
+      capabilitiesIntro: "Understand the business. Decide what technology is needed. Build it. Put it into operation. Help the business adapt.",
+      capabilitiesRoles: "Work with us as an advisor, an implementation partner, a software builder, an AI implementation partner — or a combination of these.",
+      capabilitiesScopeNote: "Scope and investment are agreed once we understand your requirements.",
       principles: [
         "Business first, technology second",
         "Practical AI, not fashionable AI",
@@ -250,6 +300,10 @@ export const COPY = {
       situationsHeading: "شريك تقني في كل مرحلة",
       situationsIntro: "أيًّا كانت المرحلة التي تمر بها أعمالك، تساعدك بيرينيا على تبنّي التقنية بشكل موثوق وعملي، مع مسار واضح للمضي قدمًا.",
       situationsCtaNote: "لست متأكدًا أيّها ينطبق عليك؟ هذا بالضبط هدف الاجتماع الاستكشافي.",
+      capabilitiesHeading: "ثلاث قدرات. شريك تقني واحد.",
+      capabilitiesIntro: "نفهم الأعمال. نحدد التقنية المطلوبة. نبنيها. نضعها قيد التشغيل. ونساعد الأعمال على التكيّف.",
+      capabilitiesRoles: "اعمل معنا كمستشار، أو شريك تنفيذ، أو مطوّر برمجيات، أو شريك لتطبيق الذكاء الاصطناعي — أو مزيج من ذلك.",
+      capabilitiesScopeNote: "نتفق على نطاق العمل والتكلفة بعد فهم متطلباتك.",
       principles: [
         "الأعمال أولًا، ثم التقنية",
         "ذكاء اصطناعي عملي، لا لمجرد مواكبة الموضة",

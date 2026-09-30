@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLang } from "../../context/LangContext.jsx";
-import { COPY, HOME_TOPICS } from "../../data/content.js";
+import { COPY, HOME_CAPABILITIES, HOME_TOPICS } from "../../data/content.js";
 import TopBar from "../layout/TopBar.jsx";
 import ClassicLayout from "./layouts/ClassicLayout.jsx";
 import SplitLayout from "./layouts/SplitLayout.jsx";
@@ -55,6 +55,10 @@ function withHomeFallbacks(home, lang) {
     situationsHeading: home.situationsHeading ?? fallback.situationsHeading,
     situationsIntro: home.situationsIntro ?? fallback.situationsIntro,
     situationsCtaNote: home.situationsCtaNote ?? fallback.situationsCtaNote,
+    capabilitiesHeading: home.capabilitiesHeading ?? fallback.capabilitiesHeading,
+    capabilitiesIntro: home.capabilitiesIntro ?? fallback.capabilitiesIntro,
+    capabilitiesRoles: home.capabilitiesRoles ?? fallback.capabilitiesRoles,
+    capabilitiesScopeNote: home.capabilitiesScopeNote ?? fallback.capabilitiesScopeNote,
   };
 }
 
@@ -95,6 +99,8 @@ export default function Hero({ onEnter, onNavigate, onBookingClick }) {
     if (topic) onEnter(topic.question);
   }
 
+  const homeCapabilities = HOME_CAPABILITIES[lang] || HOME_CAPABILITIES.en;
+
   const Layout = LAYOUTS[theme?.layoutTemplate] || ClassicLayout;
 
   return (
@@ -119,6 +125,7 @@ export default function Hero({ onEnter, onNavigate, onBookingClick }) {
         headlineTypingSpeedCps={theme?.headlineTypingSpeedCps}
         branding={branding}
         homeTopics={homeTopics}
+        homeCapabilities={homeCapabilities}
         onTopicClick={handleTopicClick}
       />
 
