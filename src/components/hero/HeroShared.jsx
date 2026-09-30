@@ -3,6 +3,7 @@ import { isSafeHref } from "../../data/siteContent.js";
 import ChatInput from "../chat/ChatInput.jsx";
 import Button from "../ui/Button.jsx";
 import GlassPanel from "../ui/GlassPanel.jsx";
+import WorkflowChain from "../ui/WorkflowChain.jsx";
 
 /**
  * The homepage's two fixed calls to action (copy.home.cta_primary /
@@ -56,6 +57,35 @@ export function HeroDiscovery({ heading, body, note, ctas, className }) {
         {body && <p>{body}</p>}
         {note && <p className="hero-discovery-note">{note}</p>}
         {ctas}
+      </GlassPanel>
+    </section>
+  );
+}
+
+/**
+ * Flagship proof — a compact teaser for the JDK Factory ERP case study
+ * (a Markdown content page, "jdk-factory-erp"): the connected lifecycle
+ * (WorkflowChain), one real screen from the system, and a link to the
+ * full case study. Renders nothing if that page doesn't exist (onOpen
+ * is null), so it never links to a dead page.
+ */
+export function HeroCaseStudy({ kicker, heading, body, stages, linkLabel, onOpen, imageSrc, imageAlt, className }) {
+  if (!heading || !onOpen) return null;
+  return (
+    <section className={`hero-block hero-case ${className || ""}`.trim()} aria-labelledby="hero-case-heading">
+      <GlassPanel className="hero-case-panel">
+        <div className="hero-case-text">
+          {kicker && <p className="hero-eyebrow hero-case-kicker">{kicker}</p>}
+          <h2 id="hero-case-heading">{heading}</h2>
+          {body && <p>{body}</p>}
+          <WorkflowChain stages={stages} label={heading} className="hero-case-chain" />
+          <div>
+            <Button variant="ghost" onClick={onOpen}>{linkLabel}</Button>
+          </div>
+        </div>
+        {imageSrc && (
+          <img className="hero-case-image" src={imageSrc} alt={imageAlt || ""} loading="lazy" />
+        )}
       </GlassPanel>
     </section>
   );

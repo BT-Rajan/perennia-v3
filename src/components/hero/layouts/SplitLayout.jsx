@@ -1,4 +1,4 @@
-import { HeroButtons, HeroCapabilities, HeroProcess, HeroChatComposer, HeroCtas, HeroDiscovery, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroLocal, HeroTrust, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
+import { HeroButtons, HeroCapabilities, HeroCaseStudy, HeroProcess, HeroChatComposer, HeroCtas, HeroDiscovery, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroLocal, HeroTrust, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
 
 /**
  * "split" — two-column: headline, tagline, and the quick-chat box
@@ -6,7 +6,7 @@ import { HeroButtons, HeroCapabilities, HeroProcess, HeroChatComposer, HeroCtas,
  * on the other. Stacks to a single column (main content first, then
  * nav) below the tablet breakpoint — see .hero-split-* in Hero.css.
  */
-export default function SplitLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, onCtaPrimary, onCtaSecondary, copy, homeTopics, homeCapabilities, homeLocalPoints, homeProcess, homeTrustPoints, onTopicClick, headlineTypingSpeedCps }) {
+export default function SplitLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, onCtaPrimary, onCtaSecondary, copy, homeTopics, homeCapabilities, homeLocalPoints, homeProcess, homeTrustPoints, homeCaseStages, onOpenCaseStudy, onTopicClick, headlineTypingSpeedCps }) {
   return (
     <>
       <div className="hero-split-wrap">
@@ -68,6 +68,17 @@ export default function SplitLayout({ home, heroButtons, lang, quickDraft, setQu
         intro={home.processIntro}
         steps={homeProcess}
         className="hero-block-start"
+      />
+
+      <HeroCaseStudy
+        kicker={home.caseKicker}
+        heading={home.caseHeading}
+        body={home.caseBody}
+        stages={homeCaseStages}
+        linkLabel={home.caseLink}
+        onOpen={onOpenCaseStudy}
+        imageSrc="/static/case-studies/jdk-erp/sales-order.png"
+        imageAlt={home.caseImageAlt}
       />
 
       <HeroTrust

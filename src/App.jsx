@@ -63,7 +63,7 @@ function AppShell() {
         {page === "home" && <Hero onEnter={handleHeroEnter} onNavigate={setPage} onBookingClick={() => setBookingOpen(true)} />}
         {page === "contact" && <ContactPage onBack={() => setPage("home")} onNavigate={setPage} />}
         {!SPECIAL_PAGE_IDS.has(page) && (
-          <ContentPage pageId={page} onBack={() => setPage("home")} onNavigate={setPage} />
+          <ContentPage pageId={page} onBack={() => setPage("home")} onNavigate={setPage} onBookingClick={() => setBookingOpen(true)} />
         )}
       </div>
 

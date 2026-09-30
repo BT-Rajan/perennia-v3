@@ -3,6 +3,7 @@ import { useLang } from "../../context/LangContext.jsx";
 import TopBar from "../layout/TopBar.jsx";
 import GlassPanel from "../ui/GlassPanel.jsx";
 import Markdown from "../ui/Markdown.jsx";
+import { COPY } from "../../data/content.js";
 import "./ContentPage.css";
 
 /**
@@ -13,9 +14,16 @@ import "./ContentPage.css";
  * content record (fetched from the backend, see src/data/siteContent.js)
  * renders inside the shell.
  */
-export default function ContentPage({ pageId, onBack, onNavigate }) {
-  const { pages, branding } = useLang();
+export default function ContentPage({ pageId, onBack, onNavigate, onBookingClick }) {
+  const { pages, branding, copy, lang, features } = useLang();
   const meta = pages[pageId];
+  // For a `[[cta]]` block in the page body (e.g. a case study): the same
+  // label and booking panel as the homepage's primary CTA, falling back
+  // to the Contact page when booking is switched off.
+  const cta = {
+    label: copy.home?.ctaPrimary ?? (COPY[lang] ?? COPY.en).home.ctaPrimary,
+    onClick: features?.bookingEnabled && onBookingClick ? onBookingClick : () => onNavigate("contact"),
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -39,7 +47,7 @@ export default function ContentPage({ pageId, onBack, onNavigate }) {
 
 
         <GlassPanel className="content-shell" as="section">
-          <Markdown source={meta.body} />
+          <Markdown source={meta.body} cta={cta} />
         </GlassPanel>
       </main>
 

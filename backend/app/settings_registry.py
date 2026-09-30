@@ -620,6 +620,12 @@ _DEFS: list[SettingDef] = [
             "situations_heading": "A technology partner at every stage",
             "situations_intro": "Whatever stage your business is at, Perennia helps you adopt technology "
                                 "reliably, practically and with a clear path forward.",
+            "case_kicker": "Case study",
+            "case_heading": "JDK Factory ERP: one system around a manufacturing workflow.",
+            "case_body": "We mapped how a manufacturing business actually runs — "
+                         "from sales and feasibility through procurement, production, delivery and payment — and built its ERP around that workflow.",
+            "case_link": "Read the case study",
+            "case_image_alt": "The completed sales order in JDK Factory ERP, linked to its quotation, finance record and deliveries",
             "trust_kicker": "What sets Perennia apart",
             "trust_heading": "Reliable technology induction for your business.",
             "trust_intro": "Technology only creates value when it works in the real business. Building software is one part of that — "
@@ -668,6 +674,12 @@ _DEFS: list[SettingDef] = [
             "situations_heading": "شريك تقني في كل مرحلة",
             "situations_intro": "أيًّا كانت المرحلة التي تمر بها أعمالك، تساعدك بيرينيا على تبنّي التقنية "
                                 "بشكل موثوق وعملي، مع مسار واضح للمضي قدمًا.",
+            "case_kicker": "دراسة حالة",
+            "case_heading": "نظام ERP لمصنع JDK: نظام واحد حول سير عمل تصنيعي.",
+            "case_body": "رسمنا طريقة عمل شركة تصنيع فعليًا — "
+                         "من المبيعات والجدوى إلى المشتريات والإنتاج والتسليم والدفع — وبنينا نظام ERP الخاص بها حول سير العمل هذا.",
+            "case_link": "اقرأ دراسة الحالة",
+            "case_image_alt": "أمر بيع مكتمل في نظام ERP لمصنع JDK، مرتبط بعرض السعر والسجل المالي والتسليمات",
             "trust_kicker": "ما يميّز بيرينيا",
             "trust_heading": "إدخال موثوق للتقنية إلى أعمالك.",
             "trust_intro": "لا تُحدث التقنية قيمة إلا عندما تعمل في واقع الأعمال. بناء البرمجيات جزء من ذلك فقط — "
@@ -706,7 +718,8 @@ _DEFS: list[SettingDef] = [
                           "capabilities_heading, capabilities_intro, capabilities_roles, "
                           "capabilities_scope_note (the Technology/AI/Advisory section), "
                           "local_kicker, local_heading, local_intro (the Kuwait/GCC panel), "
-                          "process_heading, process_intro (the how-we-work section), trust_kicker, trust_heading, trust_intro, "
+                          "process_heading, process_intro (the how-we-work section), case_kicker, case_heading, case_body, "
+                          "case_link, case_image_alt (the JDK Factory ERP case-study teaser), trust_kicker, trust_heading, trust_intro, "
                           "trust_contrast_label_a/_a/_label_b/_b (the reliable-induction section), discovery_heading, "
                           "discovery_body, discovery_note (the discovery-meeting panel after it). "
                           "eyebrow is the static line above the headline. cta_primary opens "

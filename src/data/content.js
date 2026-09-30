@@ -169,6 +169,13 @@ export const HOME_PROCESS = {
   ],
 };
 
+// Homepage case-study teaser (HeroCaseStudy) — the JDK Factory ERP
+// lifecycle, every stage of which is implemented in that project.
+export const HOME_CASE_STAGES = {
+  en: ["Sales", "Feasibility", "Quotation", "Order", "Procurement", "Inventory", "Production", "Delivery", "Payment"],
+  ar: ["المبيعات", "الجدوى", "عرض السعر", "الطلب", "المشتريات", "المخزون", "الإنتاج", "التسليم", "الدفع"],
+};
+
 // Homepage trust section (HeroTrust in HeroShared.jsx) — how Perennia
 // approaches delivery, grouped into four points rather than a long
 // feature list. These describe an approach, not guarantees.
@@ -248,6 +255,11 @@ export const COPY = {
       ctaSecondary: "Explore What We Build",
       situationsHeading: "A technology partner at every stage",
       situationsIntro: "Whatever stage your business is at, Perennia helps you adopt technology reliably, practically and with a clear path forward.",
+      caseKicker: "Case study",
+      caseHeading: "JDK Factory ERP: one system around a manufacturing workflow.",
+      caseBody: "We mapped how a manufacturing business actually runs — from sales and feasibility through procurement, production, delivery and payment — and built its ERP around that workflow.",
+      caseLink: "Read the case study",
+      caseImageAlt: "The completed sales order in JDK Factory ERP, linked to its quotation, finance record and deliveries",
       trustKicker: "What sets Perennia apart",
       trustHeading: "Reliable technology induction for your business.",
       trustIntro: "Technology only creates value when it works in the real business. Building software is one part of that — we focus on the complete journey, from understanding the business through implementation, adoption and change.",
@@ -370,6 +382,11 @@ export const COPY = {
       ctaSecondary: "استكشف ما نبنيه",
       situationsHeading: "شريك تقني في كل مرحلة",
       situationsIntro: "أيًّا كانت المرحلة التي تمر بها أعمالك، تساعدك بيرينيا على تبنّي التقنية بشكل موثوق وعملي، مع مسار واضح للمضي قدمًا.",
+      caseKicker: "دراسة حالة",
+      caseHeading: "نظام ERP لمصنع JDK: نظام واحد حول سير عمل تصنيعي.",
+      caseBody: "رسمنا طريقة عمل شركة تصنيع فعليًا — من المبيعات والجدوى إلى المشتريات والإنتاج والتسليم والدفع — وبنينا نظام ERP الخاص بها حول سير العمل هذا.",
+      caseLink: "اقرأ دراسة الحالة",
+      caseImageAlt: "أمر بيع مكتمل في نظام ERP لمصنع JDK، مرتبط بعرض السعر والسجل المالي والتسليمات",
       trustKicker: "ما يميّز بيرينيا",
       trustHeading: "إدخال موثوق للتقنية إلى أعمالك.",
       trustIntro: "لا تُحدث التقنية قيمة إلا عندما تعمل في واقع الأعمال. بناء البرمجيات جزء من ذلك فقط — نحن نركّز على الرحلة كاملة، من فهم الأعمال إلى التنفيذ والاعتماد والتكيّف مع التغيير.",

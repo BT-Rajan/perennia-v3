@@ -63,3 +63,32 @@
   height: 1px;
   background: var(--glass-border);
 }
+
+/* ── Case-study blocks (see Markdown.jsx) ───────────────── */
+.markdown-content .markdown-figure {
+  margin-inline: 0;
+  margin-bottom: 0;
+}
+.markdown-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-md, 12px);
+  border: 1px solid color-mix(in srgb, var(--white-soft) 12%, transparent);
+}
+.markdown-figure figcaption {
+  margin-top: var(--space-2);
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+}
+/* WorkflowChain is an <ol>: undo the content list styles above. */
+.markdown-content .markdown-workflow {
+  flex-direction: row;
+  padding-inline-start: 0;
+  gap: var(--space-2);
+}
+.markdown-content .markdown-workflow li { max-width: none; }
+.markdown-content .markdown-workflow li::marker { content: ""; }
+.markdown-cta { padding-top: var(--space-2); }
+.markdown-cta .btn { white-space: normal; text-align: center; }

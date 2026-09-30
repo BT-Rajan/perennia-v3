@@ -63,7 +63,20 @@ PAGE_META = {
                "section_body": "جاهز للتحدث؟ استخدم \"احجز اجتماعًا استكشافيًا لمدة 30 دقيقة\" لاختيار موعد مباشرة، أو ابدأ محادثة أدناه وسيقوم مساعدنا بتوصيلك بالشخص المناسب.",
                "tagline_line1": "لنتحدث", "tagline_line2": "", "tagline_sub": "تواصل معنا"},
     },
+    # Case study: reached from the homepage teaser, not the top nav (see
+    # NOT_IN_NAV below). Its section_* fields are required by the page
+    # schema but aren't shown anywhere while it stays out of the nav.
+    "jdk-factory-erp": {
+        "en": {"nav_label": "JDK Factory ERP", "section_title": "JDK Factory ERP",
+               "section_body": "A manufacturing ERP built around one business's operational workflow.",
+               "tagline_line1": "JDK Factory ", "tagline_line2": "ERP", "tagline_sub": "CASE STUDY · MANUFACTURING"},
+        "ar": {"nav_label": "نظام ERP لمصنع JDK", "section_title": "نظام ERP لمصنع JDK",
+               "section_body": "نظام ERP للتصنيع مبني حول سير العمل التشغيلي لشركة واحدة.",
+               "tagline_line1": "نظام ERP ", "tagline_line2": "لمصنع JDK", "tagline_sub": "دراسة حالة · التصنيع"},
+    },
 }
+
+NOT_IN_NAV = {"jdk-factory-erp"}
 
 FAQ_SEED = [
     {"en": {"q": "What services does Perennia offer?",
@@ -103,6 +116,12 @@ COPY_HOME = {
            "situations_heading": "A technology partner at every stage",
            "situations_intro": "Whatever stage your business is at, Perennia helps you adopt technology "
                                "reliably, practically and with a clear path forward.",
+           "case_kicker": "Case study",
+           "case_heading": "JDK Factory ERP: one system around a manufacturing workflow.",
+           "case_body": "We mapped how a manufacturing business actually runs — "
+                        "from sales and feasibility through procurement, production, delivery and payment — and built its ERP around that workflow.",
+           "case_link": "Read the case study",
+           "case_image_alt": "The completed sales order in JDK Factory ERP, linked to its quotation, finance record and deliveries",
            "trust_kicker": "What sets Perennia apart",
            "trust_heading": "Reliable technology induction for your business.",
            "trust_intro": "Technology only creates value when it works in the real business. Building software is one part of that — "
@@ -145,6 +164,12 @@ COPY_HOME = {
            "situations_heading": "شريك تقني في كل مرحلة",
            "situations_intro": "أيًّا كانت المرحلة التي تمر بها أعمالك، تساعدك بيرينيا على تبنّي التقنية "
                                "بشكل موثوق وعملي، مع مسار واضح للمضي قدمًا.",
+           "case_kicker": "دراسة حالة",
+           "case_heading": "نظام ERP لمصنع JDK: نظام واحد حول سير عمل تصنيعي.",
+           "case_body": "رسمنا طريقة عمل شركة تصنيع فعليًا — "
+                        "من المبيعات والجدوى إلى المشتريات والإنتاج والتسليم والدفع — وبنينا نظام ERP الخاص بها حول سير العمل هذا.",
+           "case_link": "اقرأ دراسة الحالة",
+           "case_image_alt": "أمر بيع مكتمل في نظام ERP لمصنع JDK، مرتبط بعرض السعر والسجل المالي والتسليمات",
            "trust_kicker": "ما يميّز بيرينيا",
            "trust_heading": "إدخال موثوق للتقنية إلى أعمالك.",
            "trust_intro": "لا تُحدث التقنية قيمة إلا عندما تعمل في واقع الأعمال. بناء البرمجيات جزء من ذلك فقط — "
@@ -285,6 +310,7 @@ def main() -> None:
                 for lang, fields in per_lang.items()
             }
             content_service.upsert_page(db, slug, translations=translations, order=order,
+                                         show_in_nav=slug not in NOT_IN_NAV,
                                          actor_id=None, actor_username="seed_script")
             print(f"Seeded page '{slug}'.")
 

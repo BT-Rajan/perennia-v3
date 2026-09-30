@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLang } from "../../context/LangContext.jsx";
-import { COPY, HOME_CAPABILITIES, HOME_LOCAL_POINTS, HOME_PROCESS, HOME_TOPICS, HOME_TRUST_POINTS } from "../../data/content.js";
+import { COPY, HOME_CAPABILITIES, HOME_CASE_STAGES, HOME_LOCAL_POINTS, HOME_PROCESS, HOME_TOPICS, HOME_TRUST_POINTS } from "../../data/content.js";
 import TopBar from "../layout/TopBar.jsx";
 import ClassicLayout from "./layouts/ClassicLayout.jsx";
 import SplitLayout from "./layouts/SplitLayout.jsx";
@@ -63,6 +63,11 @@ function withHomeFallbacks(home, lang) {
     localIntro: home.localIntro ?? fallback.localIntro,
     processHeading: home.processHeading ?? fallback.processHeading,
     processIntro: home.processIntro ?? fallback.processIntro,
+    caseKicker: home.caseKicker ?? fallback.caseKicker,
+    caseHeading: home.caseHeading ?? fallback.caseHeading,
+    caseBody: home.caseBody ?? fallback.caseBody,
+    caseLink: home.caseLink ?? fallback.caseLink,
+    caseImageAlt: home.caseImageAlt ?? fallback.caseImageAlt,
     trustKicker: home.trustKicker ?? fallback.trustKicker,
     trustHeading: home.trustHeading ?? fallback.trustHeading,
     trustIntro: home.trustIntro ?? fallback.trustIntro,
@@ -103,6 +108,8 @@ export default function Hero({ onEnter, onNavigate, onBookingClick }) {
     ? onBookingClick
     : () => onNavigate("contact");
   const handleCtaSecondary = pages?.products ? () => onNavigate("products") : null;
+  // The JDK Factory ERP case-study teaser only links if that page exists.
+  const handleOpenCaseStudy = pages?.["jdk-factory-erp"] ? () => onNavigate("jdk-factory-erp") : null;
 
   // The homepage situation cards (Starting Digital / Making AI
   // Practical / Scaling Technology) aren't page links — clicking one hands its preset question straight to the
@@ -117,6 +124,7 @@ export default function Hero({ onEnter, onNavigate, onBookingClick }) {
   const homeLocalPoints = HOME_LOCAL_POINTS[lang] || HOME_LOCAL_POINTS.en;
   const homeProcess = HOME_PROCESS[lang] || HOME_PROCESS.en;
   const homeTrustPoints = HOME_TRUST_POINTS[lang] || HOME_TRUST_POINTS.en;
+  const homeCaseStages = HOME_CASE_STAGES[lang] || HOME_CASE_STAGES.en;
 
   const Layout = LAYOUTS[theme?.layoutTemplate] || ClassicLayout;
 
@@ -146,6 +154,8 @@ export default function Hero({ onEnter, onNavigate, onBookingClick }) {
         homeLocalPoints={homeLocalPoints}
         homeProcess={homeProcess}
         homeTrustPoints={homeTrustPoints}
+        homeCaseStages={homeCaseStages}
+        onOpenCaseStudy={handleOpenCaseStudy}
         onTopicClick={handleTopicClick}
       />
 
