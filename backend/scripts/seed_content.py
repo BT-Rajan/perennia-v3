@@ -116,7 +116,14 @@ COPY_HOME = {
            "situations_heading": "A technology partner at every stage",
            "situations_intro": "Whatever stage your business is at, Perennia helps you adopt technology "
                                "reliably, practically and with a clear path forward.",
-           "case_kicker": "Case study",
+           "work_kicker": "Our work",
+           "work_heading": "Different businesses have different technology problems.",
+           "work_intro": "We understand the problem first, then build the appropriate solution — "
+                         "from a factory's complete operation to a sales team in the field.",
+           "work_other_label": "Other work",
+           "work_need_label": "The need",
+           "work_built_label": "What we built",
+           "case_kicker": "Featured work",
            "case_heading": "JDK Factory ERP: one system around a manufacturing workflow.",
            "case_body": "We mapped how a manufacturing business actually runs — "
                         "from sales and feasibility through procurement, production, delivery and payment — and built its ERP around that workflow.",
@@ -164,7 +171,14 @@ COPY_HOME = {
            "situations_heading": "شريك تقني في كل مرحلة",
            "situations_intro": "أيًّا كانت المرحلة التي تمر بها أعمالك، تساعدك بيرينيا على تبنّي التقنية "
                                "بشكل موثوق وعملي، مع مسار واضح للمضي قدمًا.",
-           "case_kicker": "دراسة حالة",
+           "work_kicker": "أعمالنا",
+           "work_heading": "لكل عمل مشكلاته التقنية الخاصة.",
+           "work_intro": "نفهم المشكلة أولًا، ثم نبني الحل المناسب — "
+                         "من التشغيل الكامل لمصنع إلى فريق مبيعات في الميدان.",
+           "work_other_label": "أعمال أخرى",
+           "work_need_label": "الحاجة",
+           "work_built_label": "ما بنيناه",
+           "case_kicker": "عمل مميز",
            "case_heading": "نظام ERP لمصنع JDK: نظام واحد حول سير عمل تصنيعي.",
            "case_body": "رسمنا طريقة عمل شركة تصنيع فعليًا — "
                         "من المبيعات والجدوى إلى المشتريات والإنتاج والتسليم والدفع — وبنينا نظام ERP الخاص بها حول سير العمل هذا.",

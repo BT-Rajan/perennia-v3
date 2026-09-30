@@ -169,11 +169,80 @@ export const HOME_PROCESS = {
   ],
 };
 
-// Homepage case-study teaser (HeroCaseStudy) — the JDK Factory ERP
+// Homepage featured work (HeroWork) — the JDK Factory ERP
 // lifecycle, every stage of which is implemented in that project.
 export const HOME_CASE_STAGES = {
   en: ["Sales", "Feasibility", "Quotation", "Order", "Procurement", "Inventory", "Production", "Delivery", "Payment"],
   ar: ["المبيعات", "الجدوى", "عرض السعر", "الطلب", "المشتريات", "المخزون", "الإنتاج", "التسليم", "الدفع"],
+};
+
+// Homepage "Other work" (HeroWork) — supporting evidence under the
+// featured JDK Factory ERP case study. Each item is described only from
+// its own project README; clients are described, not named (JDK is
+// already named by the featured case study). Excluded pending
+// confirmation: projects whose status or client relationship isn't
+// documented (see the Phase 1 portfolio report).
+export const HOME_OTHER_WORK = {
+  en: [
+    {
+      id: "field-sales",
+      tag: "Mobile sales app · for JDK",
+      label: "Field sales app",
+      need: "Salespeople need to take a customer from enquiry to confirmed order while out of the office, and keep managers informed.",
+      built: "An installable Arabic/English app: customers and visits, feasibility against today's stock, quotations, proforma invoices and orders, with manager reports.",
+    },
+    {
+      id: "service-operations",
+      tag: "Business platform · for a Kuwait-based service company",
+      label: "Service operations platform",
+      need: "One place to run client projects — from onboarding and government submissions to quotations, contracts and payments.",
+      built: "Client onboarding, project workspaces, a government forms library and submissions, quotations, contracts, tasks and reports, with an AI assistant — in Arabic and English.",
+    },
+    {
+      id: "practice-management",
+      tag: "Practice management · for a small law firm",
+      label: "Law firm practice management",
+      need: "A small firm's clients, compliance records, tasks and billing in one system.",
+      built: "Client onboarding with KYC and leadership history, secure document storage, tasks and calendar, and billing with PDF invoices.",
+    },
+    {
+      id: "perennia-site",
+      tag: "Website & AI · our own platform",
+      label: "This website",
+      need: "Visitors should be able to get answers and book time without waiting for a reply.",
+      built: "A bilingual website with an AI assistant grounded in our own content, and self-service booking with live availability.",
+    },
+  ],
+  ar: [
+    {
+      id: "field-sales",
+      tag: "تطبيق مبيعات · لـ JDK",
+      label: "تطبيق المبيعات الميدانية",
+      need: "يحتاج مندوبو المبيعات إلى نقل العميل من الاستفسار إلى الطلب المؤكد وهم خارج المكتب، مع إبقاء المديرين على اطلاع.",
+      built: "تطبيق قابل للتثبيت بالعربية والإنجليزية: العملاء والزيارات، وفحص الجدوى مقابل مخزون اليوم، وعروض الأسعار والفواتير المبدئية والطلبات، مع تقارير للمديرين.",
+    },
+    {
+      id: "service-operations",
+      tag: "منصة أعمال · لشركة خدمات مقرّها الكويت",
+      label: "منصة عمليات الخدمات",
+      need: "مكان واحد لإدارة مشاريع العملاء — من الانضمام والمعاملات الحكومية إلى عروض الأسعار والعقود والمدفوعات.",
+      built: "انضمام العملاء، ومساحات عمل للمشاريع، ومكتبة للنماذج الحكومية وتقديمها، وعروض الأسعار والعقود والمهام والتقارير، مع مساعد ذكي — بالعربية والإنجليزية.",
+    },
+    {
+      id: "practice-management",
+      tag: "إدارة مكتب · لمكتب محاماة صغير",
+      label: "إدارة مكتب محاماة",
+      need: "عملاء المكتب وسجلات الامتثال والمهام والفوترة في نظام واحد.",
+      built: "انضمام العملاء مع التحقق من الهوية وسجل القيادات، وتخزين آمن للمستندات، ومهام وتقويم، وفوترة مع فواتير PDF.",
+    },
+    {
+      id: "perennia-site",
+      tag: "موقع وذكاء اصطناعي · منصتنا الخاصة",
+      label: "هذا الموقع",
+      need: "يجب أن يتمكن الزوار من الحصول على إجابات وحجز موعد دون انتظار رد.",
+      built: "موقع ثنائي اللغة مع مساعد ذكي يستند إلى محتوانا، وحجز ذاتي بمواعيد متاحة مباشرة.",
+    },
+  ],
 };
 
 // Homepage trust section (HeroTrust in HeroShared.jsx) — how Perennia
@@ -255,7 +324,13 @@ export const COPY = {
       ctaSecondary: "Explore What We Build",
       situationsHeading: "A technology partner at every stage",
       situationsIntro: "Whatever stage your business is at, Perennia helps you adopt technology reliably, practically and with a clear path forward.",
-      caseKicker: "Case study",
+      workKicker: "Our work",
+      workHeading: "Different businesses have different technology problems.",
+      workIntro: "We understand the problem first, then build the appropriate solution — from a factory's complete operation to a sales team in the field.",
+      workOtherLabel: "Other work",
+      workNeedLabel: "The need",
+      workBuiltLabel: "What we built",
+      caseKicker: "Featured work",
       caseHeading: "JDK Factory ERP: one system around a manufacturing workflow.",
       caseBody: "We mapped how a manufacturing business actually runs — from sales and feasibility through procurement, production, delivery and payment — and built its ERP around that workflow.",
       caseLink: "Read the case study",
@@ -382,7 +457,13 @@ export const COPY = {
       ctaSecondary: "استكشف ما نبنيه",
       situationsHeading: "شريك تقني في كل مرحلة",
       situationsIntro: "أيًّا كانت المرحلة التي تمر بها أعمالك، تساعدك بيرينيا على تبنّي التقنية بشكل موثوق وعملي، مع مسار واضح للمضي قدمًا.",
-      caseKicker: "دراسة حالة",
+      workKicker: "أعمالنا",
+      workHeading: "لكل عمل مشكلاته التقنية الخاصة.",
+      workIntro: "نفهم المشكلة أولًا، ثم نبني الحل المناسب — من التشغيل الكامل لمصنع إلى فريق مبيعات في الميدان.",
+      workOtherLabel: "أعمال أخرى",
+      workNeedLabel: "الحاجة",
+      workBuiltLabel: "ما بنيناه",
+      caseKicker: "عمل مميز",
       caseHeading: "نظام ERP لمصنع JDK: نظام واحد حول سير عمل تصنيعي.",
       caseBody: "رسمنا طريقة عمل شركة تصنيع فعليًا — من المبيعات والجدوى إلى المشتريات والإنتاج والتسليم والدفع — وبنينا نظام ERP الخاص بها حول سير العمل هذا.",
       caseLink: "اقرأ دراسة الحالة",

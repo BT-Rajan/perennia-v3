@@ -63,30 +63,51 @@ export function HeroDiscovery({ heading, body, note, ctas, className }) {
 }
 
 /**
- * Flagship proof — a compact teaser for the JDK Factory ERP case study
- * (a Markdown content page, "jdk-factory-erp"): the connected lifecycle
- * (WorkflowChain), one real screen from the system, and a link to the
- * full case study. Renders nothing if that page doesn't exist (onOpen
- * is null), so it never links to a dead page.
+ * "Our work" — the single homepage portfolio section. Featured work (the
+ * JDK Factory ERP case study: connected lifecycle, one real screen, link
+ * to the full case-study content page "jdk-factory-erp") stands apart
+ * from "Other work": a quiet text list (who it was for, the need, what
+ * was built) with no screenshots or links, so the hierarchy is obvious
+ * and nothing links to a page that doesn't exist. The featured panel is
+ * omitted if its page is missing (featured.onOpen null).
  */
-export function HeroCaseStudy({ kicker, heading, body, stages, linkLabel, onOpen, imageSrc, imageAlt, className }) {
-  if (!heading || !onOpen) return null;
+export function HeroWork({ kicker, heading, intro, featured, otherLabel, needLabel, builtLabel, otherItems, className }) {
+  const showFeatured = featured?.heading && featured?.onOpen;
+  if (!showFeatured && !otherItems?.length) return null;
   return (
-    <section className={`hero-block hero-case ${className || ""}`.trim()} aria-labelledby="hero-case-heading">
-      <GlassPanel className="hero-case-panel">
-        <div className="hero-case-text">
-          {kicker && <p className="hero-eyebrow hero-case-kicker">{kicker}</p>}
-          <h2 id="hero-case-heading">{heading}</h2>
-          {body && <p>{body}</p>}
-          <WorkflowChain stages={stages} label={heading} className="hero-case-chain" />
-          <div>
-            <Button variant="ghost" onClick={onOpen}>{linkLabel}</Button>
+    <section className={`hero-block hero-work ${className || ""}`.trim()} aria-labelledby="hero-work-heading">
+      <HeroBlockHead id="hero-work-heading" kicker={kicker} heading={heading} intro={intro} />
+      {showFeatured && (
+        <GlassPanel className="hero-case-panel">
+          <div className="hero-case-text">
+            {featured.kicker && <p className="hero-eyebrow hero-case-kicker">{featured.kicker}</p>}
+            <h3>{featured.heading}</h3>
+            {featured.body && <p>{featured.body}</p>}
+            <WorkflowChain stages={featured.stages} label={featured.heading} className="hero-case-chain" />
+            <div>
+              <Button variant="ghost" onClick={featured.onOpen}>{featured.linkLabel}</Button>
+            </div>
           </div>
+          {featured.imageSrc && (
+            <img className="hero-case-image" src={featured.imageSrc} alt={featured.imageAlt || ""} loading="lazy" />
+          )}
+        </GlassPanel>
+      )}
+      {otherItems?.length > 0 && (
+        <div className="hero-work-other">
+          {otherLabel && <h3 className="hero-work-other-label">{otherLabel}</h3>}
+          <ul className="hero-work-list">
+            {otherItems.map(({ id, tag, label, need, built }) => (
+              <li key={id}>
+                {tag && <span className="hero-work-tag">{tag}</span>}
+                <h4>{label}</h4>
+                <p><span className="hero-work-term">{needLabel}</span> {need}</p>
+                <p><span className="hero-work-term">{builtLabel}</span> {built}</p>
+              </li>
+            ))}
+          </ul>
         </div>
-        {imageSrc && (
-          <img className="hero-case-image" src={imageSrc} alt={imageAlt || ""} loading="lazy" />
-        )}
-      </GlassPanel>
+      )}
     </section>
   );
 }

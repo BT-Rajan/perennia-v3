@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLang } from "../../context/LangContext.jsx";
-import { COPY, HOME_CAPABILITIES, HOME_CASE_STAGES, HOME_LOCAL_POINTS, HOME_PROCESS, HOME_TOPICS, HOME_TRUST_POINTS } from "../../data/content.js";
+import { COPY, HOME_CAPABILITIES, HOME_CASE_STAGES, HOME_OTHER_WORK, HOME_LOCAL_POINTS, HOME_PROCESS, HOME_TOPICS, HOME_TRUST_POINTS } from "../../data/content.js";
 import TopBar from "../layout/TopBar.jsx";
 import ClassicLayout from "./layouts/ClassicLayout.jsx";
 import SplitLayout from "./layouts/SplitLayout.jsx";
@@ -63,6 +63,12 @@ function withHomeFallbacks(home, lang) {
     localIntro: home.localIntro ?? fallback.localIntro,
     processHeading: home.processHeading ?? fallback.processHeading,
     processIntro: home.processIntro ?? fallback.processIntro,
+    workKicker: home.workKicker ?? fallback.workKicker,
+    workHeading: home.workHeading ?? fallback.workHeading,
+    workIntro: home.workIntro ?? fallback.workIntro,
+    workOtherLabel: home.workOtherLabel ?? fallback.workOtherLabel,
+    workNeedLabel: home.workNeedLabel ?? fallback.workNeedLabel,
+    workBuiltLabel: home.workBuiltLabel ?? fallback.workBuiltLabel,
     caseKicker: home.caseKicker ?? fallback.caseKicker,
     caseHeading: home.caseHeading ?? fallback.caseHeading,
     caseBody: home.caseBody ?? fallback.caseBody,
@@ -125,6 +131,7 @@ export default function Hero({ onEnter, onNavigate, onBookingClick }) {
   const homeProcess = HOME_PROCESS[lang] || HOME_PROCESS.en;
   const homeTrustPoints = HOME_TRUST_POINTS[lang] || HOME_TRUST_POINTS.en;
   const homeCaseStages = HOME_CASE_STAGES[lang] || HOME_CASE_STAGES.en;
+  const homeOtherWork = HOME_OTHER_WORK[lang] || HOME_OTHER_WORK.en;
 
   const Layout = LAYOUTS[theme?.layoutTemplate] || ClassicLayout;
 
@@ -155,6 +162,7 @@ export default function Hero({ onEnter, onNavigate, onBookingClick }) {
         homeProcess={homeProcess}
         homeTrustPoints={homeTrustPoints}
         homeCaseStages={homeCaseStages}
+        homeOtherWork={homeOtherWork}
         onOpenCaseStudy={handleOpenCaseStudy}
         onTopicClick={handleTopicClick}
       />

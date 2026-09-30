@@ -1,4 +1,4 @@
-import { HeroButtons, HeroChatComposer, HeroCtas, HeroDiscovery, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroLocal, HeroCapabilities, HeroCaseStudy, HeroProcess, HeroTrust, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
+import { HeroButtons, HeroChatComposer, HeroCtas, HeroDiscovery, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroLocal, HeroCapabilities, HeroProcess, HeroTrust, HeroWork, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
 
 /**
  * "editorial" — a bigger, left-aligned headline and a narrower
@@ -6,7 +6,7 @@ import { HeroButtons, HeroChatComposer, HeroCtas, HeroDiscovery, HeroEyebrow, He
  * horizontal-scrolling strip of compact cards instead of a grid —
  * a more magazine/editorial feel than the centered classic layout.
  */
-export default function EditorialLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, onCtaPrimary, onCtaSecondary, copy, homeTopics, homeCapabilities, homeLocalPoints, homeProcess, homeTrustPoints, homeCaseStages, onOpenCaseStudy, onTopicClick, headlineTypingSpeedCps }) {
+export default function EditorialLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, onCtaPrimary, onCtaSecondary, copy, homeTopics, homeCapabilities, homeLocalPoints, homeProcess, homeTrustPoints, homeCaseStages, homeOtherWork, onOpenCaseStudy, onTopicClick, headlineTypingSpeedCps }) {
   return (
     <>
       <div className="hero-editorial-main">
@@ -67,15 +67,25 @@ export default function EditorialLayout({ home, heroButtons, lang, quickDraft, s
         className="hero-block-start"
       />
 
-      <HeroCaseStudy
-        kicker={home.caseKicker}
-        heading={home.caseHeading}
-        body={home.caseBody}
-        stages={homeCaseStages}
-        linkLabel={home.caseLink}
-        onOpen={onOpenCaseStudy}
-        imageSrc="/static/case-studies/jdk-erp/sales-order.png"
-        imageAlt={home.caseImageAlt}
+      <HeroWork
+        kicker={home.workKicker}
+        heading={home.workHeading}
+        intro={home.workIntro}
+        featured={{
+          kicker: home.caseKicker,
+          heading: home.caseHeading,
+          body: home.caseBody,
+          stages: homeCaseStages,
+          linkLabel: home.caseLink,
+          onOpen: onOpenCaseStudy,
+          imageSrc: "/static/case-studies/jdk-erp/sales-order.png",
+          imageAlt: home.caseImageAlt,
+        }}
+        otherLabel={home.workOtherLabel}
+        needLabel={home.workNeedLabel}
+        builtLabel={home.workBuiltLabel}
+        otherItems={homeOtherWork}
+        className="hero-block-start"
       />
 
       <HeroTrust

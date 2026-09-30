@@ -1,4 +1,4 @@
-import { HeroButtons, HeroChatComposer, HeroCtas, HeroDiscovery, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroLocal, HeroCapabilities, HeroCaseStudy, HeroProcess, HeroTrust, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
+import { HeroButtons, HeroChatComposer, HeroCtas, HeroDiscovery, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroLocal, HeroCapabilities, HeroProcess, HeroTrust, HeroWork, HeroSituations, HeroSupportingText } from "../HeroShared.jsx";
 
 /**
  * "classic" — the site's original, and default, homepage body:
@@ -7,7 +7,7 @@ import { HeroButtons, HeroChatComposer, HeroCtas, HeroDiscovery, HeroEyebrow, He
  * template setting did, so picking "classic" (or leaving the setting
  * unset) can never look different from what's already live.
  */
-export default function ClassicLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, onCtaPrimary, onCtaSecondary, copy, homeTopics, homeCapabilities, homeLocalPoints, homeProcess, homeTrustPoints, homeCaseStages, onOpenCaseStudy, onTopicClick, headlineTypingSpeedCps }) {
+export default function ClassicLayout({ home, heroButtons, lang, quickDraft, setQuickDraft, onQuickSend, onExamplePick, onCtaPrimary, onCtaSecondary, copy, homeTopics, homeCapabilities, homeLocalPoints, homeProcess, homeTrustPoints, homeCaseStages, homeOtherWork, onOpenCaseStudy, onTopicClick, headlineTypingSpeedCps }) {
   return (
     <>
       <div className="hero-center">
@@ -57,15 +57,24 @@ export default function ClassicLayout({ home, heroButtons, lang, quickDraft, set
         steps={homeProcess}
       />
 
-      <HeroCaseStudy
-        kicker={home.caseKicker}
-        heading={home.caseHeading}
-        body={home.caseBody}
-        stages={homeCaseStages}
-        linkLabel={home.caseLink}
-        onOpen={onOpenCaseStudy}
-        imageSrc="/static/case-studies/jdk-erp/sales-order.png"
-        imageAlt={home.caseImageAlt}
+      <HeroWork
+        kicker={home.workKicker}
+        heading={home.workHeading}
+        intro={home.workIntro}
+        featured={{
+          kicker: home.caseKicker,
+          heading: home.caseHeading,
+          body: home.caseBody,
+          stages: homeCaseStages,
+          linkLabel: home.caseLink,
+          onOpen: onOpenCaseStudy,
+          imageSrc: "/static/case-studies/jdk-erp/sales-order.png",
+          imageAlt: home.caseImageAlt,
+        }}
+        otherLabel={home.workOtherLabel}
+        needLabel={home.workNeedLabel}
+        builtLabel={home.workBuiltLabel}
+        otherItems={homeOtherWork}
       />
 
       <HeroTrust

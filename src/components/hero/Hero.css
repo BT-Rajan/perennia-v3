@@ -1099,7 +1099,7 @@
   .hero-section-compact { flex-basis: 220px; }
 }
 
-/* ── Case-study teaser (HeroCaseStudy) — one GlassPanel: text and the
+/* ── Featured work panel (HeroWork) — one GlassPanel: text and the
    connected lifecycle on one side, a real screen from the system on
    the other. Stacks on narrow screens, text first. */
 .hero-case-panel {
@@ -1113,7 +1113,7 @@
 .hero-case-panel:hover { border-color: color-mix(in srgb, var(--gold) 15%, transparent); }
 .hero-case-text { display: flex; flex-direction: column; gap: var(--space-3); }
 .hero-case-text .hero-case-kicker { margin: 0; text-align: start; }
-.hero-case-text h2 {
+.hero-case-text h3 {
   margin: 0;
   font-family: var(--font-display);
   font-weight: 600;
@@ -1121,7 +1121,7 @@
   line-height: 1.25;
   color: var(--white-soft);
 }
-[dir="rtl"] .hero-case-text h2 { font-family: var(--font-ar); }
+[dir="rtl"] .hero-case-text h3 { font-family: var(--font-ar); }
 .hero-case-text p:not(.hero-case-kicker) {
   margin: 0;
   color: var(--muted-strong);
@@ -1137,4 +1137,53 @@
 }
 @media (max-width: 900px) {
   .hero-case-panel { grid-template-columns: 1fr; gap: var(--space-5); padding: var(--space-5) var(--space-4); }
+}
+
+/* ── Other work (HeroWork) — deliberately quieter than the featured
+   panel: a text list divided by hairlines, no cards or screenshots. */
+.hero-work-other { display: flex; flex-direction: column; gap: var(--space-4); margin-top: var(--space-3); }
+.hero-work-other-label {
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: start;
+}
+[dir="rtl"] .hero-work-other-label { letter-spacing: 0; text-transform: none; }
+.hero-work-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5) var(--space-6);
+}
+.hero-work-list li {
+  padding-top: var(--space-3);
+  border-top: 1px solid color-mix(in srgb, var(--white-soft) 12%, transparent);
+  text-align: start;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.hero-work-tag { font-size: var(--fs-sm); color: var(--gold); font-weight: 600; }
+.hero-work-list h4 {
+  margin: 0 0 var(--space-1);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--fs-body);
+  color: var(--white-soft);
+}
+[dir="rtl"] .hero-work-list h4 { font-family: var(--font-ar); }
+.hero-work-list p {
+  margin: 0;
+  color: var(--muted-strong);
+  font-size: var(--fs-sm);
+  line-height: calc(1.55 * var(--line-height-scale));
+}
+.hero-work-term { color: var(--white-soft); font-weight: 600; }
+@media (max-width: 760px) {
+  .hero-work-list { grid-template-columns: 1fr; gap: var(--space-4); }
 }
