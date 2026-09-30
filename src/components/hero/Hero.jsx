@@ -47,6 +47,8 @@ function withHomeFallbacks(home, lang) {
     taglineLine2: home.taglineLine2 ?? fallback.taglineLine2,
     supportingText: home.supportingText ?? fallback.supportingText,
     examplePrompts: home.examplePrompts ?? fallback.examplePrompts,
+    eyebrow: home.eyebrow ?? fallback.eyebrow,
+    assistantLabel: home.assistantLabel ?? fallback.assistantLabel,
     ctaPrimary: home.ctaPrimary ?? fallback.ctaPrimary,
     ctaSecondary: home.ctaSecondary ?? fallback.ctaSecondary,
     principles: home.principles ?? fallback.principles,

@@ -1,15 +1,16 @@
-import { HeroChatComposer, HeroCtas, HeroHeadline, resolveHeroButtons } from "../HeroShared.jsx";
+import { HeroChatComposer, HeroCtas, HeroEyebrow, HeroHeadline, HeroSupportingText, resolveHeroButtons } from "../HeroShared.jsx";
 
 /**
  * "centered-card" — headline, tagline, quick-chat, and topic pills all
  * live inside one bordered glass card instead of being spread across
- * the page. Deliberately kept lean (no supporting paragraph/example
- * prompts here, unlike the other layouts) — that's the point of this
- * template: everything in one compact card, not a longer page.
+ * the page. Deliberately kept lean (no principles/example prompts
+ * here, unlike the other layouts — only the eyebrow, supporting line
+ * and two CTAs) — that's the point of this template: everything in one
+ * compact card, not a longer page.
  *
  * The pill row below the quick-chat box comes from the admin's Hero
  * buttons config (Settings > On-screen text > Home hero buttons) —
- * deliberately NOT the top nav/page menu — falling back to the 4
+ * deliberately NOT the top nav/page menu — falling back to the 3
  * homepage topic buttons only if no hero buttons are configured, so
  * the card never ends up with an empty pill row on a fresh install.
  */
@@ -20,7 +21,9 @@ export default function CenteredCardLayout({ home, heroButtons, lang, quickDraft
   return (
     <div className="hero-card-wrap">
       <div className="hero-card">
+        <HeroEyebrow text={home.eyebrow} />
         <HeroHeadline statement={home.heroStatement} taglineLine1={home.taglineLine1} taglineLine2={home.taglineLine2} typingSpeedCps={headlineTypingSpeedCps} />
+        <HeroSupportingText text={home.supportingText} />
         <HeroCtas primaryLabel={home.ctaPrimary} secondaryLabel={home.ctaSecondary} onPrimary={onCtaPrimary} onSecondary={onCtaSecondary} />
 
         <HeroChatComposer
@@ -29,6 +32,7 @@ export default function CenteredCardLayout({ home, heroButtons, lang, quickDraft
           onSend={onQuickSend}
           placeholder={copy.chat.inputPlaceholder}
           sendLabel={copy.common.send}
+          label={home.assistantLabel}
         />
 
         {usingHeroButtons ? (

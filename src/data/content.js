@@ -124,7 +124,11 @@ export const COPY = {
     home: {
       welcome: "Welcome to Perennia",
       tagline: "Visit our V-Lounge for more",
-      heroStatement: "Practical AI.\nAffordable Innovation.",
+      // Empty = no typed intro; the headline shows immediately. An admin
+      // can still set one via copy.home.hero_statement.
+      heroStatement: "",
+      eyebrow: "Practical AI. Affordable Innovation.",
+      assistantLabel: "Try the bilingual assistant we built — the same kind of tool we build for clients.",
       taglineLine1: "Technology that moves",
       taglineLine2: "your business forward.",
       supportingText: "Perennia helps GCC businesses adopt, build and scale technology — from their first digital initiative to practical AI and larger-scale transformation.",
@@ -225,7 +229,9 @@ export const COPY = {
     home: {
       welcome: "مرحبا بك في بيرينيا",
       tagline: "زوروا V-Lounge الخاص بنا لمزيد من المعلومات",
-      heroStatement: "ذكاء اصطناعي عملي.\nابتكار في المتناول.",
+      heroStatement: "",
+      eyebrow: "ذكاء اصطناعي عملي. ابتكار في المتناول.",
+      assistantLabel: "جرّب المساعد ثنائي اللغة الذي بنيناه — من نوع الأدوات التي نبنيها لعملائنا.",
       taglineLine1: "تقنية تدفع",
       taglineLine2: "أعمالك إلى الأمام.",
       supportingText: "تساعد بيرينيا الشركات في دول الخليج على تبنّي التقنية وبنائها وتوسيعها — من أول مبادرة رقمية إلى الذكاء الاصطناعي العملي والتحول على نطاق أوسع.",

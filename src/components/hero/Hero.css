@@ -46,11 +46,25 @@
   justify-content: center;
   text-align: center;
   gap: var(--space-5);
-  max-width: 640px;
+  /* Wide enough for both hero CTAs to sit side by side on desktop. */
+  max-width: 720px;
   width: 100%;
   position: relative;
   padding-block: var(--space-7);
 }
+
+/* ── Eyebrow (HeroEyebrow) — static brand proposition above the H1.
+   Small and plain on purpose; the headline carries the weight. */
+.hero-eyebrow {
+  margin: 0 0 calc(-1 * var(--space-2));
+  color: var(--gold);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+[dir="rtl"] .hero-eyebrow { letter-spacing: 0; text-transform: none; font-family: var(--font-ar); }
+.hero-eyebrow-left { text-align: start; }
 
 /* ── Headline — the page's signature visual now: a single-line,
    gently rippling title that sits where the old pulsing orb used to
@@ -244,10 +258,8 @@
 
 /* ── Quick-start chat box — lets someone jump straight into a
    conversation from the landing page, handing off to the sticky AI
-   Assistant widget (see Hero.jsx onEnter / App.jsx). Carries the same
-   warm gold treatment the old standalone CTA button used to have — a
-   glowing gradient border/shadow — rather than the plain glass panel
-   look, so it still reads as the primary call to action. */
+   Assistant widget (see Hero.jsx onEnter / App.jsx). Secondary to the
+   HeroCtas booking button, so it's styled quietly (see below). */
 .hero-quick-chat {
   width: 100%;
   max-width: 560px;
@@ -258,7 +270,7 @@
   gap: var(--space-2);
   padding-inline-start: var(--space-3);
   border-radius: var(--radius-lg);
-  border: 1px solid color-mix(in srgb, var(--gold) 35%, transparent);
+  border: 1px solid color-mix(in srgb, var(--white-soft) 16%, transparent);
   /* Solid-enough on its own (not relying only on backdrop-filter to
      read against whatever sits behind it) — layering this box's own
      blur inside another already-blurred glass surface (e.g. the
@@ -267,22 +279,19 @@
      inner layer can end up rendering fully transparent — i.e. this
      box silently disappearing while its siblings render fine. One
      blur layer (the page background, not this box) is enough. */
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--gold) 14%, var(--brand-bg) 86%) 0%,
-    color-mix(in srgb, var(--gold) 6%, var(--brand-bg) 94%) 100%
-  );
-  box-shadow:
-    0 12px 32px color-mix(in srgb, var(--gold) 18%, transparent),
-    0 0 20px color-mix(in srgb, var(--gold) 10%, transparent);
+  /* Plain, no glow: the booking CTA above is the primary action now,
+     so this box stays quiet until focused. */
+  background: color-mix(in srgb, var(--white-soft) 4%, var(--brand-bg) 96%);
   overflow: hidden;
   transition: border-color var(--dur-med) var(--ease), box-shadow var(--dur-med) var(--ease);
 }
 .hero-quick-chat:focus-within {
-  border-color: color-mix(in srgb, var(--gold) 55%, transparent);
-  box-shadow:
-    0 16px 40px color-mix(in srgb, var(--gold) 26%, transparent),
-    0 0 26px color-mix(in srgb, var(--gold) 16%, transparent);
+  border-color: color-mix(in srgb, var(--gold) 50%, transparent);
+}
+.hero-quick-chat-label {
+  margin: var(--space-2) 0 calc(-1 * var(--space-2));
+  color: var(--muted);
+  font-size: var(--fs-sm);
 }
 .hero-quick-chat .chat-input-area {
   flex: 1;
@@ -403,6 +412,11 @@
 }
 .hero-ctas-left { justify-content: flex-start; }
 .hero-ctas .btn { white-space: normal; text-align: center; }
+/* Softer than the shared .btn-primary glow — restrained, not neon. */
+.hero-ctas .btn-primary,
+.hero-ctas .btn-primary:not(:disabled):hover {
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--gold) 22%, transparent);
+}
 
 /* ── Principles (HeroPrinciples) — quiet, dot-marked context line,
    deliberately not styled as buttons or chips. */

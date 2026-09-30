@@ -24,6 +24,16 @@ export function HeroCtas({ primaryLabel, secondaryLabel, onPrimary, onSecondary,
 }
 
 /**
+ * Small static line above the H1 (copy.home.eyebrow) — the brand
+ * proposition. Deliberately not animated: the headline beneath it must
+ * be readable the moment the page paints.
+ */
+export function HeroEyebrow({ text, className }) {
+  if (!text) return null;
+  return <p className={`hero-eyebrow ${className || ""}`.trim()}>{text}</p>;
+}
+
+/**
  * Short, quiet list of what Perennia stands for (copy.home.principles)
  * — plain text, not buttons, so it reads as context rather than as yet
  * another row of things to click.
@@ -103,11 +113,16 @@ export function ChatAvatar({ avatarUrl, initial, className }) {
  * way in to the *same* assistant, not as a second, competing chat
  * surface with its own message history and status states.
  */
-export function HeroChatComposer({ value, onChange, onSend, placeholder, sendLabel, className }) {
+export function HeroChatComposer({ value, onChange, onSend, placeholder, sendLabel, label, className }) {
   return (
-    <div className={`hero-quick-chat ${className || ""}`.trim()}>
-      <ChatInput value={value} onChange={onChange} onSend={onSend} placeholder={placeholder} sendLabel={sendLabel} />
-    </div>
+    <>
+      {/* Optional caption (copy.home.assistant_label) framing the box as
+          a working example of what Perennia builds, not a gimmick. */}
+      {label && <p className="hero-quick-chat-label">{label}</p>}
+      <div className={`hero-quick-chat ${className || ""}`.trim()}>
+        <ChatInput value={value} onChange={onChange} onSend={onSend} placeholder={placeholder} sendLabel={sendLabel} />
+      </div>
+    </>
   );
 }
 

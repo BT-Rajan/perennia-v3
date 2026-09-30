@@ -1,4 +1,4 @@
-import { HeroButtons, HeroChatComposer, HeroCtas, HeroExamplePrompts, HeroHeadline, HeroPrinciples, HeroSupportingText } from "../HeroShared.jsx";
+import { HeroButtons, HeroChatComposer, HeroCtas, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroPrinciples, HeroSupportingText } from "../HeroShared.jsx";
 
 /**
  * "editorial" — a bigger, left-aligned headline and a narrower
@@ -10,6 +10,7 @@ export default function EditorialLayout({ home, heroButtons, lang, quickDraft, s
   return (
     <>
       <div className="hero-editorial-main">
+        <HeroEyebrow text={home.eyebrow} className="hero-eyebrow-left" />
         <HeroHeadline
           statement={home.heroStatement}
           taglineLine1={home.taglineLine1}
@@ -28,6 +29,7 @@ export default function EditorialLayout({ home, heroButtons, lang, quickDraft, s
           onSend={onQuickSend}
           placeholder={copy.chat.inputPlaceholder}
           sendLabel={copy.common.send}
+          label={home.assistantLabel}
           className="hero-quick-chat-narrow"
         />
         <HeroExamplePrompts prompts={home.examplePrompts} onPick={onExamplePick} className="hero-example-prompts-left" />

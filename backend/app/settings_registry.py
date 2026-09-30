@@ -607,7 +607,8 @@ _DEFS: list[SettingDef] = [
         "en": {
             "welcome": "Welcome to Perennia",
             "tagline": "Visit our V-Lounge for more",
-            "hero_statement": "Practical AI.\nAffordable Innovation.",
+            "hero_statement": "", "eyebrow": "Practical AI. Affordable Innovation.",
+            "assistant_label": "Try the bilingual assistant we built — the same kind of tool we build for clients.",
             "tagline_line1": "Technology that moves",
             "tagline_line2": "your business forward.",
             "supporting_text": "Perennia helps GCC businesses adopt, build and scale technology — from their "
@@ -626,7 +627,8 @@ _DEFS: list[SettingDef] = [
         "ar": {
             "welcome": "مرحبا بك في بيرينيا",
             "tagline": "زوروا V-Lounge الخاص بنا لمزيد من المعلومات",
-            "hero_statement": "ذكاء اصطناعي عملي.\nابتكار في المتناول.",
+            "hero_statement": "", "eyebrow": "ذكاء اصطناعي عملي. ابتكار في المتناول.",
+            "assistant_label": "جرّب المساعد ثنائي اللغة الذي بنيناه — من نوع الأدوات التي نبنيها لعملائنا.",
             "tagline_line1": "تقنية تدفع",
             "tagline_line2": "أعمالك إلى الأمام.",
             "supporting_text": "تساعد بيرينيا الشركات في دول الخليج على تبنّي التقنية وبنائها وتوسيعها — من أول "
@@ -642,9 +644,10 @@ _DEFS: list[SettingDef] = [
         },
     }, i18n=True,
                help_text="welcome, tagline, hint, lang_switch, hero_statement, tagline_line1, tagline_line2, "
-                          "supporting_text, cta_primary, cta_secondary, principles, example_prompts. cta_primary opens "
+                          "eyebrow, supporting_text, cta_primary, cta_secondary, principles, assistant_label, example_prompts. "
+                          "eyebrow is the static line above the headline. cta_primary opens "
                           "the booking panel (or the Contact page if booking is off); cta_secondary opens the "
-                          "products page. hero_statement types itself out on the homepage "
+                          "products page. hero_statement (empty by default) types itself out on the homepage "
                           "before handing off to tagline_line1/2 (see theme.headline_typing_speed_cps and "
                           "theme.headline_dissolve_ms above) — include a literal newline in the string to "
                           "have it type across two lines instead of one."),

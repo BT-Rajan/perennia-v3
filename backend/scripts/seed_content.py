@@ -92,7 +92,8 @@ FAQ_SEED = [
 # frontend-side safety net this is meant to make unnecessary.
 COPY_HOME = {
     "en": {"welcome": "Welcome to Perennia", "tagline": "Visit our V-Lounge for more",
-           "hero_statement": "Practical AI.\nAffordable Innovation.",
+           "hero_statement": "", "eyebrow": "Practical AI. Affordable Innovation.",
+           "assistant_label": "Try the bilingual assistant we built — the same kind of tool we build for clients.",
            "tagline_line1": "Technology that moves", "tagline_line2": "your business forward.",
            "supporting_text": "Perennia helps GCC businesses adopt, build and scale technology — from their "
                               "first digital initiative to practical AI and larger-scale transformation.",
@@ -105,7 +106,8 @@ COPY_HOME = {
                                 "What happens in a discovery meeting?"],
            "hint": "Start chatting", "lang_switch": "AR | عربي"},
     "ar": {"welcome": "مرحبا بك في بيرينيا", "tagline": "زوروا V-Lounge الخاص بنا لمزيد من المعلومات",
-           "hero_statement": "ذكاء اصطناعي عملي.\nابتكار في المتناول.",
+           "hero_statement": "", "eyebrow": "ذكاء اصطناعي عملي. ابتكار في المتناول.",
+           "assistant_label": "جرّب المساعد ثنائي اللغة الذي بنيناه — من نوع الأدوات التي نبنيها لعملائنا.",
            "tagline_line1": "تقنية تدفع", "tagline_line2": "أعمالك إلى الأمام.",
            "supporting_text": "تساعد بيرينيا الشركات في دول الخليج على تبنّي التقنية وبنائها وتوسيعها — من أول "
                               "مبادرة رقمية إلى الذكاء الاصطناعي العملي والتحول على نطاق أوسع.",

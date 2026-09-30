@@ -1,4 +1,4 @@
-import { HeroButtons, HeroChatComposer, HeroCtas, HeroExamplePrompts, HeroHeadline, HeroPrinciples, HeroSupportingText } from "../HeroShared.jsx";
+import { HeroButtons, HeroChatComposer, HeroCtas, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroPrinciples, HeroSupportingText } from "../HeroShared.jsx";
 
 /**
  * "split" — two-column: headline, tagline, and the quick-chat box
@@ -10,6 +10,7 @@ export default function SplitLayout({ home, heroButtons, lang, quickDraft, setQu
   return (
     <div className="hero-split-wrap">
       <div className="hero-split-main">
+        <HeroEyebrow text={home.eyebrow} className="hero-eyebrow-left" />
         <HeroHeadline
           statement={home.heroStatement}
           taglineLine1={home.taglineLine1}
@@ -28,6 +29,7 @@ export default function SplitLayout({ home, heroButtons, lang, quickDraft, setQu
           onSend={onQuickSend}
           placeholder={copy.chat.inputPlaceholder}
           sendLabel={copy.common.send}
+          label={home.assistantLabel}
         />
         <HeroExamplePrompts prompts={home.examplePrompts} onPick={onExamplePick} className="hero-example-prompts-left" />
       </div>

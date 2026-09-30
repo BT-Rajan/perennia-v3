@@ -1,4 +1,4 @@
-import { HeroButtons, HeroChatComposer, HeroCtas, HeroExamplePrompts, HeroHeadline, HeroPrinciples, HeroSupportingText } from "../HeroShared.jsx";
+import { HeroButtons, HeroChatComposer, HeroCtas, HeroEyebrow, HeroExamplePrompts, HeroHeadline, HeroPrinciples, HeroSupportingText } from "../HeroShared.jsx";
 
 /**
  * "classic" — the site's original, and default, homepage body:
@@ -11,6 +11,7 @@ export default function ClassicLayout({ home, heroButtons, lang, quickDraft, set
   return (
     <>
       <div className="hero-center">
+        <HeroEyebrow text={home.eyebrow} />
         <HeroHeadline statement={home.heroStatement} taglineLine1={home.taglineLine1} taglineLine2={home.taglineLine2} typingSpeedCps={headlineTypingSpeedCps} />
         <HeroSupportingText text={home.supportingText} />
         <HeroCtas primaryLabel={home.ctaPrimary} secondaryLabel={home.ctaSecondary} onPrimary={onCtaPrimary} onSecondary={onCtaSecondary} />
@@ -23,6 +24,7 @@ export default function ClassicLayout({ home, heroButtons, lang, quickDraft, set
           onSend={onQuickSend}
           placeholder={copy.chat.inputPlaceholder}
           sendLabel={copy.common.send}
+          label={home.assistantLabel}
         />
         <HeroExamplePrompts prompts={home.examplePrompts} onPick={onExamplePick} />
       </div>
